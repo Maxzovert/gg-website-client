@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { FaRegHeart } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.png';
@@ -13,16 +14,12 @@ const Navbar = () => {
             href: '/',
         },
         {
-            name: 'Products',
-            href: '/products',
+            name: 'Sprays',
+            href: '/sprays',
         },
         {
-            name: 'Aura Spray',
-            href: '/aura-spray',
-        },
-        {
-            name: 'Rashi',
-            href: '/rashi',
+            name: 'Rudraksha',
+            href: '/rudraksha',
         },
     ]
     
@@ -37,10 +34,18 @@ const Navbar = () => {
                 <p>Shop Now</p>
             </div>
             <nav className='flex justify-between items-center h-24 w-full'>
-                <img src={logo} alt="logo" className='w-18 h-18 ml-2' />
+                <Link to="/">
+                    <img src={logo} alt="logo" className='w-18 h-18 ml-2' />
+                </Link>
                 <div className='flex items-center gap-10 w-full justify-center'>
                 {navItems.map((item) => (
-                    <li className='text-gray-700 list-none cursor-pointer mx-12 font-medium hover:text-primary' key={item.name}>{item.name}</li>
+                    <Link 
+                        key={item.name} 
+                        to={item.href}
+                        className='text-gray-700 list-none cursor-pointer mx-12 font-medium hover:text-primary'
+                    >
+                        {item.name}
+                    </Link>
                 ))}
                 </div>
                 <div className='flex items-center justify-between gap-10 m-12'>
