@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
-import { FaStar } from 'react-icons/fa';
+import { FaStar, FaShoppingCart } from 'react-icons/fa';
 
 const Rudraksh = () => {
   const [products, setProducts] = useState([]);
@@ -355,7 +355,7 @@ const Rudraksh = () => {
                 return (
                   <div
                     key={product.id}
-                    className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
+                    className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
                   >
                     {/* Product Image */}
                     <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative group">
@@ -414,28 +414,37 @@ const Rudraksh = () => {
 
                       {/* Pricing Section */}
                       <div className="mt-auto pt-2.5 border-t border-gray-100">
-                        <div className="flex items-baseline gap-2 mb-1.5">
-                          <span className="text-xl font-bold text-gray-900">
-                            ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                          </span>
-                          <span className="text-sm text-gray-400 line-through font-medium">
-                            ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                          </span>
-                        </div>
+                        <div className="flex items-stretch gap-3">
+                          {/* Price and Stock - Left Side */}
+                          <div className="flex-1 flex flex-col justify-center">
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className="text-xl font-bold text-gray-900">
+                                ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                              </span>
+                              <span className="text-sm text-gray-400 line-through font-medium">
+                                ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                              </span>
+                            </div>
+                            {product.stock > 0 ? (
+                              <span className="inline-flex items-center text-xs font-semibold text-primary">
+                                <span className="w-1.5 h-1.5 bg-primary rounded-full mr-1.5"></span>
+                                In Stock
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center text-xs font-semibold text-red-600">
+                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span>
+                                Out of Stock
+                              </span>
+                            )}
+                          </div>
 
-                        {/* Stock Status */}
-                        <div className="flex items-center justify-between">
-                          {product.stock > 0 ? (
-                            <span className="inline-flex items-center text-xs font-semibold text-green-600">
-                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                              In Stock
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center text-xs font-semibold text-red-600">
-                              <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span>
-                              Out of Stock
-                            </span>
-                          )}
+                          {/* Cart Button - Right Side */}
+                          <button
+                            className="border-2 border-primary text-primary bg-transparent w-12 rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 self-stretch cursor-pointer"
+                            aria-label="Add to cart"
+                          >
+                            <FaShoppingCart className="text-xl" />
+                          </button>
                         </div>
                       </div>
                     </div>
