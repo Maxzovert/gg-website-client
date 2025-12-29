@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
+import { FaStar } from 'react-icons/fa';
 
 const Spray = () => {
   const [products, setProducts] = useState([]);
@@ -95,8 +96,26 @@ const Spray = () => {
     });
   };
 
+  // Calculate original price and discount
+  const calculatePricing = (price) => {
+    // Default discount percentage (can be customized per product)
+    const discountPercent = 25; // Default 25% discount
+    const originalPrice = price / (1 - discountPercent / 100);
+    return {
+      currentPrice: price,
+      originalPrice: originalPrice,
+      discount: discountPercent
+    };
+  };
+
+  // Generate random review count (for demo purposes)
+  const getReviewCount = (productId) => {
+    // Use product ID to generate consistent review count
+    return 5 + (productId % 3); // Returns 5, 6, or 7
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-[#F5F5DC] py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
@@ -231,61 +250,84 @@ const Spray = () => {
             <p className="text-gray-600">No products found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              >
-                {/* Product Image */}
-                <div className="aspect-square bg-gray-200 overflow-hidden">
-                  {product.images && product.images.length > 0 ? (
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      No Image
-                    </div>
-                  )}
-                </div>
+          <>
 
-                {/* Product Info */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  {product.subcategory && (
-                    <p className="text-sm text-gray-600 mb-2">{product.subcategory}</p>
-                  )}
-                  {product.deity && (
-                    <p className="text-xs text-gray-500 mb-1">Deity: {product.deity}</p>
-                  )}
-                  {product.planet && (
-                    <p className="text-xs text-gray-500 mb-1">Planet: {product.planet}</p>
-                  )}
-                  {product.rarity && (
-                    <p className="text-xs text-gray-500 mb-2">Rarity: {product.rarity}</p>
-                  )}
-                  <div className="flex items-center justify-between mt-3">
-                    <span className="text-xl font-bold text-orange-600">
-                      ₹{product.price?.toFixed(2) || '0.00'}
-                    </span>
-                    {product.stock > 0 ? (
-                      <span className="text-xs text-green-600">In Stock</span>
-                    ) : (
-                      <span className="text-xs text-red-600">Out of Stock</span>
-                    )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map((product) => {
+                const pricing = calculatePricing(product.price);
+                const reviewCount = getReviewCount(product.id);
+                
+                return (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    {/* Product Image */}
+                    <div className="aspect-square bg-gray-100 overflow-hidden relative">
+                      {product.images && product.images.length > 0 ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+                          No Image
+                        </div>
+                      )}
+                      {/* Discount Badge */}
+                      <div className="absolute top-2 right-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded">
+                        {pricing.discount}% OFF
+                      </div>
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="p-4 bg-white">
+                      {/* Product Name */}
+                      <h3 className="text-base font-semibold text-gray-800 line-clamp-2 mb-1">
+                        {product.name}
+                      </h3>
+                      
+                      {/* Short Description */}
+                      {product.description && (
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                          {product.description}
+                        </p>
+                      )}
+                      
+                      {/* Star Rating */}
+                      <div className="flex items-center gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar key={i} className="text-orange-500 text-sm" />
+                        ))}
+                        <span className="text-xs text-gray-600 ml-1">({reviewCount})</span>
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg font-bold text-gray-800">
+                          ₹ {pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                        </span>
+                        <span className="text-sm text-gray-500 line-through">
+                          ₹ {pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                        </span>
+                      </div>
+
+                      {/* Stock Status */}
+                      {product.stock > 0 ? (
+                        <span className="text-xs text-green-600 font-medium">In Stock</span>
+                      ) : (
+                        <span className="text-xs text-red-600 font-medium">Out of Stock</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
     </div>
