@@ -15,10 +15,13 @@ const Rudraksh = () => {
     deity: 'all',
     planet: 'all',
     rarity: 'all',
-    search: ''
+    search: '',
+    priceMin: 0,
+    priceMax: 100000
   });
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -28,7 +31,16 @@ const Rudraksh = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [filters]);
+  }, [filters.subcategory, filters.deity, filters.planet, filters.rarity, filters.search]);
+
+  useEffect(() => {
+    // Filter by price on client side
+    const filtered = allProducts.filter(product => {
+      const price = product.price || 0;
+      return price >= filters.priceMin && price <= filters.priceMax;
+    });
+    setProducts(filtered);
+  }, [filters.priceMin, filters.priceMax, allProducts]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -59,7 +71,13 @@ const Rudraksh = () => {
       if (!response.ok) throw new Error('Failed to fetch products');
       const result = await response.json();
       if (result.success) {
-        setProducts(result.data);
+        setAllProducts(result.data);
+        // Apply price filter on client side
+        const filtered = result.data.filter(product => {
+          const price = product.price || 0;
+          return price >= filters.priceMin && price <= filters.priceMax;
+        });
+        setProducts(filtered);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -81,9 +99,16 @@ const Rudraksh = () => {
       deity: 'all',
       planet: 'all',
       rarity: 'all',
-      search: ''
+      search: '',
+      priceMin: 0,
+      priceMax: 100000
     });
   };
+
+  // Calculate max price from products
+  const maxPrice = allProducts.length > 0 
+    ? Math.max(...allProducts.map(p => p.price || 0), 100000)
+    : 100000;
 
   // Calculate original price and discount
   const calculatePricing = (price) => {
@@ -112,40 +137,112 @@ const Rudraksh = () => {
           <p className="text-gray-600">Explore our collection of sacred Rudraksha beads</p>
         </div>
 
-        {/* Search and Filter Toggle */}
-        <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex-1 w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-          >
-            <FiFilter />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
-          </button>
+        {/* Search Bar */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
         </div>
 
-        {/* Filters Panel */}
-        {showFilters && (
-          <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Main Content with Sidebar */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar Filters */}
+          <aside className={`w-full lg:w-64 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <div className="bg-white p-6 rounded-lg shadow-md sticky top-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="lg:hidden text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Price Range Filter */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Price Range
+                </label>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max={maxPrice}
+                      value={filters.priceMin}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 0;
+                        handleFilterChange('priceMin', Math.min(val, filters.priceMax));
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                      placeholder="Min"
+                    />
+                    <span className="text-gray-500">-</span>
+                    <input
+                      type="number"
+                      min={filters.priceMin}
+                      max={maxPrice}
+                      value={filters.priceMax}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || maxPrice;
+                        handleFilterChange('priceMax', Math.max(val, filters.priceMin));
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                      placeholder="Max"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <label className="text-xs text-gray-600 mb-1 block">Min Price</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max={maxPrice}
+                        value={filters.priceMin}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          handleFilterChange('priceMin', Math.min(val, filters.priceMax));
+                        }}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                      />
+                    </div>
+                    <div className="relative">
+                      <label className="text-xs text-gray-600 mb-1 block">Max Price</label>
+                      <input
+                        type="range"
+                        min={filters.priceMin}
+                        max={maxPrice}
+                        value={filters.priceMax}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          handleFilterChange('priceMax', Math.max(val, filters.priceMin));
+                        }}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-600 font-medium pt-2">
+                    <span>₹{filters.priceMin.toLocaleString('en-IN')}</span>
+                    <span>₹{filters.priceMax.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Subcategory Filter */}
               {filterOptions.subcategories.length > 0 && (
-                <div>
+                <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Subcategory
                   </label>
                   <select
                     value={filters.subcategory}
                     onChange={(e) => handleFilterChange('subcategory', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   >
                     <option value="all">All Subcategories</option>
                     {filterOptions.subcategories.map((subcat) => (
@@ -159,14 +256,14 @@ const Rudraksh = () => {
 
               {/* Deity Filter */}
               {filterOptions.deities.length > 0 && (
-                <div>
+                <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Deity
                   </label>
                   <select
                     value={filters.deity}
                     onChange={(e) => handleFilterChange('deity', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   >
                     <option value="all">All Deities</option>
                     {filterOptions.deities.map((deity) => (
@@ -180,14 +277,14 @@ const Rudraksh = () => {
 
               {/* Planet Filter */}
               {filterOptions.planets.length > 0 && (
-                <div>
+                <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Planet
                   </label>
                   <select
                     value={filters.planet}
                     onChange={(e) => handleFilterChange('planet', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   >
                     <option value="all">All Planets</option>
                     {filterOptions.planets.map((planet) => (
@@ -201,14 +298,14 @@ const Rudraksh = () => {
 
               {/* Rarity Filter */}
               {filterOptions.rarities.length > 0 && (
-                <div>
+                <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Rarity
                   </label>
                   <select
                     value={filters.rarity}
                     onChange={(e) => handleFilterChange('rarity', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   >
                     <option value="all">All Rarities</option>
                     {filterOptions.rarities.map((rarity) => (
@@ -219,29 +316,38 @@ const Rudraksh = () => {
                   </select>
                 </div>
               )}
+
+              <button
+                onClick={clearFilters}
+                className="w-full mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
+              >
+                Clear All Filters
+              </button>
             </div>
+          </aside>
+
+          {/* Products Section */}
+          <div className="flex-1">
+            {/* Filter Toggle for Mobile */}
             <button
-              onClick={clearFilters}
-              className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              onClick={() => setShowFilters(!showFilters)}
+              className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
             >
-              Clear All Filters
+              <FiFilter />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
             </button>
-          </div>
-        )}
 
-        {/* Products Grid */}
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <p className="text-gray-600">Loading products...</p>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="flex justify-center items-center h-64">
-            <p className="text-gray-600">No products found</p>
-          </div>
-        ) : (
-          <>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* Products Grid */}
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <p className="text-gray-600">Loading products...</p>
+              </div>
+            ) : products.length === 0 ? (
+              <div className="flex justify-center items-center h-64">
+                <p className="text-gray-600">No products found</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map((product) => {
                 const pricing = calculatePricing(product.price);
                 const reviewCount = getReviewCount(product.id);
@@ -249,75 +355,97 @@ const Rudraksh = () => {
                 return (
                   <div
                     key={product.id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
                   >
                     {/* Product Image */}
-                    <div className="aspect-square bg-gray-100 overflow-hidden relative">
+                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative group">
                       {product.images && product.images.length > 0 ? (
                         <img
                           src={product.images[0]}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
                             e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
                           }}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                          No Image
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <span className="text-sm">No Image</span>
                         </div>
                       )}
                       {/* Discount Badge */}
-                      <div className="absolute top-2 right-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded">
+                      <div className="absolute top-3 right-3 bg-black text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg">
                         {pricing.discount}% OFF
                       </div>
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-4 bg-white">
+                    <div className="p-4 bg-white flex-1 flex flex-col">
+                      {/* Badges Section */}
+                      {product.subcategory && (
+                        <div className="mb-2">
+                          <span className="inline-block px-2.5 py-1 text-xs font-semibold bg-orange-50 text-orange-700 rounded-md border border-orange-200">
+                            {product.subcategory}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Product Name */}
-                      <h3 className="text-base font-semibold text-gray-800 line-clamp-2 mb-1">
+                      <h3 className="text-base font-bold text-gray-900 line-clamp-2 mb-1.5 leading-tight">
                         {product.name}
                       </h3>
                       
                       {/* Short Description */}
                       {product.description && (
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                        <p className="text-xs text-gray-500 mb-2 line-clamp-2 leading-snug">
                           {product.description}
                         </p>
                       )}
                       
                       {/* Star Rating */}
-                      <div className="flex items-center gap-1 mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar key={i} className="text-orange-500 text-sm" />
-                        ))}
-                        <span className="text-xs text-gray-600 ml-1">({reviewCount})</span>
+                      <div className="flex items-center gap-1 mb-3">
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <FaStar key={i} className="text-orange-400 text-xs fill-current" />
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-500 font-medium ml-1">({reviewCount})</span>
                       </div>
 
-                      {/* Pricing */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg font-bold text-gray-800">
-                          ₹ {pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                        </span>
-                        <span className="text-sm text-gray-500 line-through">
-                          ₹ {pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                        </span>
-                      </div>
+                      {/* Pricing Section */}
+                      <div className="mt-auto pt-2.5 border-t border-gray-100">
+                        <div className="flex items-baseline gap-2 mb-1.5">
+                          <span className="text-xl font-bold text-gray-900">
+                            ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                          </span>
+                          <span className="text-sm text-gray-400 line-through font-medium">
+                            ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                          </span>
+                        </div>
 
-                      {/* Stock Status */}
-                      {product.stock > 0 ? (
-                        <span className="text-xs text-green-600 font-medium">In Stock</span>
-                      ) : (
-                        <span className="text-xs text-red-600 font-medium">Out of Stock</span>
-                      )}
+                        {/* Stock Status */}
+                        <div className="flex items-center justify-between">
+                          {product.stock > 0 ? (
+                            <span className="inline-flex items-center text-xs font-semibold text-green-600">
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                              In Stock
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center text-xs font-semibold text-red-600">
+                              <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span>
+                              Out of Stock
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
               })}
-            </div>
-          </>
-        )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
