@@ -404,7 +404,7 @@ const Spray = () => {
                     className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
                   >
                     {/* Product Image */}
-                    <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative group">
+                    <div className="aspect-square from-gray-50 to-gray-100 overflow-hidden relative group">
                       {product.images && product.images.length > 0 ? (
                         <img
                           src={product.images[0]}
