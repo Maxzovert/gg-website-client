@@ -175,16 +175,16 @@ const Spray = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC] py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen py-4 sm:py-6 lg:py-8">
+      <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Sprays</h1>
-          <p className="text-gray-600">Explore our collection of spiritual sprays</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">Sprays</h1>
+          <p className="text-sm sm:text-base text-gray-600">Explore our collection of spiritual sprays</p>
         </div>
 
         {/* Search Bar */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <input
             type="text"
             placeholder="Search products..."
@@ -195,10 +195,10 @@ const Spray = () => {
         </div>
 
         {/* Main Content with Sidebar */}
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           {/* Sidebar Filters */}
-          <aside className={`w-full lg:w-64 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white p-6 rounded-lg shadow-md sticky top-4">
+          <aside className={`w-full lg:w-72 xl:w-80 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md sticky top-4">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
                 <button
@@ -393,7 +393,7 @@ const Spray = () => {
                 <p className="text-gray-600">No products found</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
               {products.map((product) => {
                 const pricing = calculatePricing(product.price);
                 const reviewCount = getReviewCount(product.id);
