@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import ProductCard from '../../Components/ProductCard';
+import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 
 const Rashi = () => {
