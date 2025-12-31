@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../Components/ProductCard';
+import Loader from '../../components/Loader';
 
 const Spray = () => {
   const [products, setProducts] = useState([]);
@@ -386,7 +387,7 @@ const Spray = () => {
             {/* Products Grid */}
             {loading ? (
               <div className="flex justify-center items-center h-64">
-                <p className="text-gray-600">Loading products...</p>
+                <Loader size="lg" />
               </div>
             ) : products.length === 0 ? (
               <div className="flex justify-center items-center h-64">
