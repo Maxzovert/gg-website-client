@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import Loader from './Loader'
 
 const WebsiteCarousel = () => {
   const [images, setImages] = useState([])
@@ -91,7 +92,7 @@ const WebsiteCarousel = () => {
   if (loading) {
     return (
       <div className="w-full h-[500px] flex items-center justify-center bg-gray-100">
-        <p className="text-gray-600">Loading carousel images...</p>
+        <Loader size="xl"/>
       </div>
     )
   }

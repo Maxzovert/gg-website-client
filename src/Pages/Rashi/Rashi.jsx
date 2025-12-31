@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import ProductCard from '../../Components/ProductCard';
+import Loader from '../../components/Loader';
 
 const Rashi = () => {
   const [selectedRashi, setSelectedRashi] = useState('');
@@ -402,7 +403,7 @@ const Rashi = () => {
                 color: '#ff914d'
               }}
             >
-              <option value="" style={{ color: '#ff914d', backgroundColor: 'white' }}>-- Select Your Rashi --</option>
+              <option value="" style={{ color: '#ff914d', backgroundColor: 'white' }}>Select Your Rashi</option>
               {rashis.map((rashi) => (
                 <option 
                   key={rashi.value} 
@@ -659,7 +660,7 @@ const Rashi = () => {
 
             {loading ? (
               <div className="flex justify-center items-center h-64">
-                <p className="text-gray-600">Loading Rudraksha...</p>
+                <Loader size="lg" />
               </div>
             ) : suggestedRudraksha.length === 0 ? (
               <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-6 text-center">
