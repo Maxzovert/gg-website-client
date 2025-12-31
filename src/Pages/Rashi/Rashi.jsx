@@ -364,6 +364,18 @@ const Rashi = () => {
 
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-gradient-to-br from-orange-50/30 to-white">
+      <style>{`
+        select option {
+          color: #ff914d !important;
+          background-color: white !important;
+        }
+        select option:hover {
+          background-color: rgba(255, 145, 77, 0.1) !important;
+        }
+        select:focus option:checked {
+          background-color: rgba(255, 145, 77, 0.2) !important;
+        }
+      `}</style>
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header */}
         <div className="mb-6 sm:mb-8 text-center">
@@ -377,21 +389,37 @@ const Rashi = () => {
 
         {/* Rashi Selection */}
         <div className="mb-8 max-w-2xl mx-auto">
-          <label className="block text-sm font-medium text-primary mb-3">
+          <label className="block text-sm font-semibold text-primary mb-3">
             Select Your Rashi (Zodiac Sign)
           </label>
-          <select
-            value={selectedRashi}
-            onChange={(e) => setSelectedRashi(e.target.value)}
-            className="w-full px-4 py-3 text-base border-2 border-primary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-white text-gray-800"
-          >
-            <option value="">-- Select Your Rashi --</option>
-            {rashis.map((rashi) => (
-              <option key={rashi.value} value={rashi.value}>
-                {rashi.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={selectedRashi}
+              onChange={(e) => setSelectedRashi(e.target.value)}
+              className="w-full px-4 py-3 pr-12 text-base border-2 border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-gradient-to-br from-white to-primary/5 text-primary font-medium appearance-none cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md"
+              style={{
+                color: '#ff914d'
+              }}
+            >
+              <option value="" style={{ color: '#ff914d', backgroundColor: 'white' }}>-- Select Your Rashi --</option>
+              {rashis.map((rashi) => (
+                <option 
+                  key={rashi.value} 
+                  value={rashi.value} 
+                  style={{ color: '#ff914d', backgroundColor: 'white' }}
+                  className="hover:bg-primary/10 py-2"
+                >
+                  {rashi.label}
+                </option>
+              ))}
+            </select>
+            {/* Custom dropdown arrow overlay for better visibility */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
 
         {/* Rashi Information with Image */}
