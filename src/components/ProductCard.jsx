@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FaStar, FaShoppingCart } from 'react-icons/fa';
 
 const ProductCard = ({ 
@@ -57,8 +58,19 @@ const ProductCard = ({
 
   const badges = getBadges();
 
+  const handleCartClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+    <Link 
+      to={`/product/${product.id}`}
+      className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col block"
+    >
       {/* Product Image */}
       <div className="aspect-square lg:aspect-4/3 from-gray-50 to-gray-100 overflow-hidden relative group">
         {product.images && product.images.length > 0 ? (
@@ -168,8 +180,8 @@ const ProductCard = ({
 
             {/* Cart Button - Right Side */}
             <button
-              onClick={() => onAddToCart && onAddToCart(product)}
-              className="border-2 border-primary text-primary bg-transparent w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer"
+              onClick={handleCartClick}
+              className="border-2 border-primary text-primary bg-transparent w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10"
               aria-label="Add to cart"
             >
               <FaShoppingCart className="text-xs sm:text-sm md:text-base lg:text-xl" />
@@ -177,7 +189,7 @@ const ProductCard = ({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
