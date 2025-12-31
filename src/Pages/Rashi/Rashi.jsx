@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FaStar, FaShoppingCart, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
+import ProductCard from '../../Components/ProductCard';
 
 const Rashi = () => {
   const [selectedRashi, setSelectedRashi] = useState('');
@@ -364,6 +365,18 @@ const Rashi = () => {
 
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-gradient-to-br from-orange-50/30 to-white">
+      <style>{`
+        select option {
+          color: #ff914d !important;
+          background-color: white !important;
+        }
+        select option:hover {
+          background-color: rgba(255, 145, 77, 0.1) !important;
+        }
+        select:focus option:checked {
+          background-color: rgba(255, 145, 77, 0.2) !important;
+        }
+      `}</style>
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header */}
         <div className="mb-6 sm:mb-8 text-center">
@@ -377,21 +390,37 @@ const Rashi = () => {
 
         {/* Rashi Selection */}
         <div className="mb-8 max-w-2xl mx-auto">
-          <label className="block text-sm font-medium text-primary mb-3">
+          <label className="block text-sm font-semibold text-primary mb-3">
             Select Your Rashi (Zodiac Sign)
           </label>
-          <select
-            value={selectedRashi}
-            onChange={(e) => setSelectedRashi(e.target.value)}
-            className="w-full px-4 py-3 text-base border-2 border-primary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-white text-gray-800"
-          >
-            <option value="">-- Select Your Rashi --</option>
-            {rashis.map((rashi) => (
-              <option key={rashi.value} value={rashi.value}>
-                {rashi.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={selectedRashi}
+              onChange={(e) => setSelectedRashi(e.target.value)}
+              className="w-full px-4 py-3 pr-12 text-base border-2 border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-gradient-to-br from-white to-primary/5 text-primary font-medium appearance-none cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md"
+              style={{
+                color: '#ff914d'
+              }}
+            >
+              <option value="" style={{ color: '#ff914d', backgroundColor: 'white' }}>-- Select Your Rashi --</option>
+              {rashis.map((rashi) => (
+                <option 
+                  key={rashi.value} 
+                  value={rashi.value} 
+                  style={{ color: '#ff914d', backgroundColor: 'white' }}
+                  className="hover:bg-primary/10 py-2"
+                >
+                  {rashi.label}
+                </option>
+              ))}
+            </select>
+            {/* Custom dropdown arrow overlay for better visibility */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
 
         {/* Rashi Information with Image */}
@@ -644,123 +673,15 @@ const Rashi = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-                {suggestedRudraksha.map((product) => {
-                  const pricing = calculatePricing(product.price);
-                  const reviewCount = getReviewCount(product.id);
-
-                  return (
-                    <div
-                      key={product.id}
-                      className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
-                    >
-                      {/* Product Image */}
-                      <div className="aspect-square from-gray-50 to-gray-100 overflow-hidden relative group">
-                        {product.images && product.images.length > 0 ? (
-                          <img
-                            src={product.images[0]}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-                            <span className="text-sm">No Image</span>
-                          </div>
-                        )}
-                        <div className="absolute top-3 right-3 bg-black text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-lg">
-                          {pricing.discount}% OFF
-                        </div>
-                      </div>
-
-                      {/* Product Info */}
-                      <div className="p-4 bg-white flex-1 flex flex-col">
-                        {/* Badges */}
-                        <div className="flex flex-wrap gap-1.5 mb-2">
-                          {product.subcategory && (
-                            <span className="inline-block px-2.5 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-md border border-primary/30">
-                              {product.subcategory}
-                            </span>
-                          )}
-                          {product.deity && (
-                            <span className="inline-block px-2.5 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-md border border-primary/30">
-                              {product.deity}
-                            </span>
-                          )}
-                          {product.planet && (
-                            <span className="inline-block px-2.5 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-md border border-primary/30">
-                              {product.planet}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Product Name */}
-                        <h3 className="text-base font-bold text-gray-900 line-clamp-2 mb-1.5 leading-tight">
-                          {product.name}
-                        </h3>
-
-                        {/* Description */}
-                        {product.description && (
-                          <p className="text-xs text-gray-500 mb-2 line-clamp-2 leading-snug">
-                            {product.description}
-                          </p>
-                        )}
-
-                        {/* Benefits */}
-                        {product.benefits && (
-                          <p className="text-xs text-gray-600 mb-2 line-clamp-2 leading-snug italic">
-                            Benefits: {product.benefits}
-                          </p>
-                        )}
-
-                        {/* Star Rating */}
-                        <div className="flex items-center gap-1 mb-3">
-                          <div className="flex items-center gap-0.5">
-                            {[...Array(5)].map((_, i) => (
-                              <FaStar key={i} className="text-primary text-xs fill-current" />
-                            ))}
-                          </div>
-                          <span className="text-xs text-gray-500 font-medium ml-1">({reviewCount})</span>
-                        </div>
-
-                        {/* Pricing Section */}
-                        <div className="mt-auto pt-2.5 border-t border-primary/20">
-                          <div className="flex items-stretch gap-3">
-                            <div className="flex-1 flex flex-col justify-center">
-                              <div className="flex items-baseline gap-2 mb-1">
-                                <span className="text-xl font-bold text-primary">
-                                  ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                                </span>
-                                <span className="text-sm text-gray-400 line-through font-medium">
-                                  ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                                </span>
-                              </div>
-                              {product.stock > 0 ? (
-                                <span className="inline-flex items-center text-xs font-semibold text-primary">
-                                  <span className="w-1.5 h-1.5 bg-primary rounded-full mr-1.5"></span>
-                                  In Stock
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center text-xs font-semibold text-red-600">
-                                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span>
-                                  Out of Stock
-                                </span>
-                              )}
-                            </div>
-
-                            <button
-                              className="border-2 border-primary text-primary bg-transparent w-12 rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 self-stretch cursor-pointer"
-                              aria-label="Add to cart"
-                            >
-                              <FaShoppingCart className="text-xl" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                {suggestedRudraksha.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    variant="rashi"
+                    calculatePricing={calculatePricing}
+                    getReviewCount={getReviewCount}
+                  />
+                ))}
               </div>
             )}
           </div>
