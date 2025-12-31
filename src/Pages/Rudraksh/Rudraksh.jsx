@@ -133,32 +133,61 @@ const Rudraksh = () => {
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">Rudraksha</h1>
+        <div className="mb-6 sm:mb-8 text-center sm:text-left">
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2">Rudraksha</h1>
           <p className="text-sm sm:text-base text-gray-600">Explore our collection of sacred Rudraksha beads</p>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-4 sm:mb-6">
+        {/* Search Bar and Filter */}
+        <div className="mb-4 sm:mb-6 flex items-center gap-3">
           <input
             type="text"
             placeholder="Search products..."
             value={filters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
-            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="flex-1 max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
+          {/* Filter Toggle for Mobile */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="lg:hidden p-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+            aria-label="Toggle filters"
+          >
+            <FiFilter className="text-xl" />
+          </button>
         </div>
 
+        {/* Mobile Overlay */}
+        <div
+          className={`lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-all duration-300 ease-out ${
+            showFilters ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={() => setShowFilters(false)}
+        ></div>
+
         {/* Main Content with Sidebar */}
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 relative">
           {/* Sidebar Filters */}
-          <aside className={`w-full lg:w-72 xl:w-80 shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md sticky top-4">
+          <aside className={`
+            fixed lg:static
+            top-0 left-0
+            h-full lg:h-auto
+            w-72 sm:w-80 lg:w-72 xl:w-80
+            bg-white
+            z-50 lg:z-auto
+            transform transition-all duration-300 ease-out
+            ${showFilters ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0 lg:translate-x-0 lg:opacity-100'}
+            ${showFilters ? 'visible' : 'invisible lg:visible'}
+            shadow-2xl lg:shadow-md
+            overflow-y-auto lg:overflow-visible
+          `}>
+            <div className="p-4 sm:p-6 lg:rounded-lg lg:sticky lg:top-4 h-full lg:h-auto">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="lg:hidden text-gray-500 hover:text-gray-700"
+                  className="lg:hidden text-gray-500 hover:text-gray-700 text-2xl"
+                  aria-label="Close filters"
                 >
                   ✕
                 </button>
@@ -329,14 +358,6 @@ const Rudraksh = () => {
 
           {/* Products Section */}
           <div className="flex-1">
-            {/* Filter Toggle for Mobile */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-            >
-              <FiFilter />
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </button>
 
             {/* Products Grid */}
             {loading ? (
@@ -348,7 +369,7 @@ const Rudraksh = () => {
                 <p className="text-gray-600">No products found</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-5 xl:gap-6">
               {products.map((product) => (
                 <ProductCard
                   key={product.id}

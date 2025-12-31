@@ -380,7 +380,7 @@ const Rashi = () => {
       `}</style>
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header */}
-        <div className="mb-6 sm:mb-8 text-center">
+        <div className="mb-6 sm:mb-8 text-center sm:text-left">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-2">
             Find Your Rashi Rudraksha
           </h1>
@@ -499,16 +499,13 @@ const Rashi = () => {
         {/* Suggested Rudraksha Cards (Modal) */}
         {selectedRashi && rashiToRudrakshaMapping[selectedRashi] && (
           <div className="mb-8">
-            <div className="mb-6">
+            <div className="mb-6 text-center sm:text-left">
               <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
                 Recommended Rudraksha for {rashiInfo?.name}
               </h2>
-              <p className="text-gray-600">
-                Click on each Rudraksha to learn more about its benefits and properties:
-              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 mb-8">
               {rashiToRudrakshaMapping[selectedRashi].map((mukhi) => {
                 const mukhiInfo = mukhiDetails[mukhi];
 
@@ -516,7 +513,7 @@ const Rashi = () => {
                   <div
                     key={mukhi}
                     onClick={() => setModalMukhi(mukhi)}
-                    className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl shadow-md border-2 border-primary/30 overflow-hidden hover:shadow-xl hover:border-primary transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                    className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg sm:rounded-xl shadow-md border-2 border-primary/30 overflow-hidden hover:shadow-xl hover:border-primary transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
                   >
                     {/* Rudraksha Image */}
                     <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/10 overflow-hidden relative">
@@ -525,31 +522,31 @@ const Rashi = () => {
                         alt={mukhi}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute top-3 left-3 bg-primary text-white text-sm font-bold px-3 py-1.5 rounded-md shadow-lg">
+                      <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 bg-primary text-white text-[10px] sm:text-xs md:text-sm font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 md:px-3 md:py-1.5 rounded-md shadow-lg">
                         {mukhi}
                       </div>
                     </div>
 
                     {/* Rudraksha Info */}
-                    <div className="p-5">
-                      <h3 className="text-xl font-bold text-primary mb-3">{mukhi}</h3>
+                    <div className="p-2 sm:p-3 md:p-5">
+                      <h3 className="text-xs sm:text-sm md:text-lg lg:text-xl font-bold text-primary mb-1.5 sm:mb-2 md:mb-3 line-clamp-1">{mukhi}</h3>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-primary">Deity:</span>
-                          <span className="text-sm text-gray-700">{mukhiInfo.deity}</span>
+                      <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <span className="text-[10px] sm:text-xs md:text-sm font-medium text-primary">Deity:</span>
+                          <span className="text-[10px] sm:text-xs md:text-sm text-gray-700 truncate">{mukhiInfo.deity}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-primary">Planet:</span>
-                          <span className="text-sm text-gray-700">{mukhiInfo.planet}</span>
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <span className="text-[10px] sm:text-xs md:text-sm font-medium text-primary">Planet:</span>
+                          <span className="text-[10px] sm:text-xs md:text-sm text-gray-700 truncate">{mukhiInfo.planet}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-primary">Chakra:</span>
-                          <span className="text-sm text-gray-700">{mukhiInfo.chakra}</span>
+                        <div className="hidden sm:flex items-center gap-1 sm:gap-2">
+                          <span className="text-[10px] sm:text-xs md:text-sm font-medium text-primary">Chakra:</span>
+                          <span className="text-[10px] sm:text-xs md:text-sm text-gray-700 truncate">{mukhiInfo.chakra}</span>
                         </div>
                       </div>
 
-                      <button className="mt-4 w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium">
+                      <button className="mt-2 sm:mt-3 md:mt-4 w-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 bg-primary text-white rounded-md sm:rounded-lg hover:bg-primary/90 transition-colors text-[10px] sm:text-xs md:text-sm font-medium">
                         View Details
                       </button>
                     </div>
@@ -649,7 +646,7 @@ const Rashi = () => {
         {/* Buy Cards - Actual Products */}
         {selectedRashi && (
           <div className="mb-8">
-            <div className="mb-6">
+            <div className="mb-6 text-center sm:text-left">
               <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
                 Available Rudraksha Products
               </h2>
@@ -673,7 +670,7 @@ const Rashi = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-5 xl:gap-6">
                 {suggestedRudraksha.map((product) => (
                   <ProductCard
                     key={product.id}
