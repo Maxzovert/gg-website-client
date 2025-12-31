@@ -365,7 +365,7 @@ const Rashi = () => {
   };
 
   return (
-    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-gradient-to-br from-orange-50/30 to-white">
+    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white">
       <style>{`
         select option {
           color: #ff914d !important;
@@ -398,7 +398,7 @@ const Rashi = () => {
             <select
               value={selectedRashi}
               onChange={(e) => setSelectedRashi(e.target.value)}
-              className="w-full px-4 py-3 pr-12 text-base border-2 border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-gradient-to-br from-white to-primary/5 text-primary font-medium appearance-none cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md"
+              className="w-full px-4 py-3 pr-12 text-base border-2 border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-linear-to-br from-white to-primary/5 text-primary font-medium appearance-none cursor-pointer hover:border-primary transition-all shadow-sm hover:shadow-md"
               style={{
                 color: '#ff914d'
               }}
@@ -427,11 +427,11 @@ const Rashi = () => {
         {/* Rashi Information with Image */}
         {rashiInfo && (
           <div className="mb-8 max-w-5xl mx-auto">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl shadow-lg overflow-hidden border-2 border-primary/30">
+            <div className="bg-linear-to-br from-primary/10 to-primary/5 rounded-xl shadow-lg overflow-hidden border-2 border-primary/30">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                 {/* Rashi Image */}
                 <div className="lg:order-1 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent z-10"></div>
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-transparent z-10"></div>
                   <img
                     src={rashiImages[selectedRashi]}
                     alt={rashiInfo.name}
@@ -513,10 +513,10 @@ const Rashi = () => {
                   <div
                     key={mukhi}
                     onClick={() => setModalMukhi(mukhi)}
-                    className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg sm:rounded-xl shadow-md border-2 border-primary/30 overflow-hidden hover:shadow-xl hover:border-primary transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                    className="bg-linear-to-br from-primary/10 to-primary/5 rounded-lg sm:rounded-xl shadow-md border-2 border-primary/30 overflow-hidden hover:shadow-xl hover:border-primary transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
                   >
                     {/* Rudraksha Image */}
-                    <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/10 overflow-hidden relative">
+                    <div className="aspect-square bg-linear-to-br from-primary/20 to-primary/10 overflow-hidden relative">
                       <img
                         src={`https://via.placeholder.com/400x400?text=${mukhi.replace(' ', '+')}+Rudraksha`}
                         alt={mukhi}
@@ -572,7 +572,7 @@ const Rashi = () => {
                 return (
                   <>
                     {/* Modal Header */}
-                    <div className="bg-gradient-to-r from-primary to-primary/80 p-6 text-white">
+                    <div className="bg-linear-to-r from-primary to-primary/80 p-6 text-white">
                       <div className="flex items-center justify-between">
                         <h2 className="text-2xl sm:text-3xl font-bold">{modalMukhi} Rudraksha</h2>
                         <button
@@ -688,7 +688,7 @@ const Rashi = () => {
         {/* Info Section when no rashi selected */}
         {!selectedRashi && (
           <div className="max-w-4xl mx-auto mt-12">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-8 border-2 border-primary/30 text-center">
+            <div className="bg-linear-to-br from-primary/10 to-primary/5 rounded-xl p-8 border-2 border-primary/30 text-center">
               <h3 className="text-2xl font-bold text-primary mb-4">
                 How It Works
               </h3>
