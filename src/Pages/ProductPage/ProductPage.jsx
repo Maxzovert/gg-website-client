@@ -6,16 +6,20 @@ import {
   FaArrowLeft,
   FaChevronLeft,
   FaChevronRight,
+  FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 import Loader from "../../components/Loader";
 import { useToast } from "../../components/Toaster";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -85,6 +89,16 @@ const ProductPage = () => {
     toast.info(`Proceeding to checkout with ${quantity} ${product.name}!`);
     // In the future, this would navigate to checkout page
     // navigate('/checkout', { state: { product, quantity } });
+  };
+
+  const handleWishlistToggle = () => {
+    if (!product) return;
+    const added = toggleWishlist(product);
+    if (added) {
+      toast.success(`${product.name} added to wishlist!`);
+    } else {
+      toast.info(`${product.name} removed from wishlist`);
+    }
   };
 
   const handleQuantityChange = (delta) => {
@@ -230,10 +244,23 @@ const ProductPage = () => {
 
           {/* Product Info */}
           <div className="space-y-4 sm:space-y-6">
-            {/* Product Name */}
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-              {product.name}
-            </h1>
+            {/* Product Name with Wishlist */}
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 flex-1">
+                {product.name}
+              </h1>
+              <button
+                onClick={handleWishlistToggle}
+                className="p-2 sm:p-3 transition-all hover:scale-110 shrink-0"
+                aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                {isInWishlist(product.id) ? (
+                  <FaHeart className="text-2xl sm:text-3xl text-primary fill-primary" />
+                ) : (
+                  <FaRegHeart className="text-2xl sm:text-3xl text-primary hover:text-primary/80" />
+                )}
+              </button>
+            </div>
 
             {/* Star Rating and Reviews */}
             <div className="flex items-center gap-3">

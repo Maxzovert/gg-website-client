@@ -5,12 +5,15 @@ import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.png';
 import { LuCircleUserRound } from "react-icons/lu";
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { getTotalItems } = useCart();
+    const { getTotalItems: getWishlistCount } = useWishlist();
     const cartCount = getTotalItems();
+    const wishlistCount = getWishlistCount();
 
     const navItems = [
         {
@@ -80,7 +83,14 @@ const Navbar = () => {
                 <div className='flex items-center gap-4 md:gap-6 lg:gap-8'>
                     {/* Desktop Icons */}
                     <div className='hidden md:flex items-center gap-4 lg:gap-6'>
-                        <FaRegHeart className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
+                        <Link to="/wishlist" className="relative">
+                            <FaRegHeart className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
+                            {wishlistCount > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                                </span>
+                            )}
+                        </Link>
                         <Link to="/cart" className="relative">
                             <CgShoppingBag className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
                             {cartCount > 0 && (
@@ -132,12 +142,17 @@ const Navbar = () => {
                         ))}
                         {/* Mobile Menu Heart Icon */}
                         <Link
-                            to="#"
+                            to="/wishlist"
                             onClick={closeMenu}
-                            className='flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:text-primary hover:bg-primary/5 transition-colors text-base'
+                            className='flex items-center gap-3 px-6 py-3 text-gray-700 font-medium hover:text-primary hover:bg-primary/5 transition-colors text-base relative'
                         >
                             <FaRegHeart className='text-primary' />
                             <span>Wishlist</span>
+                            {wishlistCount > 0 && (
+                                <span className="ml-auto bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 </div>

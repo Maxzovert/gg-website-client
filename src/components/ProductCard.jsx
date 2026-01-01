@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaStar, FaShoppingCart } from 'react-icons/fa';
+import { FaStar, FaShoppingCart, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useToast } from './Toaster';
 
 const ProductCard = ({ 
@@ -13,7 +14,9 @@ const ProductCard = ({
   onAddToCart
 }) => {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const toast = useToast();
+  const inWishlist = isInWishlist(product.id);
   // Calculate pricing
   const pricing = calculatePricing ? calculatePricing(product.price) : {
     currentPrice: product.price,
@@ -75,10 +78,21 @@ const ProductCard = ({
     }
   };
 
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const added = toggleWishlist(product);
+    if (added) {
+      toast.success(`${product.name} added to wishlist!`);
+    } else {
+      toast.info(`${product.name} removed from wishlist`);
+    }
+  };
+
   return (
     <Link 
       to={`/product/${product.id}`}
-      className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col block"
+      className="bg-white rounded-xl shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
     >
       {/* Product Image */}
       <div className="aspect-square lg:aspect-4/3 from-gray-50 to-gray-100 overflow-hidden relative group">
@@ -187,14 +201,30 @@ const ProductCard = ({
               )}
             </div>
 
-            {/* Cart Button - Right Side */}
-            <button
-              onClick={handleCartClick}
-              className="border-2 border-primary text-primary bg-transparent w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10"
-              aria-label="Add to cart"
-            >
-              <FaShoppingCart className="text-xs sm:text-sm md:text-base lg:text-xl" />
-            </button>
+            {/* Heart and Cart Buttons */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Heart Button */}
+              <button
+                onClick={handleWishlistClick}
+                className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10 hover:scale-110"
+                aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                {inWishlist ? (
+                  <FaHeart className="text-xs sm:text-sm md:text-base lg:text-xl text-primary fill-primary" />
+                ) : (
+                  <FaRegHeart className="text-xs sm:text-sm md:text-base lg:text-xl text-primary hover:text-primary/80" />
+                )}
+              </button>
+              
+              {/* Cart Button */}
+              <button
+                onClick={handleCartClick}
+                className="border-2 border-primary text-primary bg-transparent w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10"
+                aria-label="Add to cart"
+              >
+                <FaShoppingCart className="text-xs sm:text-sm md:text-base lg:text-xl" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
