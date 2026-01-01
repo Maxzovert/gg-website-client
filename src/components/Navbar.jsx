@@ -4,10 +4,13 @@ import { FaRegHeart, FaBars, FaTimes } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.png';
 import { LuCircleUserRound } from "react-icons/lu";
+import { useCart } from '../context/CartContext';
 
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { getTotalItems } = useCart();
+    const cartCount = getTotalItems();
 
     const navItems = [
         {
@@ -78,13 +81,27 @@ const Navbar = () => {
                     {/* Desktop Icons */}
                     <div className='hidden md:flex items-center gap-4 lg:gap-6'>
                         <FaRegHeart className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
-                        <CgShoppingBag className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
+                        <Link to="/cart" className="relative">
+                            <CgShoppingBag className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {cartCount > 99 ? '99+' : cartCount}
+                                </span>
+                            )}
+                        </Link>
                         <LuCircleUserRound className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
                     </div>
 
                     {/* Mobile Icons - Only Cart and User */}
                     <div className='md:hidden flex items-center gap-4'>
-                        <CgShoppingBag className='text-primary text-xl cursor-pointer' />
+                        <Link to="/cart" className="relative">
+                            <CgShoppingBag className='text-primary text-xl cursor-pointer' />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {cartCount > 99 ? '99+' : cartCount}
+                                </span>
+                            )}
+                        </Link>
                         <LuCircleUserRound className='text-primary text-xl cursor-pointer' />
                     </div>
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaStar, FaShoppingCart } from 'react-icons/fa';
+import { useCart } from '../context/CartContext';
+import { useToast } from './Toaster';
 
 const ProductCard = ({ 
   product, 
@@ -10,6 +12,8 @@ const ProductCard = ({
   getEssence,
   onAddToCart
 }) => {
+  const { addToCart } = useCart();
+  const toast = useToast();
   // Calculate pricing
   const pricing = calculatePricing ? calculatePricing(product.price) : {
     currentPrice: product.price,
@@ -61,7 +65,12 @@ const ProductCard = ({
   const handleCartClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onAddToCart) {
+    
+    // Use cart context if available, otherwise use prop callback
+    if (addToCart) {
+      addToCart(product, 1);
+      toast.success(`${product.name} added to cart!`);
+    } else if (onAddToCart) {
       onAddToCart(product);
     }
   };

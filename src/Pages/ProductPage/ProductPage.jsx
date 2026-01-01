@@ -9,11 +9,13 @@ import {
 } from "react-icons/fa";
 import Loader from "../../components/Loader";
 import { useToast } from "../../components/Toaster";
+import { useCart } from "../../context/CartContext";
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,9 +74,9 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log("Add to cart:", product, quantity);
-    toast.success(`Added ${quantity} ${product.name} to cart!`);
+    if (!product) return;
+    addToCart(product, quantity);
+    toast.success(`Added ${quantity} ${quantity === 1 ? 'item' : 'items'} of ${product.name} to cart!`);
   };
 
   const handleBuyNow = () => {
