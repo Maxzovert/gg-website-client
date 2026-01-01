@@ -5,12 +5,13 @@ import Spray from './Pages/Spray/Spray'
 import Rudraksh from './Pages/Rudraksh/Rudraksh'
 import Rashi from './Pages/Rashi/Rashi'
 import ProductPage from './Pages/ProductPage/ProductPage'
+import { ToastProvider } from './components/Toaster'
 import { Routes, Route, Navigate } from "react-router-dom";
 
 
 const App = () => {
   return (
-    <>
+    <ToastProvider>
       <Navbar/>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -19,7 +20,7 @@ const App = () => {
         <Route path="/rashi" element={<Rashi />} />
         <Route path="/product/:id" element={<ProductPage />} />
       </Routes>
-    </>
+    </ToastProvider>
   )
 }
 

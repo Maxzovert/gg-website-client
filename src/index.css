@@ -1,5 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Amaranth:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
-
 @theme {
   --color-primary: #ff914d;
+  --font-heading: 'Amaranth', sans-serif;
+  --font-family-heading: var(--font-heading);
+}
+
+/* Apply Amaranth font to all headings globally */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading) !important;
+}
+
+/* Also apply to heading-like elements with large text and bold font */
+.font-heading,
+[class*="text-3xl"],
+[class*="text-4xl"],
+[class*="text-5xl"] {
+  font-family: var(--font-heading);
 }
