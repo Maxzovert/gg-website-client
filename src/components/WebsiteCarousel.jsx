@@ -6,13 +6,60 @@ const WebsiteCarousel = () => {
   const [images, setImages] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [deviceType, setDeviceType] = useState(null)
   const intervalRef = useRef(null)
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
+  // Detect device type based on window width
+  const detectDeviceType = () => {
+    const isMobile = window.innerWidth <= 768
+    return isMobile ? 'mobile' : 'desktop'
+  }
+
+  // Update device type on mount and window resize
   useEffect(() => {
-    fetchCarouselImages()
+    const updateDeviceType = () => {
+      const newDeviceType = detectDeviceType()
+      setDeviceType(newDeviceType)
+    }
+
+    // Set initial device type immediately
+    updateDeviceType()
+
+    // Listen for window resize
+    window.addEventListener('resize', updateDeviceType)
+
+    return () => {
+      window.removeEventListener('resize', updateDeviceType)
+    }
   }, [])
+
+  // Fetch carousel images when device type is determined
+  useEffect(() => {
+    if (!deviceType) return
+
+    const fetchCarouselImages = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${API_URL}/api/carousel?device_type=${deviceType}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch carousel images')
+        }
+        const data = await response.json()
+        // Only set images for the current device type
+        setImages(data || [])
+        setCurrentIndex(0)
+      } catch (error) {
+        console.error('Error fetching carousel images:', error)
+        setImages([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCarouselImages()
+  }, [deviceType, API_URL])
 
   useEffect(() => {
     // Auto-loop functionality - only if there's more than one image
@@ -28,23 +75,6 @@ const WebsiteCarousel = () => {
       }
     }
   }, [images.length])
-
-  const fetchCarouselImages = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`${API_URL}/api/carousel`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch carousel images')
-      }
-      const data = await response.json()
-      setImages(data)
-      setCurrentIndex(0)
-    } catch (error) {
-      console.error('Error fetching carousel images:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const goToPrevious = () => {
     if (images.length === 0) return
