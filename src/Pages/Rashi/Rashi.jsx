@@ -2,6 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
+// Import Rudraksh images
+import mukhi1 from '../../assets/Rudrakshs/1mukhi.jpg';
+import mukhi2 from '../../assets/Rudrakshs/2mukhi.jpg';
+import mukhi3 from '../../assets/Rudrakshs/3mukhi.jpg';
+import mukhi4 from '../../assets/Rudrakshs/4mukhi.jpg';
+import mukhi5 from '../../assets/Rudrakshs/5mukhi.jpg';
+import mukhi6 from '../../assets/Rudrakshs/6mukhi.jpg';
+import mukhi7 from '../../assets/Rudrakshs/7mukhi.jpg';
+import mukhi8 from '../../assets/Rudrakshs/8mukhi.jpg';
+import mukhi9 from '../../assets/Rudrakshs/9mukhi.jpg';
+import mukhi10 from '../../assets/Rudrakshs/10mukhi.jpg';
+import mukhi11 from '../../assets/Rudrakshs/11mukhi.jpg';
+import mukhi12 from '../../assets/Rudrakshs/12mukhi.jpg';
+import mukhi13 from '../../assets/Rudrakshs/13mukhi.jpg';
+import mukhi14 from '../../assets/Rudrakshs/14mukhi.jpg';
 
 const Rashi = () => {
   const [selectedRashi, setSelectedRashi] = useState('');
@@ -155,6 +170,24 @@ const Rashi = () => {
     'Capricorn': ['6 Mukhi', '10 Mukhi', '14 Mukhi'],
     'Aquarius': ['5 Mukhi', '11 Mukhi', '13 Mukhi'],
     'Pisces': ['4 Mukhi', '7 Mukhi', '12 Mukhi']
+  };
+
+  // Mapping of Mukhi names to image imports
+  const mukhiImages = {
+    '1 Mukhi': mukhi1,
+    '2 Mukhi': mukhi2,
+    '3 Mukhi': mukhi3,
+    '4 Mukhi': mukhi4,
+    '5 Mukhi': mukhi5,
+    '6 Mukhi': mukhi6,
+    '7 Mukhi': mukhi7,
+    '8 Mukhi': mukhi8,
+    '9 Mukhi': mukhi9,
+    '10 Mukhi': mukhi10,
+    '11 Mukhi': mukhi11,
+    '12 Mukhi': mukhi12,
+    '13 Mukhi': mukhi13,
+    '14 Mukhi': mukhi14
   };
 
   // Detailed information about each Mukhi (1-14)
@@ -518,9 +551,12 @@ const Rashi = () => {
                     {/* Rudraksha Image */}
                     <div className="aspect-square bg-linear-to-br from-primary/20 to-primary/10 overflow-hidden relative">
                       <img
-                        src={`https://via.placeholder.com/400x400?text=${mukhi.replace(' ', '+')}+Rudraksha`}
+                        src={mukhiImages[mukhi] || `https://via.placeholder.com/400x400?text=${mukhi.replace(' ', '+')}+Rudraksha`}
                         alt={mukhi}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = `https://via.placeholder.com/400x400?text=${mukhi.replace(' ', '+')}+Rudraksha`;
+                        }}
                       />
                       <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 bg-primary text-white text-[10px] sm:text-xs md:text-sm font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 md:px-3 md:py-1.5 rounded-md shadow-lg">
                         {mukhi}
@@ -590,9 +626,12 @@ const Rashi = () => {
                       {/* Image */}
                       <div className="mb-6">
                         <img
-                          src={`https://via.placeholder.com/600x400?text=${modalMukhi.replace(' ', '+')}+Rudraksha`}
+                          src={mukhiImages[modalMukhi] || `https://via.placeholder.com/600x400?text=${modalMukhi.replace(' ', '+')}+Rudraksha`}
                           alt={modalMukhi}
                           className="w-full h-64 object-cover rounded-lg border-2 border-primary/30"
+                          onError={(e) => {
+                            e.target.src = `https://via.placeholder.com/600x400?text=${modalMukhi.replace(' ', '+')}+Rudraksha`;
+                          }}
                         />
                       </div>
 
