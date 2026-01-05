@@ -181,7 +181,6 @@ const Spray = () => {
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header with Banner */}
         <div className="mb-6 sm:mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary mb-4 sm:mb-6">Explore Variety of Aura Sprays</h1>
           <div className="w-full rounded-lg overflow-hidden shadow-md">
             <img 
               src={sprayBanner} 
