@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FaRegHeart, FaBars, FaTimes } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.png';
@@ -14,6 +14,7 @@ const Navbar = () => {
     const { getTotalItems: getWishlistCount } = useWishlist();
     const cartCount = getTotalItems();
     const wishlistCount = getWishlistCount();
+    const location = useLocation();
 
     const navItems = [
         {
@@ -40,6 +41,13 @@ const Navbar = () => {
 
     const closeMenu = () => {
         setIsMenuOpen(false);
+    };
+
+    const isActive = (href) => {
+        if (href === '/') {
+            return location.pathname === '/';
+        }
+        return location.pathname.startsWith(href);
     };
     
   return (
@@ -68,15 +76,22 @@ const Navbar = () => {
 
                 {/* Desktop Navigation Links */}
                 <div className='hidden lg:flex items-center gap-6 xl:gap-10 w-full justify-center'>
-                    {navItems.map((item) => (
-                        <Link 
-                            key={item.name} 
-                            to={item.href}
-                            className='text-gray-700 list-none cursor-pointer font-medium hover:text-primary transition-colors text-sm xl:text-base'
-                        >
-                            {item.name}
-                        </Link>
-                    ))}
+                    {navItems.map((item) => {
+                        const active = isActive(item.href);
+                        return (
+                            <Link 
+                                key={item.name} 
+                                to={item.href}
+                                className={`list-none cursor-pointer font-medium transition-colors text-sm xl:text-base ${
+                                    active 
+                                        ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                                        : 'text-gray-700 hover:text-primary'
+                                }`}
+                            >
+                                {item.name}
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* Right Side Icons */}
@@ -130,16 +145,23 @@ const Navbar = () => {
             {isMenuOpen && (
                 <div className='lg:hidden bg-white border-t border-gray-200 shadow-lg'>
                     <div className='flex flex-col py-4'>
-                        {navItems.map((item) => (
-                            <Link 
-                                key={item.name} 
-                                to={item.href}
-                                onClick={closeMenu}
-                                className='text-gray-700 px-6 py-3 font-medium hover:text-primary hover:bg-primary/5 transition-colors text-base'
-                            >
-                                {item.name}
-                            </Link>
-                        ))}
+                        {navItems.map((item) => {
+                            const active = isActive(item.href);
+                            return (
+                                <Link 
+                                    key={item.name} 
+                                    to={item.href}
+                                    onClick={closeMenu}
+                                    className={`px-6 py-3 font-medium transition-colors text-base ${
+                                        active 
+                                            ? 'text-primary font-bold bg-primary/10 border-l-4 border-primary' 
+                                            : 'text-gray-700 hover:text-primary hover:bg-primary/5'
+                                    }`}
+                                >
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
                         {/* Mobile Menu Heart Icon */}
                         <Link
                             to="/wishlist"

@@ -17,6 +17,19 @@ import mukhi11 from '../../assets/Rudrakshs/11mukhi.jpg';
 import mukhi12 from '../../assets/Rudrakshs/12mukhi.jpg';
 import mukhi13 from '../../assets/Rudrakshs/13mukhi.jpg';
 import mukhi14 from '../../assets/Rudrakshs/14mukhi.jpg';
+// Import Zodiac sign images
+import ariesImg from '../../assets/Zodiac/aries.jpg';
+import taurusImg from '../../assets/Zodiac/taurus.jpg';
+import geminiImg from '../../assets/Zodiac/gemini.jpg';
+import cancerImg from '../../assets/Zodiac/cancer.jpg';
+import leoImg from '../../assets/Zodiac/leo.jpg';
+import virgoImg from '../../assets/Zodiac/vigro.jpg';
+import libraImg from '../../assets/Zodiac/libra.jpg';
+import scorpioImg from '../../assets/Zodiac/scorpio.jpg';
+import sagittariusImg from '../../assets/Zodiac/sagittarius.jpg';
+import capricornImg from '../../assets/Zodiac/capricorn.jpg';
+import aquariusImg from '../../assets/Zodiac/aquarius.jpg';
+import piscesImg from '../../assets/Zodiac/pisces.jpg';
 
 const Rashi = () => {
   const [selectedRashi, setSelectedRashi] = useState('');
@@ -306,20 +319,20 @@ const Rashi = () => {
     }
   };
 
-  // Rashi images (placeholder URLs - can be replaced with actual images)
+  // Rashi images
   const rashiImages = {
-    'Aries': 'https://via.placeholder.com/400x300?text=Aries+%28%E0%A4%AE%E0%A5 87%E0%A4%B7%29',
-    'Taurus': 'https://via.placeholder.com/400x300?text=Taurus+%28%E0%A4%B5%E0%A5%83%E0%A4%B7%E0%A4%AD%29',
-    'Gemini': 'https://via.placeholder.com/400x300?text=Gemini+%28%E0%A4%AE%E0%A4%BF%E0%A4%A5%E0%A5%81%E0%A4%A8%29',
-    'Cancer': 'https://via.placeholder.com/400x300?text=Cancer+%28%E0%A4%95%E0%A4%B0%E0%A5%8D%E0%A4%95%29',
-    'Leo': 'https://via.placeholder.com/400x300?text=Leo+%28%E0%A4%B8%E0%A4%BF%E0%A4%82%E0%A4%B9%29',
-    'Virgo': 'https://via.placeholder.com/400x300?text=Virgo+%28%E0%A4%95%E0%A4%A8%E0%A5%8D%E0%A4%AF%E0%A4%BE%29',
-    'Libra': 'https://via.placeholder.com/400x300?text=Libra+%28%E0%A4%A4%E0%A5%81%E0%A4%B2%E0%A4%BE%29',
-    'Scorpio': 'https://via.placeholder.com/400x300?text=Scorpio+%28%E0%A4%B5%E0%A5%83%E0%A4%B6%E0%A5%8D%E0%A4%9A%E0%A4%BF%E0%A4%95%29',
-    'Sagittarius': 'https://via.placeholder.com/400x300?text=Sagittarius+%28%E0%A4%A7%E0%A4%A8%E0%A5%81%29',
-    'Capricorn': 'https://via.placeholder.com/400x300?text=Capricorn+%28%E0%A4%AE%E0%A4%95%E0%A4%B0%29',
-    'Aquarius': 'https://via.placeholder.com/400x300?text=Aquarius+%28%E0%A4%95%E0%A5%81%E0%A4%AE%E0%A5%8D%E0%A4%AD%29',
-    'Pisces': 'https://via.placeholder.com/400x300?text=Pisces+%28%E0%A4%AE%E0%A5%80%E0%A4%A8%29'
+    'Aries': ariesImg,
+    'Taurus': taurusImg,
+    'Gemini': geminiImg,
+    'Cancer': cancerImg,
+    'Leo': leoImg,
+    'Virgo': virgoImg,
+    'Libra': libraImg,
+    'Scorpio': scorpioImg,
+    'Sagittarius': sagittariusImg,
+    'Capricorn': capricornImg,
+    'Aquarius': aquariusImg,
+    'Pisces': piscesImg
   };
 
   useEffect(() => {
