@@ -325,14 +325,14 @@ const Spray = () => {
               {filterOptions.subcategories.length > 0 && (
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subcategory
+                    Category
                   </label>
                   <select
                     value={filters.subcategory}
                     onChange={(e) => handleFilterChange('subcategory', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   >
-                    <option value="all">All Subcategories</option>
+                    <option value="all">All Categories</option>
                     {filterOptions.subcategories.map((subcat) => (
                       <option key={subcat} value={subcat}>
                         {subcat}
@@ -346,14 +346,14 @@ const Spray = () => {
               {filterOptions.deities.length > 0 && (
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Deity
+                    Essence
                   </label>
                   <select
                     value={filters.deity}
                     onChange={(e) => handleFilterChange('deity', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   >
-                    <option value="all">All Deities</option>
+                    <option value="all">All Essences</option>
                     {filterOptions.deities.map((deity) => (
                       <option key={deity} value={deity}>
                         {deity}
