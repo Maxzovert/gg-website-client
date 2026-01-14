@@ -13,18 +13,22 @@ import Loader from "../../components/Loader";
 import { useToast } from "../../components/Toaster";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
+import { useAuth } from "../../context/AuthContext";
+import CheckoutModal from "../../components/CheckoutModal";
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { isAuthenticated, userId } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -84,11 +88,22 @@ const ProductPage = () => {
   };
 
   const handleBuyNow = () => {
-    // TODO: Implement buy now functionality (redirect to checkout)
-    console.log("Buy now:", product, quantity);
-    toast.info(`Proceeding to checkout with ${quantity} ${product.name}!`);
-    // In the future, this would navigate to checkout page
-    // navigate('/checkout', { state: { product, quantity } });
+    if (!product) return;
+    if (!isAuthenticated) {
+      navigate('/auth', { state: { from: { pathname: `/product/${id}` } } });
+      return;
+    }
+    // Add to cart first if not already in cart
+    const existingItem = cartItems.find(item => item.id === product.id);
+    if (!existingItem) {
+      addToCart(product, quantity);
+    }
+    // Open checkout modal
+    setShowCheckout(true);
+  };
+  
+  const calculateTotalAmount = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const handleWishlistToggle = () => {
@@ -424,6 +439,15 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        cartItems={cartItems}
+        totalAmount={calculateTotalAmount()}
+        userId={userId}
+      />
     </div>
   );
 };

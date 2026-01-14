@@ -7,29 +7,36 @@ import Rashi from './Pages/Rashi/Rashi'
 import ProductPage from './Pages/ProductPage/ProductPage'
 import Cart from './Pages/Cart/Cart'
 import Wishlist from './Pages/Wishlist/Wishlist'
+import Auth from './Pages/Auth/Auth'
+import AuthCallback from './Pages/Auth/AuthCallback'
 import { ToastProvider } from './components/Toaster'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
-import { Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from './context/AuthContext'
+import { Routes, Route } from "react-router-dom";
 
 
 const App = () => {
   return (
     <ToastProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <Navbar/>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/sprays" element={<Spray />} />
-            <Route path="/rudraksha" element={<Rudraksh />} />
-            <Route path="/rashi" element={<Rashi />} />
-            <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-          </Routes>
-        </WishlistProvider>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <Navbar/>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/sprays" element={<Spray />} />
+              <Route path="/rudraksha" element={<Rudraksh />} />
+              <Route path="/rashi" element={<Rashi />} />
+              <Route path="/product/:id" element={<ProductPage />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+            </Routes>
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
     </ToastProvider>
   )
 }

@@ -1,12 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
+import { useAuth } from '../../context/AuthContext';
+import CheckoutModal from '../../components/CheckoutModal';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
   const toast = useToast();
+  const { isAuthenticated, userId } = useAuth();
+  const navigate = useNavigate();
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const handleRemoveItem = (productId, productName) => {
     removeFromCart(productId);
@@ -215,7 +220,21 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all font-semibold text-sm sm:text-base md:text-lg shadow-lg hover:shadow-xl mb-2 sm:mb-3">
+              <button 
+                onClick={() => {
+                  if (cartItems.length === 0) {
+                    toast.info('Your cart is empty. Add items to proceed to checkout.');
+                    return;
+                  }
+                  if (!isAuthenticated) {
+                    navigate('/auth', { state: { from: { pathname: '/cart' } } });
+                    return;
+                  }
+                  setShowCheckout(true);
+                }}
+                disabled={cartItems.length === 0}
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all font-semibold text-sm sm:text-base md:text-lg shadow-lg hover:shadow-xl mb-2 sm:mb-3 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
                 Proceed to Checkout
               </button>
 
@@ -229,6 +248,15 @@ const Cart = () => {
           </div>
         </div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        cartItems={cartItems}
+        totalAmount={totalPrice}
+        userId={userId}
+      />
     </div>
   );
 };

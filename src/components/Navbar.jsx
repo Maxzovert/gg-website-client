@@ -1,17 +1,21 @@
-import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { FaRegHeart, FaBars, FaTimes } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { FaRegHeart, FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.png';
 import { LuCircleUserRound } from "react-icons/lu";
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
     const { getTotalItems } = useCart();
     const { getTotalItems: getWishlistCount } = useWishlist();
+    const { isAuthenticated, user, signOut } = useAuth();
+    const navigate = useNavigate();
     const cartCount = getTotalItems();
     const wishlistCount = getWishlistCount();
     const location = useLocation();
@@ -42,6 +46,35 @@ const Navbar = () => {
     const closeMenu = () => {
         setIsMenuOpen(false);
     };
+
+    const handleUserClick = () => {
+        if (isAuthenticated) {
+            setShowUserMenu(!showUserMenu);
+        } else {
+            navigate('/auth', { state: { from: location } });
+        }
+    };
+
+    const handleSignOut = async () => {
+        await signOut();
+        setShowUserMenu(false);
+    };
+
+    // Close user menu when clicking outside
+    const userMenuRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setShowUserMenu(false);
+            }
+        };
+        if (showUserMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showUserMenu]);
 
     const isActive = (href) => {
         if (href === '/') {
@@ -114,7 +147,26 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
-                        <LuCircleUserRound className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' />
+                        <div className="relative" ref={userMenuRef}>
+                            <LuCircleUserRound 
+                                onClick={handleUserClick}
+                                className='text-primary text-xl lg:text-2xl cursor-pointer hover:scale-110 transition-transform' 
+                            />
+                            {showUserMenu && isAuthenticated && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                                    <div className="px-4 py-2 border-b border-gray-200">
+                                        <p className="text-sm font-semibold text-gray-900 truncate">{user?.email}</p>
+                                    </div>
+                                    <button
+                                        onClick={handleSignOut}
+                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                    >
+                                        <FaSignOutAlt className="text-primary" />
+                                        <span>Sign Out</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Mobile Icons - Only Cart and User */}
@@ -127,7 +179,10 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
-                        <LuCircleUserRound className='text-primary text-xl cursor-pointer' />
+                        <LuCircleUserRound 
+                            onClick={handleUserClick}
+                            className='text-primary text-xl cursor-pointer' 
+                        />
                     </div>
 
                     {/* Mobile Hamburger Menu Button */}
