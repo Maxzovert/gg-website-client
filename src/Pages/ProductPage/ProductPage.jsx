@@ -22,7 +22,7 @@ const ProductPage = () => {
   const toast = useToast();
   const { addToCart, cartItems } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated, userId } = useAuth();
+  const { isAuthenticated, userId, loading: authLoading } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,6 +89,10 @@ const ProductPage = () => {
 
   const handleBuyNow = () => {
     if (!product) return;
+    if (authLoading) {
+      toast.info('Please wait, checking authentication...');
+      return;
+    }
     if (!isAuthenticated) {
       navigate('/auth', { state: { from: { pathname: `/product/${id}` } } });
       return;

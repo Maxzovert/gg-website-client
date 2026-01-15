@@ -6,7 +6,7 @@ import { useToast } from '../../components/Toaster';
 import supabase from '../../config/supabaseClient';
 
 const Profile = () => {
-  const { user, signOut, userId } = useAuth();
+  const { user, signOut, userId, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState('overview');
@@ -19,12 +19,15 @@ const Profile = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
+    // Wait for auth to finish loading before checking
+    if (authLoading) return;
+    
     if (!user) {
       navigate('/auth', { state: { from: { pathname: '/profile' } } });
       return;
     }
     fetchUserData();
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   const fetchUserData = async () => {
     try {
@@ -197,6 +200,25 @@ const Profile = () => {
     }
   };
 
+  // Show loading while auth is loading or profile data is loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // If not authenticated, show loading while redirecting
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show loading while fetching profile data
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
