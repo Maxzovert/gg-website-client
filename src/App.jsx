@@ -9,6 +9,7 @@ import Cart from './Pages/Cart/Cart'
 import Wishlist from './Pages/Wishlist/Wishlist'
 import Auth from './Pages/Auth/Auth'
 import AuthCallback from './Pages/Auth/AuthCallback'
+import Profile from './Pages/Profile/Profile'
 import { ToastProvider } from './components/Toaster'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
             </Routes>
