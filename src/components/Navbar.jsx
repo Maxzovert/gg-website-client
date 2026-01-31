@@ -33,6 +33,10 @@ const Navbar = () => {
             href: '/rudraksha',
         },
         {
+            name: 'Accessories',
+            href: '/accessories',
+        },
+        {
             name: 'Rashi',
             href: '/rashi',
         },

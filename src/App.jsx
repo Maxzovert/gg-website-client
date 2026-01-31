@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import Spray from './Pages/Spray/Spray'
 import Rudraksh from './Pages/Rudraksh/Rudraksh'
 import Rashi from './Pages/Rashi/Rashi'
+import Accessories from './Pages/Accessories/Accessories'
 import ProductPage from './Pages/ProductPage/ProductPage'
 import Cart from './Pages/Cart/Cart'
 import Wishlist from './Pages/Wishlist/Wishlist'
@@ -29,6 +30,7 @@ const App = () => {
               <Route path="/sprays" element={<Spray />} />
               <Route path="/rudraksha" element={<Rudraksh />} />
               <Route path="/rashi" element={<Rashi />} />
+              <Route path="/accessories" element={<Accessories />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/wishlist" element={<Wishlist />} />
