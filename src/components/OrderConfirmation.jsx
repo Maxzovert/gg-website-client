@@ -48,23 +48,38 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         })
       });
 
-      const result = await response.json();
+      // Handle non-JSON or empty response (e.g. server crash, proxy error)
+      const text = await response.text();
+      let result;
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch {
+        console.error('Server returned non-JSON:', text?.slice(0, 200));
+        setLoading(false);
+        alert(`Server error (${response.status}). Check console. Response: ${text?.slice(0, 100) || 'empty'}`);
+        return;
+      }
 
       if (result.success) {
         setOrderData(result.data);
         onOrderPlaced(result.data);
         clearCart(); // Clear cart after successful order
       } else {
-        alert(result.message || 'Failed to place order. Please try again.');
+        let errorMsg = result.error || result.message || (typeof result.details === 'string' ? result.details : '') || 'Failed to place order. Please try again.';
+        if (result.hint) errorMsg += '\n\n' + result.hint;
+        console.error('Order error:', result);
+        alert(errorMsg);
       }
     } catch (error) {
-      alert('Failed to place order. Please try again.');
+      console.error('Order request failed:', error);
+      alert(error.message || 'Network error or server down. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   if (orderData) {
+    const amount = orderData.final_amount ?? orderData.total_amount ?? 0;
     return (
       <div className="text-center py-8">
         <div className="mb-6">
@@ -77,27 +92,29 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
           <div className="space-y-3">
             <div>
               <span className="text-sm font-medium text-gray-600">Order Number:</span>
-              <p className="text-lg font-bold text-primary">{orderData.order_number}</p>
+              <p className="text-lg font-bold text-primary">{orderData.order_number ?? '—'}</p>
             </div>
             <div>
               <span className="text-sm font-medium text-gray-600">Total Amount:</span>
-              <p className="text-lg font-bold text-gray-900">₹{orderData.final_amount.toLocaleString('en-IN')}</p>
+              <p className="text-lg font-bold text-gray-900">₹{Number(amount).toLocaleString('en-IN')}</p>
             </div>
             <div>
               <span className="text-sm font-medium text-gray-600">Payment Method:</span>
-              <p className="text-gray-900 capitalize">{orderData.payment_method}</p>
+              <p className="text-gray-900 capitalize">{orderData.payment_method ?? 'COD'}</p>
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-600">Delivery Address:</span>
-              <p className="text-gray-900">
-                {selectedAddress.receiver_name}, {selectedAddress.receiver_phone}
-                <br />
-                {selectedAddress.address_line1}
-                {selectedAddress.address_line2 && `, ${selectedAddress.address_line2}`}
-                <br />
-                {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.postal_code}
-              </p>
-            </div>
+            {selectedAddress && (
+              <div>
+                <span className="text-sm font-medium text-gray-600">Delivery Address:</span>
+                <p className="text-gray-900">
+                  {selectedAddress.receiver_name}, {selectedAddress.receiver_phone}
+                  <br />
+                  {selectedAddress.address_line1}
+                  {selectedAddress.address_line2 ? `, ${selectedAddress.address_line2}` : ''}
+                  <br />
+                  {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.postal_code}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

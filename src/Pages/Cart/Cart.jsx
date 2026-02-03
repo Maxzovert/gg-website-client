@@ -36,7 +36,10 @@ const Cart = () => {
   const originalTotal = totalPrice / (1 - discountPercent / 100);
   const discountAmount = originalTotal - totalPrice;
 
-  if (cartItems.length === 0) {
+  // When checkout modal is open (e.g. after placing order), keep it mounted so confirmation stays visible
+  const showEmptyCart = cartItems.length === 0 && !showCheckout;
+
+  if (showEmptyCart) {
     return (
       <div className="min-h-screen py-8 sm:py-12 bg-linear-to-br from-orange-50/30 to-white">
         <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
@@ -69,6 +72,7 @@ const Cart = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white">
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         {/* Header */}
@@ -249,7 +253,7 @@ const Cart = () => {
         </div>
       </div>
 
-      {/* Checkout Modal */}
+      {/* Checkout Modal - kept mounted when open so order confirmation stays visible after cart is cleared */}
       <CheckoutModal
         isOpen={showCheckout}
         onClose={() => setShowCheckout(false)}
@@ -258,6 +262,7 @@ const Cart = () => {
         userId={userId}
       />
     </div>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../config/supabaseClient';
+import { getRedirectURL, getAuthCallbackURL } from '../utils/authUtils';
 
 const AuthContext = createContext(null);
 
@@ -58,11 +59,13 @@ export const AuthProvider = ({ children }) => {
 
   const signUp = async (email, password, metadata = {}) => {
     try {
+      const redirectTo = getRedirectURL();
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: metadata
+          data: metadata,
+          emailRedirectTo: redirectTo || undefined
         }
       });
       if (error) throw error;
@@ -76,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       });
       if (error) throw error;
       return { data, error: null };
@@ -87,10 +90,18 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithGoogle = async () => {
     try {
+      const redirectTo = getAuthCallbackURL();
+      if (!redirectTo) {
+        throw new Error('Redirect URL not available. Set VITE_SITE_URL in .env if using SSR.');
+      }
+      // So Supabase uses this URL (not Site URL): it must match Redirect URLs in dashboard exactly
+      if (import.meta.env.DEV) {
+        console.log('[Auth] OAuth redirectTo:', redirectTo, '| Add this exact URL in Supabase → Auth → URL Configuration → Redirect URLs');
+      }
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo
         }
       });
       if (error) throw error;
