@@ -94,10 +94,6 @@ export const AuthProvider = ({ children }) => {
       if (!redirectTo) {
         throw new Error('Redirect URL not available. Set VITE_SITE_URL in .env if using SSR.');
       }
-      // So Supabase uses this URL (not Site URL): it must match Redirect URLs in dashboard exactly
-      if (import.meta.env.DEV) {
-        console.log('[Auth] OAuth redirectTo:', redirectTo, '| Add this exact URL in Supabase → Auth → URL Configuration → Redirect URLs');
-      }
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

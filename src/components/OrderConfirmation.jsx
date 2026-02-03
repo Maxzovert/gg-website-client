@@ -54,25 +54,22 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
       try {
         result = text ? JSON.parse(text) : {};
       } catch {
-        console.error('Server returned non-JSON:', text?.slice(0, 200));
         setLoading(false);
-        alert(`Server error (${response.status}). Check console. Response: ${text?.slice(0, 100) || 'empty'}`);
+        alert(`Server error (${response.status}). Please try again.`);
         return;
       }
 
       if (result.success) {
         setOrderData(result.data);
         onOrderPlaced(result.data);
-        clearCart(); // Clear cart after successful order
+        clearCart();
       } else {
-        let errorMsg = result.error || result.message || (typeof result.details === 'string' ? result.details : '') || 'Failed to place order. Please try again.';
+        let errorMsg = result.error || result.message || 'Failed to place order. Please try again.';
         if (result.hint) errorMsg += '\n\n' + result.hint;
-        console.error('Order error:', result);
         alert(errorMsg);
       }
     } catch (error) {
-      console.error('Order request failed:', error);
-      alert(error.message || 'Network error or server down. Please try again.');
+      alert(error.message || 'Network error. Please try again.');
     } finally {
       setLoading(false);
     }

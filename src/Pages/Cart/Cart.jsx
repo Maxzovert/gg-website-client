@@ -36,7 +36,6 @@ const Cart = () => {
   const originalTotal = totalPrice / (1 - discountPercent / 100);
   const discountAmount = originalTotal - totalPrice;
 
-  // When checkout modal is open (e.g. after placing order), keep it mounted so confirmation stays visible
   const showEmptyCart = cartItems.length === 0 && !showCheckout;
 
   if (showEmptyCart) {
@@ -253,7 +252,6 @@ const Cart = () => {
         </div>
       </div>
 
-      {/* Checkout Modal - kept mounted when open so order confirmation stays visible after cart is cleared */}
       <CheckoutModal
         isOpen={showCheckout}
         onClose={() => setShowCheckout(false)}
