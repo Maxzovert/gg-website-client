@@ -9,7 +9,7 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const discountAmount = totalAmount * 0.25;
-  const shippingCharges = totalAmount > 1000 ? 0 : 50; // Free shipping above ₹1000
+  const shippingCharges = totalAmount > 1000 ? 0 : 50;
   const finalAmount = totalAmount - discountAmount + shippingCharges;
 
   const handlePlaceOrder = async () => {
@@ -21,7 +21,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
     setLoading(true);
 
     try {
-      // Prepare order items
       const orderItems = cartItems.map(item => ({
         product_id: item.id,
         product_name: item.name,
@@ -29,7 +28,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         quantity: item.quantity
       }));
 
-      // Create order
       const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
@@ -48,7 +46,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         })
       });
 
-      // Handle non-JSON or empty response (e.g. server crash, proxy error)
       const text = await response.text();
       let result;
       try {
@@ -64,8 +61,7 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         onOrderPlaced(result.data);
         clearCart();
       } else {
-        let errorMsg = result.error || result.message || 'Failed to place order. Please try again.';
-        if (result.hint) errorMsg += '\n\n' + result.hint;
+        const errorMsg = [result.error, result.message, result.hint].filter(Boolean).join('\n\n') || 'Failed to place order. Please try again.';
         alert(errorMsg);
       }
     } catch (error) {
@@ -126,7 +122,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
     <div className="space-y-6">
       <h3 className="text-xl font-bold text-gray-900">Review Your Order</h3>
 
-      {/* Order Summary */}
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <FaShoppingBag className="text-primary" />
@@ -147,7 +142,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         </div>
       </div>
 
-      {/* Delivery Address */}
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <FaMapMarkerAlt className="text-primary" />
@@ -169,7 +163,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         )}
       </div>
 
-      {/* Price Breakdown */}
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4">Price Breakdown</h4>
         <div className="space-y-2">
@@ -200,7 +193,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         </div>
       </div>
 
-      {/* Place Order Button */}
       <button
         onClick={handlePlaceOrder}
         disabled={loading || !selectedAddress}
