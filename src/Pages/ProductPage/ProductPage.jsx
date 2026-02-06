@@ -382,7 +382,7 @@ const ProductPage = () => {
               {/* Main image + Element & Benefits – same width (flex-1), same box style */}
               <div className="flex-1 flex flex-col gap-4 sm:gap-6 min-w-0">
                 {/* Main Image */}
-                <div className="relative aspect-4/3 max-h-[700px] w-full bg-gray-100 rounded-xl overflow-hidden border-2 border-primary/20 group">
+                <div className="relative aspect-4/3 max-h-[280px] sm:max-h-[400px] md:max-h-[550px] lg:max-h-[700px] w-full bg-gray-100 rounded-xl overflow-hidden border-2 border-primary/20 group">
                   {product.images && product.images.length > 0 ? (
                     <>
                       <img
@@ -399,17 +399,17 @@ const ProductPage = () => {
                         <>
                           <button
                             onClick={prevImage}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-2 rounded-full transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center"
                             aria-label="Previous image"
                           >
-                            <FaChevronLeft />
+                            <FaChevronLeft className="text-sm sm:text-base" />
                           </button>
                           <button
                             onClick={nextImage}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-2 rounded-full transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center"
                             aria-label="Next image"
                           >
-                            <FaChevronRight />
+                            <FaChevronRight className="text-sm sm:text-base" />
                           </button>
                         </>
                       )}
@@ -463,9 +463,9 @@ const ProductPage = () => {
               </span>
             </div>
 
-            {/* Pricing */}
+            {/* Pricing – wraps on very small screens */}
             <div className="space-y-2 pb-2 border-b border-gray-200">
-              <div className="flex items-baseline gap-3">
+              <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
                 <span className="text-3xl sm:text-4xl font-bold text-primary">
                   ₹
                   {pricing.currentPrice.toLocaleString("en-IN", {
@@ -542,16 +542,17 @@ const ProductPage = () => {
               </div>
             )}
 
-            {/* Quantity Selector */}
-            <div className="flex items-center gap-4 pt-2">
-              <label className="text-sm sm:text-base font-semibold text-gray-700">
+            {/* Quantity Selector + Stock – responsive: wrap on mobile */}
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
+              <label className="text-sm sm:text-base font-semibold text-gray-700 w-full sm:w-auto">
                 Quantity:
               </label>
-              <div className="flex items-center border-2 border-primary rounded-lg">
+              <div className="flex items-center border-2 border-primary rounded-lg shrink-0">
                 <button
                   onClick={() => handleQuantityChange(-1)}
                   disabled={quantity <= 1}
-                  className="px-3 sm:px-4 py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 sm:px-4 py-2.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
+                  aria-label="Decrease quantity"
                 >
                   -
                 </button>
@@ -561,95 +562,97 @@ const ProductPage = () => {
                 <button
                   onClick={() => handleQuantityChange(1)}
                   disabled={quantity >= product.stock}
-                  className="px-3 sm:px-4 py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 sm:px-4 py-2.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
+                  aria-label="Increase quantity"
                 >
                   +
                 </button>
               </div>
-              
-            {/* Stock Status */}
-            <div>
-              {product.stock > 0 ? (
-                <span className="inline-flex items-center text-sm sm:text-base font-semibold text-primary">
-                  <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
-                  In Stock ({product.stock} available)
-                </span>
-              ) : (
-                <span className="inline-flex items-center text-sm sm:text-base font-semibold text-red-600">
-                  <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                  Out of Stock
-                </span>
-              )}
-            </div>
+              {/* Stock Status */}
+              <div className="w-full sm:w-auto">
+                {product.stock > 0 ? (
+                  <span className="inline-flex items-center text-sm sm:text-base font-semibold text-primary">
+                    <span className="w-2 h-2 bg-primary rounded-full mr-2 shrink-0"></span>
+                    In Stock ({product.stock} available)
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center text-sm sm:text-base font-semibold text-red-600">
+                    <span className="w-2 h-2 bg-red-500 rounded-full mr-2 shrink-0"></span>
+                    Out of Stock
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Buy Now and Add to Cart Buttons */}
+            {/* Buy Now and Add to Cart Buttons – full width on mobile, touch-friendly */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className="flex-1 px-6 py-4 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                className="w-full sm:flex-1 px-6 py-4 min-h-[48px] sm:min-h-0 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl touch-manipulation"
               >
-                <FaShoppingCart className="text-xl" />
-                {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                <FaShoppingCart className="text-xl shrink-0" />
+                <span>{product.stock > 0 ? "Add to Cart" : "Out of Stock"}</span>
               </button>
               <button
                 onClick={handleBuyNow}
                 disabled={product.stock === 0}
-                className="flex-1 px-6 py-4 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                className="w-full sm:flex-1 px-6 py-4 min-h-[48px] sm:min-h-0 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl touch-manipulation"
               >
                 Buy Now
               </button>
             </div>
 
-            {/* Trust / Delivery info */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 border-y border-gray-200">
-              <div className="flex items-center gap-3 text-gray-700">
+            {/* Trust / Delivery info – stacked on mobile, 3 cols on sm+ */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 py-4 border-y border-gray-200">
+              <div className="flex items-center gap-3 text-gray-700 min-w-0">
                 <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaTruck className="text-lg" />
+                  <FaTruck className="text-base sm:text-lg" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-sm">Free Delivery</p>
                   <p className="text-xs text-gray-500">On orders above ₹999</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-gray-700">
+              <div className="flex items-center gap-3 text-gray-700 min-w-0">
                 <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaShieldAlt className="text-lg" />
+                  <FaShieldAlt className="text-base sm:text-lg" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-sm">Secure Payment</p>
                   <p className="text-xs text-gray-500">100% secure checkout</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-gray-700">
+              <div className="flex items-center gap-3 text-gray-700 min-w-0">
                 <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaUndo className="text-lg" />
+                  <FaUndo className="text-base sm:text-lg" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-sm">Easy Returns</p>
                   <p className="text-xs text-gray-500">Hassle-free returns</p>
                 </div>
               </div>
             </div>
 
-            {/* Check your Rashi – CTA to find Rashi and buy according to it */}
+            {/* Check your Rashi – CTA: stacked on mobile, row on sm+ */}
             <Link
               to="/rashi"
-              className="flex items-center gap-4 p-4 sm:p-5 rounded-xl border-2 border-primary/30 bg-linear-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 hover:border-primary/50 transition-all group"
+              className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl border-2 border-primary/30 bg-linear-to-r from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 hover:border-primary/50 transition-all group"
             >
-              <div className="p-3 rounded-full bg-primary/20 text-primary shrink-0 group-hover:scale-105 transition-transform">
-                <FaCompass className="text-2xl sm:text-3xl" />
+              <div className="flex items-center gap-3 sm:contents">
+                <div className="p-3 rounded-full bg-primary/20 text-primary shrink-0 group-hover:scale-105 transition-transform">
+                  <FaCompass className="text-2xl sm:text-3xl" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-0.5">
+                    Find your Rashi & choose the right Rudraksha
+                  </h3>
+                  <p className="text-sm text-gray-600 hidden sm:block">
+                    Not sure which Rudraksha suits you? Check your Rashi (zodiac sign) and get personalized recommendations to buy the best Rudraksha for you.
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-0.5">
-                  Find your Rashi & choose the right Rudraksha
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Not sure which Rudraksha suits you? Check your Rashi (zodiac sign) and get personalized recommendations to buy the best Rudraksha for you.
-                </p>
-              </div>
-              <span className="text-primary font-semibold text-sm sm:text-base shrink-0 group-hover:underline">
+              <span className="text-primary font-semibold text-sm sm:text-base shrink-0 group-hover:underline self-start sm:self-auto">
                 Check Rashi →
               </span>
             </Link>
