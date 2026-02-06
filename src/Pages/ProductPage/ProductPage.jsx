@@ -603,33 +603,33 @@ const ProductPage = () => {
               </button>
             </div>
 
-            {/* Trust / Delivery info – stacked on mobile, 3 cols on sm+ */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 py-4 border-y border-gray-200">
-              <div className="flex items-center gap-3 text-gray-700 min-w-0">
-                <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaTruck className="text-base sm:text-lg" />
+            {/* Trust / Delivery info – compact stack on mobile, 3 cols on sm+ */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 py-3 sm:py-4 border-y border-gray-200">
+              <div className="flex items-center gap-2.5 sm:gap-3 text-gray-700 min-w-0 py-1 sm:py-0">
+                <div className="p-1.5 sm:p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                  <FaTruck className="text-sm sm:text-lg" />
                 </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm">Free Delivery</p>
-                  <p className="text-xs text-gray-500">On orders above ₹999</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 text-gray-700 min-w-0">
-                <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaShieldAlt className="text-base sm:text-lg" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm">Secure Payment</p>
-                  <p className="text-xs text-gray-500">100% secure checkout</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-xs sm:text-sm">Free Delivery</p>
+                  <p className="text-[11px] sm:text-xs text-gray-500">On orders above ₹999</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-gray-700 min-w-0">
-                <div className="p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaUndo className="text-base sm:text-lg" />
+              <div className="flex items-center gap-2.5 sm:gap-3 text-gray-700 min-w-0 py-1 sm:py-0 border-t border-gray-100 sm:border-t-0">
+                <div className="p-1.5 sm:p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                  <FaShieldAlt className="text-sm sm:text-lg" />
                 </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm">Easy Returns</p>
-                  <p className="text-xs text-gray-500">Hassle-free returns</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-xs sm:text-sm">Secure Payment</p>
+                  <p className="text-[11px] sm:text-xs text-gray-500">100% secure checkout</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 sm:gap-3 text-gray-700 min-w-0 py-1 sm:py-0 border-t border-gray-100 sm:border-t-0">
+                <div className="p-1.5 sm:p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                  <FaUndo className="text-sm sm:text-lg" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-xs sm:text-sm">Easy Returns</p>
+                  <p className="text-[11px] sm:text-xs text-gray-500">Hassle-free returns</p>
                 </div>
               </div>
             </div>
