@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { FaUser, FaShoppingBag, FaMapMarkerAlt, FaSignOutAlt, FaEdit, FaTrash, FaCamera, FaCheck } from 'react-icons/fa';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FaUser, FaShoppingBag, FaMapMarkerAlt, FaSignOutAlt, FaTrash, FaCheck } from 'react-icons/fa';
 import { useToast } from '../../components/Toaster';
-import supabase from '../../config/supabaseClient';
 
 const Profile = () => {
   const { user, signOut, userId, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState('overview');
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,11 +27,14 @@ const Profile = () => {
     fetchUserData();
   }, [user, authLoading, navigate]);
 
+  useEffect(() => {
+    if (location.state?.openOrdersTab) setActiveTab('orders');
+  }, [location.state?.openOrdersTab]);
+
   const fetchUserData = async () => {
     try {
       setLoading(true);
       await Promise.all([
-        fetchProfilePicture(),
         fetchOrders(),
         fetchAddresses()
       ]);
@@ -41,22 +42,6 @@ const Profile = () => {
       console.error('Error fetching user data:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchProfilePicture = async () => {
-    try {
-      const { data } = await supabase
-        .from('user_profiles')
-        .select('profile_picture_url')
-        .eq('user_id', userId)
-        .single();
-      
-      if (data?.profile_picture_url) {
-        setProfilePicture(data.profile_picture_url);
-      }
-    } catch (error) {
-      // Profile might not exist yet, that's okay
     }
   };
 
@@ -81,70 +66,6 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('Error fetching addresses:', error);
-    }
-  };
-
-  const handleProfilePictureUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
-      return;
-    }
-
-    setUploading(true);
-
-    try {
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}-${Date.now()}.${fileExt}`;
-      const filePath = `profile-pictures/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('user-uploads')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) {
-        // If bucket doesn't exist, create it or use public URL
-        throw uploadError;
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('user-uploads')
-        .getPublicUrl(filePath);
-
-      // Save to database
-      const { error: dbError } = await supabase
-        .from('user_profiles')
-        .upsert({
-          user_id: userId,
-          profile_picture_url: publicUrl,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (dbError) throw dbError;
-
-      setProfilePicture(publicUrl);
-      toast.success('Profile picture updated successfully');
-    } catch (error) {
-      console.error('Error uploading profile picture:', error);
-      toast.error('Failed to upload profile picture. Please try again.');
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -240,30 +161,9 @@ const Profile = () => {
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            {/* Profile Picture */}
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-primary">
-                {profilePicture ? (
-                  <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <FaUser className="text-6xl text-gray-400" />
-                )}
-              </div>
-              <label className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
-                <FaCamera className="text-sm" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureUpload}
-                  className="hidden"
-                  disabled={uploading}
-                />
-              </label>
-              {uploading && (
-                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                </div>
-              )}
+            {/* Profile logo */}
+            <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary shrink-0">
+              <FaUser className="text-5xl text-primary" />
             </div>
 
             {/* User Info */}
