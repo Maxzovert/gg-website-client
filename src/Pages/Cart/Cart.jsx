@@ -9,7 +9,7 @@ import CheckoutModal from '../../components/CheckoutModal';
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
   const toast = useToast();
-  const { isAuthenticated, userId, loading: authLoading } = useAuth();
+  const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [showCheckout, setShowCheckout] = useState(false);
 
@@ -258,6 +258,8 @@ const Cart = () => {
         cartItems={cartItems}
         totalAmount={totalPrice}
         userId={userId}
+        userEmail={user?.email}
+        userName={user?.user_metadata?.name}
       />
     </div>
     </>

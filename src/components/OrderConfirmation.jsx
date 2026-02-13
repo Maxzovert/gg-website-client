@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 
-const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, paymentMethod, onOrderPlaced, orderData: initialOrderData }) => {
+const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
+
+const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, userEmail, userName, paymentMethod, onOrderPlaced, orderData: initialOrderData }) => {
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState(initialOrderData);
   const { clearCart } = useCart();
@@ -11,10 +13,15 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
   const discountAmount = totalAmount * 0.25;
   const shippingCharges = totalAmount > 1000 ? 0 : 50;
   const finalAmount = totalAmount - discountAmount + shippingCharges;
+  const isOnlinePayment = ONLINE_PAYMENT_IDS.includes((paymentMethod || '').toLowerCase());
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
       alert('Please select a delivery address');
+      return;
+    }
+    if (isOnlinePayment && !userEmail) {
+      alert('Email is required for online payment. Please ensure you are logged in with a valid email.');
       return;
     }
 
@@ -28,6 +35,43 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         quantity: item.quantity
       }));
 
+      if (isOnlinePayment) {
+        const firstname = (selectedAddress.receiver_name || userName || 'Customer').trim() || 'Customer';
+        const email = (userEmail || '').trim();
+        const phone = String(selectedAddress.receiver_phone || '').replace(/\D/g, '').slice(0, 10) || '0000000000';
+        if (!email) {
+          alert('Email is required for online payment. Please ensure you are logged in with a valid email.');
+          setLoading(false);
+          return;
+        }
+        const initRes = await fetch(`${API_URL}/api/payment/initiate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            address_id: selectedAddress.id,
+            items: orderItems,
+            total_amount: totalAmount,
+            discount_amount: discountAmount,
+            shipping_charges: shippingCharges,
+            final_amount: finalAmount,
+            firstname,
+            email,
+            phone
+          })
+        });
+        const initData = await initRes.json().catch(() => ({}));
+        if (initData.success && initData.payment_url) {
+          clearCart();
+          window.location.href = initData.payment_url;
+          return;
+        }
+        alert(initData.message || 'Could not open payment page. Please try again or choose Cash on Delivery.');
+        setLoading(false);
+        return;
+      }
+
+      const orderPaymentMethod = paymentMethod || 'cod';
       const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
@@ -41,7 +85,7 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
           discount_amount: discountAmount,
           shipping_charges: shippingCharges,
           final_amount: finalAmount,
-          payment_method: paymentMethod || 'cod',
+          payment_method: orderPaymentMethod,
           notes: ''
         })
       });
@@ -56,14 +100,23 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
         return;
       }
 
-      if (result.success) {
-        setOrderData(result.data);
-        onOrderPlaced(result.data);
-        clearCart();
-      } else {
+      if (!result.success) {
         const errorMsg = [result.error, result.message, result.hint].filter(Boolean).join('\n\n') || 'Failed to place order. Please try again.';
         alert(errorMsg);
+        setLoading(false);
+        return;
       }
+
+      const rawOrder = result.data;
+      const order = Array.isArray(rawOrder) ? rawOrder[0] : rawOrder;
+      if (!order) {
+        alert('Order was created but we could not read the response. Please check My Orders.');
+        setLoading(false);
+        return;
+      }
+      setOrderData(order);
+      onOrderPlaced(order);
+      clearCart();
     } catch (error) {
       alert(error.message || 'Network error. Please try again.');
     } finally {
@@ -93,7 +146,9 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, pa
             </div>
             <div>
               <span className="text-sm font-medium text-gray-600">Payment Method:</span>
-              <p className="text-gray-900 capitalize">{orderData.payment_method ?? 'COD'}</p>
+              <p className="text-gray-900">
+                {orderData.payment_method === 'easebuzz' ? 'Online Payment' : (orderData.payment_method ?? 'COD').toUpperCase()}
+              </p>
             </div>
             {selectedAddress && (
               <div>

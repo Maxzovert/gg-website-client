@@ -4,7 +4,7 @@ import AddressForm from './AddressForm';
 import PaymentOptions from './PaymentOptions';
 import OrderConfirmation from './OrderConfirmation';
 
-const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId }) => {
+const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEmail, userName }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [addresses, setAddresses] = useState([]);
@@ -175,6 +175,8 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId }) => {
               selectedAddress={selectedAddress}
               totalAmount={totalAmount}
               userId={userId}
+              userEmail={userEmail}
+              userName={userName}
               paymentMethod={paymentMethod}
               onOrderPlaced={handleOrderPlaced}
               orderData={orderData}

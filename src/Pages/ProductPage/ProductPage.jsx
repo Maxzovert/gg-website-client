@@ -33,7 +33,7 @@ const ProductPage = () => {
   const toast = useToast();
   const { addToCart, cartItems } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated, userId, loading: authLoading } = useAuth();
+  const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1210,6 +1210,8 @@ const ProductPage = () => {
         cartItems={cartItems}
         totalAmount={calculateTotalAmount()}
         userId={userId}
+        userEmail={user?.email}
+        userName={user?.user_metadata?.name}
       />
     </div>
   );
