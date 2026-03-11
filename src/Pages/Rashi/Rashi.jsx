@@ -307,10 +307,10 @@ const Rashi = () => {
     fetchAllRudraksha();
   }, []);
 
-  const SUPABASE_STORAGE_BASE = (import.meta.env.VITE_SUPABASE_URL || '').replace(/\/$/, '');
+  const S3_BASE = (import.meta.env.VITE_S3_PUBLIC_BASE_URL || '').replace(/\/$/, '');
   const buildImageUrl = (folder, file_name) =>
-    SUPABASE_STORAGE_BASE
-      ? `${SUPABASE_STORAGE_BASE}/storage/v1/object/public/GGIMG/StaticImg/${encodeURIComponent(folder)}/${encodeURIComponent(file_name)}`
+    S3_BASE
+      ? `${S3_BASE}/StaticImg/${encodeURIComponent(folder)}/${encodeURIComponent(file_name)}`
       : null;
 
   useEffect(() => {
