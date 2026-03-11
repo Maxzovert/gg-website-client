@@ -169,9 +169,9 @@ const Profile = () => {
             {/* User Info */}
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {user?.user_metadata?.name || 'User'}
+                {user?.full_name || user?.email || 'User'}
               </h1>
-              <p className="text-gray-600 mb-4">{user?.email}</p>
+              <p className="text-gray-600 mb-4">{user?.email || ''}</p>
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">{orders.length}</div>

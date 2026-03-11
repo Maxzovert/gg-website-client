@@ -259,7 +259,7 @@ const Cart = () => {
         totalAmount={totalPrice}
         userId={userId}
         userEmail={user?.email}
-        userName={user?.user_metadata?.name}
+        userName={user?.full_name}
       />
     </div>
     </>

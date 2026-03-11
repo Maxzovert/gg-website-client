@@ -1211,7 +1211,7 @@ const ProductPage = () => {
         totalAmount={calculateTotalAmount()}
         userId={userId}
         userEmail={user?.email}
-        userName={user?.user_metadata?.name}
+        userName={user?.full_name}
       />
     </div>
   );

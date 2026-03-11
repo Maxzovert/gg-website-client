@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaGoogle, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
 
@@ -9,8 +9,9 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,32 +33,17 @@ const Auth = () => {
           navigate(from, { replace: true });
         }
       } else {
-        const { error } = await signUp(email, password, { name });
+        const { error } = await signUp(email, password, { full_name: name });
         if (error) {
           toast.error(error.message || 'Failed to sign up');
         } else {
-          toast.success('Account created! Please check your email to verify your account.');
+          toast.success('Account created! You can sign in now.');
           setIsLogin(true);
         }
       }
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        toast.error(error.message || 'Failed to sign in with Google');
-        setLoading(false);
-      }
-      // Note: Google OAuth redirects, so we don't navigate here
-    } catch (error) {
-      toast.error('An unexpected error occurred');
       setLoading(false);
     }
   };
@@ -119,14 +105,22 @@ const Auth = () => {
               <div className="relative">
                 <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="Enter your password"
                   required
                   minLength={6}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <FaEyeSlash className="w-5 h-5" /> : <FaEye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
 
@@ -138,26 +132,6 @@ const Auth = () => {
               {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
             </button>
           </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
-              </div>
-            </div>
-
-            <button
-              onClick={handleGoogleSignIn}
-              disabled={loading}
-              className="mt-4 w-full flex items-center justify-center gap-3 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FaGoogle className="text-red-500" />
-              <span>Sign in with Google</span>
-            </button>
-          </div>
 
           <div className="mt-6 text-center">
             <button

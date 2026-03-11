@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../config/supabaseClient';
-import { getRedirectURL, getAuthCallbackURL } from '../utils/authUtils';
 
 const AuthContext = createContext(null);
 
@@ -10,20 +8,38 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     let mounted = true;
 
-    // Get initial session - this checks localStorage first
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
+        const token = window.localStorage.getItem('auth_token');
+        if (!token || !API_URL) {
+          if (mounted) setLoading(false);
+          return;
         }
-        
+
+        const res = await fetch(`${API_URL}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!res.ok) {
+          window.localStorage.removeItem('auth_token');
+          if (mounted) {
+            setUser(null);
+            setLoading(false);
+          }
+          return;
+        }
+
+        const data = await res.json();
         if (mounted) {
-          setUser(session?.user ?? null);
+          setUser(data.user || null);
           setLoading(false);
         }
       } catch (error) {
@@ -36,39 +52,35 @@ export const AuthProvider = ({ children }) => {
 
     initializeAuth();
 
-    // Listen for auth changes (this also fires on initial load)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (mounted) {
-        setUser(session?.user ?? null);
-        setLoading(false);
-        
-        // Handle token refresh
-        if (event === 'TOKEN_REFRESHED') {
-          // Token was refreshed, session is still valid
-        }
-      }
-    });
-
     return () => {
       mounted = false;
-      subscription.unsubscribe();
     };
-  }, []);
+  }, [API_URL]);
 
   const signUp = async (email, password, metadata = {}) => {
     try {
-      const redirectTo = getRedirectURL();
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: metadata,
-          emailRedirectTo: redirectTo || undefined
-        }
+      if (!API_URL) throw new Error('API URL is not configured');
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          full_name: metadata.full_name,
+        }),
       });
-      if (error) throw error;
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to sign up');
+      }
+
+      if (data.token) {
+        window.localStorage.setItem('auth_token', data.token);
+      }
+      setUser(data.user || null);
       return { data, error: null };
     } catch (error) {
       return { data: null, error };
@@ -77,30 +89,24 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
+      if (!API_URL) throw new Error('API URL is not configured');
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error };
-    }
-  };
 
-  const signInWithGoogle = async () => {
-    try {
-      const redirectTo = getAuthCallbackURL();
-      if (!redirectTo) {
-        throw new Error('Redirect URL not available. Set VITE_SITE_URL in .env if using SSR.');
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to sign in');
       }
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo
-        }
-      });
-      if (error) throw error;
+
+      if (data.token) {
+        window.localStorage.setItem('auth_token', data.token);
+      }
+      setUser(data.user || null);
       return { data, error: null };
     } catch (error) {
       return { data: null, error };
@@ -109,8 +115,19 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (API_URL) {
+        const token = window.localStorage.getItem('auth_token');
+        if (token) {
+          await fetch(`${API_URL}/api/auth/logout`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        }
+      }
+      window.localStorage.removeItem('auth_token');
+      setUser(null);
       navigate('/');
       return { error: null };
     } catch (error) {
@@ -123,7 +140,6 @@ export const AuthProvider = ({ children }) => {
     loading,
     signUp,
     signIn,
-    signInWithGoogle,
     signOut,
     isAuthenticated: !!user,
     userId: user?.id || null

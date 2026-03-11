@@ -15,6 +15,9 @@ const OrderFailed = () => {
     payment_failed: 'The payment could not be completed. You can try again or choose Cash on Delivery.',
     hash_mismatch: 'We could not verify the payment response. Please contact support if you were charged.',
     invalid_callback: 'Invalid payment response. Please try again or use Cash on Delivery.',
+    no_draft: 'Payment response was incomplete. Please try again or use Cash on Delivery.',
+    draft_not_found: 'We could not find your order session. Please place the order again.',
+    order_create_failed: 'Payment succeeded but we could not create your order. Please contact support with your payment details.',
     error: 'Something went wrong. Please try again or choose Cash on Delivery.'
   };
 
