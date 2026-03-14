@@ -3,8 +3,9 @@
  * Use apiFetch for requests that may require auth (adds Bearer token when present).
  */
 
+// In production build, VITE_API_URL must be set (e.g. Docker build-arg or Amplify env).
 export const API_URL =
-  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:3001');
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : '');
 
 function getAuthHeaders() {
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('auth_token') : null;
