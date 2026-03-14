@@ -12,7 +12,6 @@ export const CartProvider = ({ children }) => {
         return Array.isArray(parsed) ? parsed : [];
       }
     } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
     }
     return [];
   });
@@ -30,7 +29,6 @@ export const CartProvider = ({ children }) => {
       try {
         localStorage.setItem('cart', JSON.stringify(cartItems));
       } catch (error) {
-        console.error('Error saving cart to localStorage:', error);
       }
     }
   }, [cartItems, isInitialized]);

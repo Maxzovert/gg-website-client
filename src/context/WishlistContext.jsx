@@ -12,7 +12,6 @@ export const WishlistProvider = ({ children }) => {
       try {
         setWishlistItems(JSON.parse(savedWishlist));
       } catch (error) {
-        console.error('Error loading wishlist from localStorage:', error);
       }
     }
   }, []);

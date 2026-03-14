@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { apiFetch } from '../config/api.js';
 
 const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
 
@@ -8,7 +9,6 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, us
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState(initialOrderData);
   const { clearCart } = useCart();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const discountAmount = totalAmount * 0.25;
   const shippingCharges = totalAmount > 1000 ? 0 : 50;
@@ -44,11 +44,9 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, us
           setLoading(false);
           return;
         }
-        const initRes = await fetch(`${API_URL}/api/payment/initiate`, {
+        const initRes = await apiFetch('/api/payment/initiate', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            user_id: userId,
             address_id: selectedAddress.id,
             items: orderItems,
             total_amount: totalAmount,
@@ -72,13 +70,9 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, us
       }
 
       const orderPaymentMethod = paymentMethod || 'cod';
-      const response = await fetch(`${API_URL}/api/orders`, {
+      const response = await apiFetch('/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
-          user_id: userId,
           address_id: selectedAddress.id,
           items: orderItems,
           total_amount: totalAmount,

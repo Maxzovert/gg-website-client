@@ -3,6 +3,7 @@ import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import rudrakshBanner from '../../assets/RudraksPageImg/rd1.png';
+import { apiFetch } from '../../config/api.js';
 
 const Rudraksh = () => {
   const [products, setProducts] = useState([]);
@@ -25,8 +26,6 @@ const Rudraksh = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
   useEffect(() => {
     fetchFilterOptions();
   }, []);
@@ -46,14 +45,13 @@ const Rudraksh = () => {
 
   const fetchFilterOptions = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products/filters?category=Rudraksha`);
+      const response = await apiFetch('/api/products/filters?category=Rudraksha');
       if (!response.ok) throw new Error('Failed to fetch filter options');
       const result = await response.json();
       if (result.success) {
         setFilterOptions(result.data);
       }
-    } catch (error) {
-      console.error('Error fetching filter options:', error);
+    } catch (_error) {
     }
   };
 
@@ -69,7 +67,7 @@ const Rudraksh = () => {
         ...(filters.search && { search: filters.search })
       });
 
-      const response = await fetch(`${API_URL}/api/products?${params}`);
+      const response = await apiFetch(`/api/products?${params}`);
       if (!response.ok) throw new Error('Failed to fetch products');
       const result = await response.json();
       if (result.success) {
@@ -81,8 +79,7 @@ const Rudraksh = () => {
         });
         setProducts(filtered);
       }
-    } catch (error) {
-      console.error('Error fetching products:', error);
+    } catch (_error) {
     } finally {
       setLoading(false);
     }

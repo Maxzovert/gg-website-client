@@ -1,33 +1,41 @@
-import React from 'react'
-import Home from './Pages/Home/Home'
+import React, { lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import Footer from './components/Footer'
-import Spray from './Pages/Spray/Spray'
-import Rudraksh from './Pages/Rudraksh/Rudraksh'
-import Rashi from './Pages/Rashi/Rashi'
-import Accessories from './Pages/Accessories/Accessories'
-import ProductPage from './Pages/ProductPage/ProductPage'
-import Cart from './Pages/Cart/Cart'
-import Wishlist from './Pages/Wishlist/Wishlist'
-import Auth from './Pages/Auth/Auth'
-import AuthCallback from './Pages/Auth/AuthCallback'
-import Profile from './Pages/Profile/Profile'
-import ViewDetails from './Pages/Profile/ViewDetails'
-import OrderSuccess from './Pages/Order/OrderSuccess'
-import OrderFailed from './Pages/Order/OrderFailed'
-import About from './Pages/About/About'
-import Contact from './Pages/Contact/Contact'
-import TermsOfService from './Pages/Policies/TermsOfService'
-import RefundCancellation from './Pages/Policies/RefundCancellation'
-import TermsAndConditions from './Pages/Policies/TermsAndConditions'
-import ShippingPolicy from './Pages/Policies/ShippingPolicy'
-import PrivacyPolicy from './Pages/Policies/PrivacyPolicy'
+import Loader from './components/Loader'
 import { ToastProvider } from './components/Toaster'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { AuthProvider } from './context/AuthContext'
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom"
+
+const Home = lazy(() => import('./Pages/Home/Home'))
+const Spray = lazy(() => import('./Pages/Spray/Spray'))
+const Rudraksh = lazy(() => import('./Pages/Rudraksh/Rudraksh'))
+const Rashi = lazy(() => import('./Pages/Rashi/Rashi'))
+const Accessories = lazy(() => import('./Pages/Accessories/Accessories'))
+const ProductPage = lazy(() => import('./Pages/ProductPage/ProductPage'))
+const Cart = lazy(() => import('./Pages/Cart/Cart'))
+const Wishlist = lazy(() => import('./Pages/Wishlist/Wishlist'))
+const Auth = lazy(() => import('./Pages/Auth/Auth'))
+const AuthCallback = lazy(() => import('./Pages/Auth/AuthCallback'))
+const Profile = lazy(() => import('./Pages/Profile/Profile'))
+const ViewDetails = lazy(() => import('./Pages/Profile/ViewDetails'))
+const OrderSuccess = lazy(() => import('./Pages/Order/OrderSuccess'))
+const OrderFailed = lazy(() => import('./Pages/Order/OrderFailed'))
+const About = lazy(() => import('./Pages/About/About'))
+const Contact = lazy(() => import('./Pages/Contact/Contact'))
+const TermsOfService = lazy(() => import('./Pages/Policies/TermsOfService'))
+const RefundCancellation = lazy(() => import('./Pages/Policies/RefundCancellation'))
+const TermsAndConditions = lazy(() => import('./Pages/Policies/TermsAndConditions'))
+const ShippingPolicy = lazy(() => import('./Pages/Policies/ShippingPolicy'))
+const PrivacyPolicy = lazy(() => import('./Pages/Policies/PrivacyPolicy'))
+
+const PageLoader = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <Loader />
+  </div>
+)
 
 
 const App = () => {
@@ -40,6 +48,7 @@ const App = () => {
               <ScrollToTop />
               <Navbar />
               <main className="flex-1">
+                <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/sprays" element={<Spray />} />
@@ -63,6 +72,7 @@ const App = () => {
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
                 </Routes>
+                </Suspense>
               </main>
               <Footer />
             </div>

@@ -3,6 +3,7 @@ import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import sprayBanner from '../../assets/Spray/4sp.png';
+import { apiFetch } from '../../config/api.js';
 
 const Spray = () => {
   const [products, setProducts] = useState([]);
@@ -25,8 +26,6 @@ const Spray = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
   useEffect(() => {
     fetchFilterOptions();
   }, []);
@@ -46,8 +45,7 @@ const Spray = () => {
 
   const fetchFilterOptions = async () => {
     try {
-      const url = `${API_URL}/api/products/filters?category=Sprays`;
-      const response = await fetch(url);
+      const response = await apiFetch('/api/products/filters?category=Sprays');
       if (!response.ok) {
         throw new Error(`Failed to fetch filter options: ${response.status}`);
       }
@@ -72,8 +70,7 @@ const Spray = () => {
         ...(filters.search && { search: filters.search })
       });
 
-      const url = `${API_URL}/api/products?${params}`;
-      const response = await fetch(url);
+      const response = await apiFetch(`/api/products?${params}`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch products: ${response.status}`);

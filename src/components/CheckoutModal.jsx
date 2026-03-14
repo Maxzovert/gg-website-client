@@ -3,6 +3,7 @@ import { FaTimes, FaMapMarkerAlt, FaCreditCard, FaCheckCircle, FaChevronRight, F
 import AddressForm from './AddressForm';
 import PaymentOptions from './PaymentOptions';
 import OrderConfirmation from './OrderConfirmation';
+import { apiFetch } from '../config/api.js';
 
 const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEmail, userName }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -10,8 +11,6 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEm
   const [addresses, setAddresses] = useState([]);
   const [orderData, setOrderData] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('');
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   // Fetch user addresses
   useEffect(() => {
@@ -22,7 +21,7 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEm
 
   const fetchAddresses = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/addresses/user/${userId}`);
+      const response = await apiFetch(`/api/addresses/user/${userId}`);
       const result = await response.json();
       if (result.success) {
         setAddresses(result.data || []);

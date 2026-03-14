@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaMapMarkerAlt, FaPlus, FaCheck } from 'react-icons/fa';
+import { apiFetch } from '../config/api.js';
 
 const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCreated, userId }) => {
   const [showForm, setShowForm] = useState(false);
@@ -18,8 +19,6 @@ const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCre
   });
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   // Get current location
   const getCurrentLocation = () => {
@@ -132,14 +131,10 @@ const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCre
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/addresses`, {
+      const response = await apiFetch('/api/addresses', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
-          ...formData,
-          user_id: userId
+          ...formData
         })
       });
 

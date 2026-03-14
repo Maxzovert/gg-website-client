@@ -26,6 +26,7 @@ import { useWishlist } from "../../context/WishlistContext";
 import { useAuth } from "../../context/AuthContext";
 import CheckoutModal from "../../components/CheckoutModal";
 import ProductCard from "../../components/ProductCard";
+import { API_URL, apiFetch } from "../../config/api.js";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -45,7 +46,7 @@ const ProductPage = () => {
   const [staticImagesLoading, setStaticImagesLoading] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
-  const [accordionOpen, setAccordionOpen] = useState(() => new Set(["description"])); // Set of open keys
+  const [accordionOpen, setAccordionOpen] = useState(() => new Set(["description"]));
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewHover, setReviewHover] = useState(0);
   const [reviewName, setReviewName] = useState("");
@@ -59,9 +60,6 @@ const ProductPage = () => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewDeletingId, setReviewDeletingId] = useState(null);
-
-  // In dev, use same origin so Vite proxy can forward /api to the backend
-  const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "" : "http://localhost:3001");
 
   // Normalize API review to UI shape
   const normalizeReview = (r) => ({
@@ -153,7 +151,7 @@ const ProductPage = () => {
     const fetchReviews = async () => {
       setReviewsLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/reviews/product/${product.id}`);
+        const res = await apiFetch(`/api/reviews/product/${product.id}`);
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
           setReviews(json.data);
@@ -161,14 +159,13 @@ const ProductPage = () => {
           setReviews([]);
         }
       } catch (err) {
-        console.error("Error fetching reviews:", err);
         setReviews([]);
       } finally {
         setReviewsLoading(false);
       }
     };
     fetchReviews();
-  }, [product?.id, API_URL]);
+  }, [product?.id]);
 
   // Fetch Elements and Benifits static images when product is loaded (for rudraksha matching)
   useEffect(() => {
@@ -178,8 +175,8 @@ const ProductPage = () => {
       setStaticImagesLoading(true);
       try {
         const [elementsRes, benefitsRes] = await Promise.all([
-          fetch(`${API_URL}/api/static-images?folder=Elements`),
-          fetch(`${API_URL}/api/static-images?folder=Benifits`),
+          apiFetch(`/api/static-images?folder=Elements`),
+          apiFetch(`/api/static-images?folder=Benifits`),
         ]);
         const elementsData = elementsRes.ok ? await elementsRes.json() : [];
         const benefitsData = benefitsRes.ok ? await benefitsRes.json() : [];
@@ -193,14 +190,13 @@ const ProductPage = () => {
         setElementImages(withUrls(elementsData));
         setBenefitImages(withUrls(benefitsData));
       } catch (err) {
-        console.error("Error fetching element/benefit images:", err);
       } finally {
         setStaticImagesLoading(false);
       }
     };
 
     fetchStaticImages();
-  }, [product?.id, API_URL]);
+  }, [product?.id]);
 
   // Fetch related products (same category, exclude current)
   useEffect(() => {
@@ -209,8 +205,8 @@ const ProductPage = () => {
     const fetchRelated = async () => {
       setRelatedLoading(true);
       try {
-        const res = await fetch(
-          `${API_URL}/api/products?category=${encodeURIComponent(product.category)}`
+        const res = await apiFetch(
+          `/api/products?category=${encodeURIComponent(product.category)}`
         );
         const result = res.ok ? await res.json() : { data: [] };
         const list = result.success && result.data ? result.data : [];
@@ -219,20 +215,19 @@ const ProductPage = () => {
           .slice(0, 4);
         setRelatedProducts(related);
       } catch (err) {
-        console.error("Error fetching related products:", err);
       } finally {
         setRelatedLoading(false);
       }
     };
 
     fetchRelated();
-  }, [product?.id, product?.category, API_URL]);
+  }, [product?.id, product?.category]);
 
   const fetchProduct = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_URL}/api/products/${id}`);
+      const response = await apiFetch(`/api/products/${id}`);
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -252,7 +247,6 @@ const ProductPage = () => {
         setError("Failed to load product");
       }
     } catch (err) {
-      console.error("Error fetching product:", err);
       setError("Failed to load product");
     } finally {
       setLoading(false);
@@ -330,7 +324,6 @@ const ProductPage = () => {
         setReviews(json.data);
       }
     } catch (err) {
-      console.error("Error fetching reviews:", err);
     }
   };
 
@@ -343,12 +336,10 @@ const ProductPage = () => {
     }
     setReviewSubmitting(true);
     try {
-      const res = await fetch(`${API_URL}/api/reviews`, {
+      const res = await apiFetch("/api/reviews", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           product_id: product.id,
-          user_id: userId || null,
           reviewer_name: reviewName.trim(),
           rating: reviewRating,
           comment: reviewComment.trim(),
@@ -366,8 +357,7 @@ const ProductPage = () => {
       } else {
         toast.error(json.message || "Failed to submit review.");
       }
-    } catch (err) {
-      console.error("Submit review:", err);
+    } catch (_err) {
       toast.error("Failed to submit review.");
     } finally {
       setReviewSubmitting(false);
@@ -378,10 +368,8 @@ const ProductPage = () => {
     if (!userId || reviewUserId !== userId) return;
     setReviewDeletingId(reviewId);
     try {
-      const res = await fetch(`${API_URL}/api/reviews/${reviewId}`, {
+      const res = await apiFetch(`/api/reviews/${reviewId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId }),
       });
       const json = await res.json();
       if (json.success) {
@@ -390,8 +378,7 @@ const ProductPage = () => {
       } else {
         toast.error(json.message || "Failed to delete review.");
       }
-    } catch (err) {
-      console.error("Delete review:", err);
+    } catch (_err) {
       toast.error("Failed to delete review.");
     } finally {
       setReviewDeletingId(null);

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL, apiFetch } from '../config/api.js';
 
 const AuthContext = createContext(null);
 
@@ -8,25 +9,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL;
-
   useEffect(() => {
     let mounted = true;
 
     const initializeAuth = async () => {
       try {
         const token = window.localStorage.getItem('auth_token');
-        if (!token || !API_URL) {
+        if (!token || !API_URL?.length) {
           if (mounted) setLoading(false);
           return;
         }
 
-        const res = await fetch(`${API_URL}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: 'include',
-        });
+        const res = await apiFetch('/api/auth/me');
 
         if (!res.ok) {
           window.localStorage.removeItem('auth_token');
@@ -42,8 +36,7 @@ export const AuthProvider = ({ children }) => {
           setUser(data.user || null);
           setLoading(false);
         }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
+      } catch (_error) {
         if (mounted) {
           setLoading(false);
         }
@@ -60,11 +53,8 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password, metadata = {}) => {
     try {
       if (!API_URL) throw new Error('API URL is not configured');
-      const res = await fetch(`${API_URL}/api/auth/register`, {
+      const res = await apiFetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           email,
           password,
@@ -90,11 +80,8 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       if (!API_URL) throw new Error('API URL is not configured');
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -116,15 +103,7 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       if (API_URL) {
-        const token = window.localStorage.getItem('auth_token');
-        if (token) {
-          await fetch(`${API_URL}/api/auth/logout`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-        }
+        await apiFetch('/api/auth/logout', { method: 'POST' });
       }
       window.localStorage.removeItem('auth_token');
       setUser(null);

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FaCheckCircle, FaShoppingBag, FaSpinner } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../config/api.js';
 
 const REDIRECT_DELAY_MS = 2500;
 
@@ -49,19 +50,18 @@ const OrderSuccess = () => {
   const orderId = searchParams.get('order_id');
   const { userId } = useAuth();
   const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(!!orderId && !!userId);
+  const [loading, setLoading] = useState(!!orderId);
   const [showModal, setShowModal] = useState(true);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
-    if (!orderId || !userId) {
+    if (!orderId) {
       setLoading(false);
       return;
     }
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${API_URL}/api/orders/${orderId}?userId=${userId}`);
+        const res = await apiFetch(`/api/orders/${orderId}`);
         const data = await res.json();
         if (!cancelled && data.success && data.data) setOrder(data.data);
       } catch {
@@ -71,7 +71,7 @@ const OrderSuccess = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [orderId, userId]);
+  }, [orderId]);
 
   useEffect(() => {
     if (!showModal) return;

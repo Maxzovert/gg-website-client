@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaUser, FaShoppingBag, FaMapMarkerAlt, FaSignOutAlt, FaTrash, FaCheck } from 'react-icons/fa';
 import { useToast } from '../../components/Toaster';
+import { apiFetch } from '../../config/api.js';
 
 const Profile = () => {
   const { user, signOut, userId, loading: authLoading } = useAuth();
@@ -13,8 +14,6 @@ const Profile = () => {
   const [orders, setOrders] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     // Wait for auth to finish loading before checking
@@ -38,8 +37,7 @@ const Profile = () => {
         fetchOrders(),
         fetchAddresses()
       ]);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
+    } catch (_error) {
     } finally {
       setLoading(false);
     }
@@ -47,25 +45,23 @@ const Profile = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/orders/user/${userId}`);
+      const response = await apiFetch(`/api/orders/user/${userId}`);
       const result = await response.json();
       if (result.success) {
         setOrders(result.data || []);
       }
-    } catch (error) {
-      console.error('Error fetching orders:', error);
+    } catch (_error) {
     }
   };
 
   const fetchAddresses = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/addresses/user/${userId}`);
+      const response = await apiFetch(`/api/addresses/user/${userId}`);
       const result = await response.json();
       if (result.success) {
         setAddresses(result.data || []);
       }
-    } catch (error) {
-      console.error('Error fetching addresses:', error);
+    } catch (_error) {
     }
   };
 
@@ -83,7 +79,7 @@ const Profile = () => {
     if (!confirm('Are you sure you want to delete this address?')) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/addresses/${addressId}?userId=${userId}`, {
+      const response = await apiFetch(`/api/addresses/${addressId}`, {
         method: 'DELETE'
       });
 
@@ -101,12 +97,9 @@ const Profile = () => {
 
   const handleSetDefaultAddress = async (addressId) => {
     try {
-      const response = await fetch(`${API_URL}/api/addresses/${addressId}/default`, {
+      const response = await apiFetch(`/api/addresses/${addressId}/default`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({})
       });
 
       const result = await response.json();

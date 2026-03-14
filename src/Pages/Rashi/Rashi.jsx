@@ -4,6 +4,7 @@ import { FaTimes, FaChevronDown, FaArrowRight } from 'react-icons/fa';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import RashiSection from '../Home/RashiSection';
+import { apiFetch } from '../../config/api.js';
 
 // Zodiac dropdown images from local assets (Client/src/assets/Zodiac)
 // Filenames can be lowercase (e.g. aries.jpg) or capitalized (Aries.png); keys are normalized to match rashi values.
@@ -40,8 +41,6 @@ const Rashi = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   // All 12 Rashis (Zodiac Signs)
   const rashis = [
@@ -316,7 +315,7 @@ const Rashi = () => {
   useEffect(() => {
     const fetchRudrakshaImages = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/static-images?folder=Rudrakshas`);
+        const res = await apiFetch('/api/static-images?folder=Rudrakshas');
         if (!res.ok) return;
         const data = await res.json();
         const byKey = (data || []).reduce((acc, item) => {
@@ -325,12 +324,11 @@ const Rashi = () => {
           return acc;
         }, {});
         setMukhiImages(byKey);
-      } catch (err) {
-        console.error('Error fetching rudraksha images:', err);
+      } catch (_err) {
       }
     };
     fetchRudrakshaImages();
-  }, [API_URL]);
+  }, []);
 
   useEffect(() => {
     if (selectedRashi) {
@@ -363,14 +361,13 @@ const Rashi = () => {
   const fetchAllRudraksha = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/products?category=Rudraksha`);
+      const response = await apiFetch('/api/products?category=Rudraksha');
       if (!response.ok) throw new Error('Failed to fetch Rudraksha');
       const result = await response.json();
       if (result.success) {
         setAllRudraksha(result.data);
       }
-    } catch (error) {
-      console.error('Error fetching Rudraksha:', error);
+    } catch (_error) {
     } finally {
       setLoading(false);
     }

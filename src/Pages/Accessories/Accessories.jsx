@@ -3,6 +3,7 @@ import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import accessoriesBanner from '../../assets/RudraksPageImg/rd1.png';
+import { apiFetch } from '../../config/api.js';
 
 // Mukhi options for Rudraksh accessories (1–14 Mukhi)
 const MUKHI_OPTIONS = [
@@ -40,8 +41,6 @@ const Accessories = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
   useEffect(() => {
     fetchFilterOptions();
   }, []);
@@ -64,7 +63,7 @@ const Accessories = () => {
 
   const fetchFilterOptions = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products/filters?category=Accessories`);
+      const response = await apiFetch('/api/products/filters?category=Accessories');
       if (!response.ok) throw new Error('Failed to fetch filter options');
       const result = await response.json();
       if (result.success) {
@@ -88,7 +87,7 @@ const Accessories = () => {
         ...(filters.search && { search: filters.search })
       });
 
-      const response = await fetch(`${API_URL}/api/products?${params}`);
+      const response = await apiFetch(`/api/products?${params}`);
       if (!response.ok) throw new Error('Failed to fetch products');
       const result = await response.json();
       if (result.success) {

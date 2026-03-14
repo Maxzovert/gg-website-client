@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaSpinner } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../config/api.js';
 
 const ViewDetails = () => {
   const { id: orderId } = useParams();
   const navigate = useNavigate();
-  const { userId, user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     if (authLoading) return;
@@ -18,14 +18,14 @@ const ViewDetails = () => {
       navigate('/auth', { state: { from: { pathname: `/orders/${orderId}` } } });
       return;
     }
-    if (!orderId || !userId) {
+    if (!orderId) {
       setLoading(false);
       return;
     }
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${API_URL}/api/orders/${orderId}?userId=${userId}`);
+        const res = await apiFetch(`/api/orders/${orderId}`);
         const data = await res.json();
         if (!cancelled) {
           if (data.success && data.data) setOrder(data.data);
@@ -38,7 +38,7 @@ const ViewDetails = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [orderId, userId, user, authLoading, navigate, API_URL]);
+  }, [orderId, user, authLoading, navigate]);
 
   const address = order?.addresses
     ? (Array.isArray(order.addresses) ? order.addresses[0] : order.addresses)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import Loader from './Loader'
+import { apiFetch } from '../config/api.js'
 
 const WebsiteCarousel = () => {
   const [images, setImages] = useState([])
@@ -8,8 +9,6 @@ const WebsiteCarousel = () => {
   const [loading, setLoading] = useState(true)
   const [deviceType, setDeviceType] = useState(null)
   const intervalRef = useRef(null)
-
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
   // Detect device type based on window width
   const detectDeviceType = () => {
@@ -42,7 +41,7 @@ const WebsiteCarousel = () => {
     const fetchCarouselImages = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`${API_URL}/api/carousel?device_type=${deviceType}`)
+        const response = await apiFetch(`/api/carousel?device_type=${deviceType}`)
         if (!response.ok) {
           throw new Error('Failed to fetch carousel images')
         }
@@ -50,8 +49,7 @@ const WebsiteCarousel = () => {
         // Only set images for the current device type
         setImages(data || [])
         setCurrentIndex(0)
-      } catch (error) {
-        console.error('Error fetching carousel images:', error)
+      } catch (_error) {
         setImages([])
       } finally {
         setLoading(false)
@@ -59,7 +57,7 @@ const WebsiteCarousel = () => {
     }
 
     fetchCarouselImages()
-  }, [deviceType, API_URL])
+  }, [deviceType])
 
   useEffect(() => {
     // Auto-loop functionality - only if there's more than one image
