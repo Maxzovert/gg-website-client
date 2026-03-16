@@ -50,7 +50,7 @@ const Footer = () => {
               <img src={logo} alt="Gawri Ganga" className="w-14 h-14 sm:w-14 sm:h-14 md:w-16 md:h-16" />
             </Link>
             <p className="mt-3 font-heading font-semibold text-white text-sm">
-              Authentic · Spiritual · Lifestyle
+              Purity · Power · Protection
             </p>
             <p className="mt-2 text-white/95 text-sm leading-relaxed max-w-[280px] sm:max-w-xs mx-auto lg:mx-0">
               Discover authentic rudraksha, aura sprays and spiritual accessories at Gawri Ganga.
