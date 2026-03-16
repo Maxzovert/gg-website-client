@@ -91,10 +91,10 @@ const Contact = () => {
                   Email
                 </h3>
                 <a
-                  href="mailto:support@gawriganga.com"
+                  href="mailto:gawrigangaofficial@gmail.com"
                   className="about-body text-stone-600 text-sm sm:text-base hover:text-primary transition-colors break-all"
                 >
-                  support@gawriganga.com
+                  gawrigangaofficial@gmail.com
                 </a>
               </div>
             </div>
