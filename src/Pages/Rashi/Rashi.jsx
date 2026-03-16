@@ -437,9 +437,6 @@ const Rashi = () => {
 
           {/* Custom Rashi dropdown */}
           <div className="mb-8 max-w-xl mx-auto" ref={dropdownRef}>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Select Your Rashi (Zodiac Sign)
-            </label>
             <div className="relative">
               <button
                 type="button"
