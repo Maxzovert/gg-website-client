@@ -85,8 +85,7 @@ const RashiSection = ({ hideCta = false }) => {
               to="/rashi"
               className="inline-flex flex-wrap items-center justify-center gap-2 md:gap-3 py-4 px-6 md:px-8 rounded-2xl bg-primary text-white font-semibold text-sm md:text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 group"
             >
-              <span className="font-heading">Find your Rashi Rudraksha</span>
-              <span className="opacity-90">— beads for your zodiac</span>
+              <span className="font-heading">Find your Rashi Rudraksha beads for your zodiac</span>
               <FaArrowRight className="text-lg shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden />
             </Link>
           </div>
