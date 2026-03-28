@@ -548,13 +548,13 @@ const ProductPage = () => {
               {/* Main image + Element & Benefits – same width (flex-1), same box style */}
               <div className="flex-1 flex flex-col gap-4 sm:gap-6 min-w-0 order-2">
                 {/* Main Image */}
-                <div className="relative aspect-[4/3] max-h-[280px] sm:max-h-[400px] md:max-h-[550px] lg:max-h-[700px] w-full min-w-0 bg-gray-100 rounded-xl overflow-hidden border-2 border-primary/20 group">
+                <div className="relative aspect-square w-full max-w-[min(100%,280px)] max-h-[280px] sm:max-w-[min(100%,400px)] sm:max-h-[400px] md:max-w-[min(100%,550px)] md:max-h-[550px] lg:max-w-[min(100%,700px)] lg:max-h-[700px] mx-auto min-w-0 bg-gray-100 rounded-xl overflow-hidden border-2 border-primary/20 group">
                   {product.images && product.images.length > 0 ? (
                     <>
                       <img
                         src={product.images[selectedImageIndex]}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="block h-full w-full object-contain object-center"
                         onError={(e) => {
                           e.target.src =
                             "https://via.placeholder.com/600x600?text=No+Image";
