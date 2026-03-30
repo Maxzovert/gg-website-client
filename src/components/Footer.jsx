@@ -143,7 +143,7 @@ const Footer = () => {
                 <FaFacebookF className="text-sm" />
               </a>
               <a
-                href="https://www.instagram.com/gawriganga.in?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                href="https://www.instagram.com/gawriganga.in"
                 aria-label="Instagram"
                 className="w-10 h-10 sm:w-9 sm:h-9 rounded-full border-2 border-white/60 text-white flex items-center justify-center hover:bg-white hover:text-primary transition-colors shrink-0"
               >
