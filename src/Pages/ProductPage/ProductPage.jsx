@@ -32,7 +32,14 @@ const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const { addToCart, cartItems } = useCart();
+  const {
+    addToCart,
+    cartItems,
+    includeBlessing,
+    setIncludeBlessing,
+    blessingCharge,
+    OPTIONAL_BLESSING_CHARGE,
+  } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const [product, setProduct] = useState(null);
@@ -60,6 +67,8 @@ const ProductPage = () => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewDeletingId, setReviewDeletingId] = useState(null);
+  const isRudrakshaProduct =
+    product?.category === "Rudraksha" || product?.category === "Rudrakshas";
 
   // Normalize API review to UI shape
   const normalizeReview = (r) => ({
@@ -144,6 +153,12 @@ const ProductPage = () => {
   useEffect(() => {
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    if (!isRudrakshaProduct && includeBlessing) {
+      setIncludeBlessing(false);
+    }
+  }, [isRudrakshaProduct, includeBlessing, setIncludeBlessing]);
 
   // Fetch reviews for this product
   useEffect(() => {
@@ -463,16 +478,15 @@ const ProductPage = () => {
   };
 
   const matchKeys = getMatchKeys();
-  const matchedElementImage = elementImages.find((img) =>
+  const matchedElementInfo = elementImages.find((img) =>
     matchKeys.some((k) => String(img.key).toLowerCase() === String(k).toLowerCase())
   );
-  const matchedBenefitImage = benefitImages.find((img) =>
+  const matchedBenefitInfo = benefitImages.find((img) =>
     matchKeys.some((k) => String(img.key).toLowerCase() === String(k).toLowerCase())
   );
-  const showElementOrBenefit = Boolean(matchedElementImage || matchedBenefitImage);
 
   // For Rudraksha: which Rashis recommend this product (by matching mukhi in subcategory/name)
-  const isRudraksha = product.category === "Rudraksha" || product.category === "Rudrakshas";
+  const isRudraksha = isRudrakshaProduct;
   const getRashisForThisProduct = () => {
     if (!isRudraksha) return [];
     const text = `${product.subcategory || ""} ${product.name || ""}`.toLowerCase();
@@ -762,6 +776,28 @@ const ProductPage = () => {
               </div>
             </div>
 
+            {/* Optional blessing add-on (only for Rudraksha) */}
+            {isRudraksha && (
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 sm:p-4">
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={includeBlessing}
+                    onChange={(e) => setIncludeBlessing(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 sm:h-5 sm:w-5 accent-primary shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm sm:text-base font-semibold text-gray-900">
+                      Add Special Blessing Service - shuddhi/pran pratishtha (+₹{OPTIONAL_BLESSING_CHARGE})
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600">
+                      If selected, ₹{OPTIONAL_BLESSING_CHARGE} will be added to your final bill.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            )}
+
             {/* Buy Now and Add to Cart Buttons – full width on mobile, touch-friendly */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
@@ -821,6 +857,38 @@ const ProductPage = () => {
               </div>
             </div>
 
+            {/* Authenticity narrative strip */}
+            <div className="rounded-xl border border-amber-300/70 bg-linear-to-r from-amber-50 via-orange-50 to-amber-100 p-3 sm:p-5 shadow-sm">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="p-2.5 sm:p-3 rounded-full bg-white text-primary border border-primary/20 shrink-0 shadow-sm">
+                  <FaCertificate className="text-xl sm:text-2xl" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-primary">
+                    Authenticity Assurance
+                  </p>
+                  <h3 className="text-sm sm:text-lg font-bold text-gray-900 leading-snug mt-0.5">
+                    Every spiritual product is quality checked and authenticity-verified.
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-700 mt-1.5 leading-relaxed">
+                    We source with care and follow a strict validation process through trusted
+                    testing standards so you can buy with confidence.
+                  </p>
+
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
+                    <div className="inline-flex items-center gap-2">
+                      <FaCheckCircle className="text-primary shrink-0" />
+                      <span>Sourced from verified channels</span>
+                    </div>
+                    <div className="inline-flex items-center gap-2">
+                      <FaCheckCircle className="text-primary shrink-0" />
+                      <span>Authenticity-first quality checks</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Check your Rashi – CTA: stacked on mobile, row on sm+ */}
             <Link
               to="/rashi"
@@ -862,26 +930,45 @@ const ProductPage = () => {
                       key: "elements",
                       title: "Elements",
                       content: (
-                        <div className="space-y-3 min-w-0 max-w-full">
-                          {matchedElementImage ? (
-                            <div className="flex flex-col sm:flex-row gap-4 items-start min-w-0">
-                              <img
-                                src={matchedElementImage.url}
-                                alt="Element"
-                                loading="lazy"
-                                decoding="async"
-                                className="w-full sm:w-40 h-40 object-contain rounded-lg border border-gray-200 bg-gray-50 shrink-0"
-                              />
-                              <p className="text-gray-700 flex-1 min-w-0 break-words">
-                                This product is associated with natural elements and traditional symbolism. The element representation above reflects its spiritual significance.
-                              </p>
+                        <div className="space-y-3 min-w-0 max-w-full text-gray-700">
+                          <p className="break-words min-w-0">
+                            This product is associated with natural elements and traditional
+                            symbolism. Its spiritual meaning is interpreted through elemental
+                            balance and sacred energy.
+                          </p>
+                          {(matchedElementInfo || matchedBenefitInfo) && (
+                            <div className="grid gap-2 text-sm sm:text-base">
+                              {matchedElementInfo?.key && (
+                                <p className="break-words">
+                                  <span className="font-semibold text-gray-900">Element Key:</span>{" "}
+                                  {matchedElementInfo.key}
+                                </p>
+                              )}
+                              {matchedBenefitInfo?.key && (
+                                <p className="break-words">
+                                  <span className="font-semibold text-gray-900">Benefit Key:</span>{" "}
+                                  {matchedBenefitInfo.key}
+                                </p>
+                              )}
                             </div>
-                          ) : (
-                            <p className="text-gray-700 break-words min-w-0">
-                              Elements and natural associations for this product are part of traditional knowledge. This item carries the essence of natural, sacred materials.
-                            </p>
                           )}
                         </div>
+                      ),
+                    },
+                    {
+                      key: "care",
+                      title: "Care Information",
+                      content: (
+                        <ul className="list-disc pl-5 space-y-2 text-sm sm:text-base text-gray-700 leading-relaxed">
+                          <li>
+                            Keep away from water, dishwashing soap, lotions, perfumes, silver
+                            cleaners, and harsh chemicals.
+                          </li>
+                          <li>Remove before swimming, bathing, or exercising.</li>
+                          <li>
+                            Store separately in a zip lock bag to prevent moisture and tarnishing.
+                          </li>
+                        </ul>
                       ),
                     },
                     {
@@ -1212,6 +1299,7 @@ const ProductPage = () => {
         onClose={() => setShowCheckout(false)}
         cartItems={cartItems}
         totalAmount={calculateTotalAmount()}
+        blessingCharge={isRudraksha ? blessingCharge : 0}
         userId={userId}
         userEmail={user?.email}
         userName={user?.full_name}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
-import accessoriesBanner from '../../assets/RudraksPageImg/rd1.png';
+import accessoriesBanner from '../../assets/Accessories/as1.png';
 import { apiFetch } from '../../config/api.js';
 
 // Mukhi options for Rudraksh accessories (1–14 Mukhi)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
@@ -7,7 +7,17 @@ import { useAuth } from '../../context/AuthContext';
 import CheckoutModal from '../../components/CheckoutModal';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
+  const {
+    cartItems,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getTotalPrice,
+    includeBlessing,
+    setIncludeBlessing,
+    blessingCharge,
+    OPTIONAL_BLESSING_CHARGE,
+  } = useCart();
   const toast = useToast();
   const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -32,9 +42,26 @@ const Cart = () => {
   };
 
   const totalPrice = getTotalPrice();
+  const hasRudrakshaInCart = cartItems.some((item) => {
+    const category = String(item.category || '').toLowerCase();
+    const name = String(item.name || '').toLowerCase();
+    const subcategory = String(item.subcategory || '').toLowerCase();
+    return (
+      category.includes('rudraksha') ||
+      name.includes('rudraksha') ||
+      subcategory.includes('mukhi')
+    );
+  });
+  const totalWithBlessing = totalPrice + (hasRudrakshaInCart ? blessingCharge : 0);
   const discountPercent = 25;
   const originalTotal = totalPrice / (1 - discountPercent / 100);
   const discountAmount = originalTotal - totalPrice;
+
+  useEffect(() => {
+    if (!hasRudrakshaInCart && includeBlessing) {
+      setIncludeBlessing(false);
+    }
+  }, [hasRudrakshaInCart, includeBlessing, setIncludeBlessing]);
 
   const showEmptyCart = cartItems.length === 0 && !showCheckout;
 
@@ -211,10 +238,31 @@ const Cart = () => {
                   </span>
                 </div>
                 <div className="border-t border-gray-200 pt-2 sm:pt-3 md:pt-4">
+                  {hasRudrakshaInCart && (
+                    <>
+                      <label className="mb-2 sm:mb-3 flex items-start gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={includeBlessing}
+                          onChange={(e) => setIncludeBlessing(e.target.checked)}
+                          className="mt-0.5 h-4 w-4 accent-primary shrink-0"
+                        />
+                        <span className="text-xs sm:text-sm text-gray-700">
+                          Add Special Blessing Service (+₹{OPTIONAL_BLESSING_CHARGE})
+                        </span>
+                      </label>
+                      {includeBlessing && (
+                        <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600 mb-2">
+                          <span>Blessing Service</span>
+                          <span>₹{blessingCharge.toLocaleString('en-IN')}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-base sm:text-lg md:text-xl font-bold text-gray-900">Total</span>
                     <span className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">
-                      ₹{totalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      ₹{totalWithBlessing.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
@@ -257,6 +305,7 @@ const Cart = () => {
         onClose={() => setShowCheckout(false)}
         cartItems={cartItems}
         totalAmount={totalPrice}
+        blessingCharge={hasRudrakshaInCart ? blessingCharge : 0}
         userId={userId}
         userEmail={user?.email}
         userName={user?.full_name}
