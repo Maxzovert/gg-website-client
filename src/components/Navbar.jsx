@@ -64,9 +64,27 @@ const Navbar = () => {
         }
         return location.pathname.startsWith(href);
     };
+
+    const spraySparkles = [
+        { id: 'sp-1', top: '-7px', right: '-8px', delay: '0s', duration: '1.2s', scale: 0.75 },
+        { id: 'sp-2', top: '-10px', right: '22px', delay: '0.35s', duration: '1.45s', scale: 0.55 },
+        { id: 'sp-3', top: '19px', right: '-7px', delay: '0.75s', duration: '1.35s', scale: 0.62 },
+    ];
     
   return (
     <>
+        <style>{`
+          @keyframes spraySparkleTwinkle {
+            0% { opacity: 0; transform: scale(0) rotate(70deg); }
+            35% { opacity: 1; transform: scale(var(--sparkle-scale, .7)) rotate(120deg); }
+            100% { opacity: 0; transform: scale(0) rotate(155deg); }
+          }
+          .spray-sparkle {
+            animation-name: spraySparkleTwinkle;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+          }
+        `}</style>
         <header className='bg-[white] shadow-md'>
             {/* Top Banner */}
             <div className='hidden md:flex items-center justify-evenly h-8 bg-primary text-white text-xs'>
@@ -93,17 +111,48 @@ const Navbar = () => {
                 <div className='hidden lg:flex items-center gap-6 xl:gap-10 w-full justify-center'>
                     {navItems.map((item) => {
                         const active = isActive(item.href);
+                        const isSprayTab = item.href === '/sprays';
                         return (
                             <Link 
                                 key={item.name} 
                                 to={item.href}
-                                className={`list-none cursor-pointer font-medium transition-colors text-sm xl:text-base ${
-                                    active 
-                                        ? 'text-primary font-bold border-b-2 border-primary pb-1' 
-                                        : 'text-gray-700 hover:text-primary'
+                                className={`list-none cursor-pointer font-medium transition-all text-sm xl:text-base ${
+                                    isSprayTab
+                                        ? `relative px-3 py-1.5 rounded-full ${
+                                            active
+                                                ? 'text-primary font-bold'
+                                                : 'text-primary hover:text-primary/80'
+                                        }`
+                                        : active
+                                            ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                                            : 'text-gray-700 hover:text-primary'
                                 }`}
                             >
-                                {item.name}
+                                {isSprayTab && (
+                                    <>
+                                        {spraySparkles.map((s) => (
+                                            <span
+                                                key={s.id}
+                                                className="pointer-events-none absolute z-20 spray-sparkle text-primary"
+                                                style={{
+                                                    top: s.top,
+                                                    right: s.right,
+                                                    animationDelay: s.delay,
+                                                    animationDuration: s.duration,
+                                                    '--sparkle-scale': s.scale,
+                                                }}
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 21 21" fill="none" aria-hidden>
+                                                    <path
+                                                        d="M9.82531 0.843845C10.0553 0.215178 10.9446 0.215178 11.1746 0.843845L11.8618 2.72026C12.4006 4.19229 12.3916 6.39157 13.5 7.5C14.6084 8.60843 16.8077 8.59935 18.2797 9.13822L20.1561 9.82534C20.7858 10.0553 20.7858 10.9447 20.1561 11.1747L18.2797 11.8618C16.8077 12.4007 14.6084 12.3916 13.5 13.5C12.3916 14.6084 12.4006 16.8077 11.8618 18.2798L11.1746 20.1562C10.9446 20.7858 10.0553 20.7858 9.82531 20.1562L9.13819 18.2798C8.59932 16.8077 8.60843 14.6084 7.5 13.5C6.39157 12.3916 4.19225 12.4007 2.72023 11.8618L0.843814 11.1747C0.215148 10.9447 0.215148 10.0553 0.843814 9.82534L2.72023 9.13822C4.19225 8.59935 6.39157 8.60843 7.5 7.5C8.60843 6.39157 8.59932 4.19229 9.13819 2.72026L9.82531 0.843845Z"
+                                                        fill="currentColor"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        ))}
+                                    </>
+                                )}
+                                <span className='relative z-10'>{item.name}</span>
                             </Link>
                         );
                     })}
@@ -170,18 +219,35 @@ const Navbar = () => {
                     <div className='flex flex-col py-4'>
                         {navItems.map((item) => {
                             const active = isActive(item.href);
+                            const isSprayTab = item.href === '/sprays';
                             return (
                                 <Link 
                                     key={item.name} 
                                     to={item.href}
                                     onClick={closeMenu}
                                     className={`px-6 py-3 font-medium transition-colors text-base ${
-                                        active 
-                                            ? 'text-primary font-bold bg-primary/10 border-l-4 border-primary' 
-                                            : 'text-gray-700 hover:text-primary hover:bg-primary/5'
+                                        isSprayTab
+                                            ? active
+                                                ? 'text-primary font-bold'
+                                                : 'text-primary font-semibold hover:bg-primary/5'
+                                            : active 
+                                                ? 'text-primary font-bold bg-primary/10 border-l-4 border-primary' 
+                                                : 'text-gray-700 hover:text-primary hover:bg-primary/5'
                                     }`}
                                 >
-                                    {item.name}
+                                    <span className='inline-flex items-center gap-2'>
+                                        {item.name}
+                                        {isSprayTab && (
+                                            <span className='spray-sparkle inline-flex text-primary' style={{ animationDuration: '1.2s' }}>
+                                                <svg width="11" height="11" viewBox="0 0 21 21" fill="none" aria-hidden>
+                                                    <path
+                                                        d="M9.82531 0.843845C10.0553 0.215178 10.9446 0.215178 11.1746 0.843845L11.8618 2.72026C12.4006 4.19229 12.3916 6.39157 13.5 7.5C14.6084 8.60843 16.8077 8.59935 18.2797 9.13822L20.1561 9.82534C20.7858 10.0553 20.7858 10.9447 20.1561 11.1747L18.2797 11.8618C16.8077 12.4007 14.6084 12.3916 13.5 13.5C12.3916 14.6084 12.4006 16.8077 11.8618 18.2798L11.1746 20.1562C10.9446 20.7858 10.0553 20.7858 9.82531 20.1562L9.13819 18.2798C8.59932 16.8077 8.60843 14.6084 7.5 13.5C6.39157 12.3916 4.19225 12.4007 2.72023 11.8618L0.843814 11.1747C0.215148 10.9447 0.215148 10.0553 0.843814 9.82534L2.72023 9.13822C4.19225 8.59935 6.39157 8.60843 7.5 7.5C8.60843 6.39157 8.59932 4.19229 9.13819 2.72026L9.82531 0.843845Z"
+                                                        fill="currentColor"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        )}
+                                    </span>
                                 </Link>
                             );
                         })}
