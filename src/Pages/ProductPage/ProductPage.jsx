@@ -172,6 +172,18 @@ const ProductPage = () => {
     if (!product) return;
 
     const fetchStaticImages = async () => {
+      const isRudraksha =
+        product.category === "Rudraksha" || product.category === "Rudrakshas";
+
+      // These static images are only needed for rudraksha-related matching.
+      // Skipping them for other categories reduces network calls and speeds up page load.
+      if (!isRudraksha) {
+        setElementImages([]);
+        setBenefitImages([]);
+        setStaticImagesLoading(false);
+        return;
+      }
+
       setStaticImagesLoading(true);
       try {
         const [elementsRes, benefitsRes] = await Promise.all([
@@ -534,6 +546,8 @@ const ProductPage = () => {
                       <img
                         src={image}
                         alt={`${product.name} ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src =
@@ -554,6 +568,8 @@ const ProductPage = () => {
                       <img
                         src={product.images[selectedImageIndex]}
                         alt={product.name}
+                        loading="eager"
+                        decoding="async"
                         className="block h-full w-full object-contain object-center"
                         onError={(e) => {
                           e.target.src =
@@ -579,10 +595,6 @@ const ProductPage = () => {
                           </button>
                         </>
                       )}
-                      {/* Discount Badge */}
-                      <div className="absolute top-3 right-3 bg-black text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded shadow-lg">
-                        {pricing.discount}% OFF
-                      </div>
                     </>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -856,6 +868,8 @@ const ProductPage = () => {
                               <img
                                 src={matchedElementImage.url}
                                 alt="Element"
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full sm:w-40 h-40 object-contain rounded-lg border border-gray-200 bg-gray-50 shrink-0"
                               />
                               <p className="text-gray-700 flex-1 min-w-0 break-words">
@@ -1138,6 +1152,8 @@ const ProductPage = () => {
                           <img
                             src={review.imageUrl}
                             alt="Review"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover"
                           />
                         </div>

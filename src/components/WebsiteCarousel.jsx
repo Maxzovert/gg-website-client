@@ -9,6 +9,7 @@ const WebsiteCarousel = () => {
   const [loading, setLoading] = useState(true)
   const [deviceType, setDeviceType] = useState(null)
   const intervalRef = useRef(null)
+  const currentImage = images?.[currentIndex] || null
 
   // Detect device type based on window width
   const detectDeviceType = () => {
@@ -135,26 +136,22 @@ const WebsiteCarousel = () => {
 
   return (
     <div className="relative w-full h-[500px] overflow-hidden bg-gray-100">
-      {/* Carousel Images */}
-      <div 
-        className="flex transition-transform duration-500 ease-in-out h-full"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-      >
-        {images.map((item, index) => (
-          <div
-            key={item.id}
-            className="min-w-full h-full flex items-center justify-center"
-          >
-            <img
-              src={item.image_url}
-              alt={`Carousel ${index + 1}`}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/1200x500?text=Image+Not+Found'
-              }}
-            />
-          </div>
-        ))}
+      {/* Render only the current slide (prevents downloading every carousel image at once). */}
+      <div className="h-full w-full">
+        {currentImage && (
+          <img
+            key={currentImage.id || currentIndex}
+            src={currentImage.image_url}
+            alt={`Carousel ${currentIndex + 1}`}
+            className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+            onError={(e) => {
+              e.target.src =
+                'https://via.placeholder.com/1200x500?text=Image+Not+Found'
+            }}
+          />
+        )}
       </div>
 
       {/* Navigation Buttons - Only show if more than one image */}
