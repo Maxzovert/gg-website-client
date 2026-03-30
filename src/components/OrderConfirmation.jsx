@@ -5,14 +5,25 @@ import { apiFetch } from '../config/api.js';
 
 const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
 
-const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, userEmail, userName, paymentMethod, onOrderPlaced, orderData: initialOrderData }) => {
+const OrderConfirmation = ({
+  cartItems,
+  selectedAddress,
+  totalAmount,
+  blessingCharge = 0,
+  userId,
+  userEmail,
+  userName,
+  paymentMethod,
+  onOrderPlaced,
+  orderData: initialOrderData,
+}) => {
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState(initialOrderData);
   const { clearCart } = useCart();
 
   const discountAmount = totalAmount * 0.25;
   const shippingCharges = totalAmount > 1000 ? 0 : 50;
-  const finalAmount = totalAmount - discountAmount + shippingCharges;
+  const finalAmount = totalAmount - discountAmount + shippingCharges + (Number(blessingCharge) || 0);
   const isOnlinePayment = ONLINE_PAYMENT_IDS.includes((paymentMethod || '').toLowerCase());
 
   const handlePlaceOrder = async () => {
@@ -52,6 +63,7 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, us
             total_amount: totalAmount,
             discount_amount: discountAmount,
             shipping_charges: shippingCharges,
+            blessing_charge: Number(blessingCharge) || 0,
             final_amount: finalAmount,
             firstname,
             email,
@@ -78,9 +90,10 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, us
           total_amount: totalAmount,
           discount_amount: discountAmount,
           shipping_charges: shippingCharges,
+          blessing_charge: Number(blessingCharge) || 0,
           final_amount: finalAmount,
           payment_method: orderPaymentMethod,
-          notes: ''
+          notes: Number(blessingCharge) > 0 ? `Special Blessing Service: +₹${Number(blessingCharge)}` : ''
         })
       });
 
@@ -233,6 +246,12 @@ const OrderConfirmation = ({ cartItems, selectedAddress, totalAmount, userId, us
               )}
             </span>
           </div>
+          {Number(blessingCharge) > 0 && (
+            <div className="flex justify-between text-gray-700">
+              <span>Special Blessing Service:</span>
+              <span>₹{Number(blessingCharge).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+            </div>
+          )}
           <div className="border-t border-gray-300 pt-2 mt-2">
             <div className="flex justify-between text-lg font-bold text-primary">
               <span>Total:</span>

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
+  const OPTIONAL_BLESSING_CHARGE = 101;
   // Initialize cart from localStorage immediately to prevent race condition
   const [cartItems, setCartItems] = useState(() => {
     try {
@@ -14,6 +15,13 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
     }
     return [];
+  });
+  const [includeBlessing, setIncludeBlessingState] = useState(() => {
+    try {
+      return localStorage.getItem('cart_include_blessing') === 'true';
+    } catch (_error) {
+      return false;
+    }
   });
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -32,6 +40,15 @@ export const CartProvider = ({ children }) => {
       }
     }
   }, [cartItems, isInitialized]);
+
+  useEffect(() => {
+    if (isInitialized) {
+      try {
+        localStorage.setItem('cart_include_blessing', includeBlessing ? 'true' : 'false');
+      } catch (_error) {
+      }
+    }
+  }, [includeBlessing, isInitialized]);
 
   const addToCart = useCallback((product, quantity = 1) => {
     setCartItems(prev => {
@@ -53,6 +70,7 @@ export const CartProvider = ({ children }) => {
           images: product.images || [],
           quantity: quantity,
           stock: product.stock,
+          category: product.category || '',
           subcategory: product.subcategory,
           deity: product.deity,
           planet: product.planet
@@ -80,6 +98,11 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = useCallback(() => {
     setCartItems([]);
+    setIncludeBlessingState(false);
+  }, []);
+
+  const setIncludeBlessing = useCallback((value) => {
+    setIncludeBlessingState(Boolean(value));
   }, []);
 
   const getTotalItems = useCallback(() => {
@@ -97,7 +120,11 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     clearCart,
     getTotalItems,
-    getTotalPrice
+    getTotalPrice,
+    includeBlessing,
+    setIncludeBlessing,
+    blessingCharge: includeBlessing ? OPTIONAL_BLESSING_CHARGE : 0,
+    OPTIONAL_BLESSING_CHARGE
   };
 
   return (

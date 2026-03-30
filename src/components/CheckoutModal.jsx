@@ -5,7 +5,16 @@ import PaymentOptions from './PaymentOptions';
 import OrderConfirmation from './OrderConfirmation';
 import { apiFetch } from '../config/api.js';
 
-const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEmail, userName }) => {
+const CheckoutModal = ({
+  isOpen,
+  onClose,
+  cartItems,
+  totalAmount,
+  blessingCharge = 0,
+  userId,
+  userEmail,
+  userName,
+}) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [addresses, setAddresses] = useState([]);
@@ -84,6 +93,8 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEm
     return false;
   };
 
+  const payableAmount = Number(totalAmount || 0) + Number(blessingCharge || 0);
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
@@ -161,7 +172,7 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEm
 
           {currentStep === 2 && (
             <PaymentOptions
-              totalAmount={totalAmount}
+              totalAmount={payableAmount}
               onPaymentSelect={(method) => {
                 setPaymentMethod(method);
               }}
@@ -173,6 +184,7 @@ const CheckoutModal = ({ isOpen, onClose, cartItems, totalAmount, userId, userEm
               cartItems={cartItems}
               selectedAddress={selectedAddress}
               totalAmount={totalAmount}
+              blessingCharge={blessingCharge}
               userId={userId}
               userEmail={userEmail}
               userName={userName}

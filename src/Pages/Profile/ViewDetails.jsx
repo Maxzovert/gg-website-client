@@ -44,6 +44,20 @@ const ViewDetails = () => {
     ? (Array.isArray(order.addresses) ? order.addresses[0] : order.addresses)
     : null;
 
+  const subtotal = Number(order?.total_amount || 0);
+  const discount = Number(order?.discount_amount || 0);
+  const shipping = Number(order?.shipping_charges || 0);
+  const finalAmount = Number(order?.final_amount ?? order?.total_amount ?? 0);
+  const expectedWithoutBlessing = subtotal - discount + shipping;
+
+  // Prefer explicit note marker; fallback to amount delta when final > expected.
+  const blessingFromNotesMatch = String(order?.notes || '').match(
+    /Special Blessing Service:\s*\+₹?\s*([0-9]+(?:\.[0-9]{1,2})?)/i,
+  );
+  const blessingFromNotes = blessingFromNotesMatch ? Number(blessingFromNotesMatch[1]) : 0;
+  const delta = Math.max(0, Number((finalAmount - expectedWithoutBlessing).toFixed(2)));
+  const blessingCharge = blessingFromNotes > 0 ? blessingFromNotes : delta;
+
   const statusClass = (status) => {
     const s = (status || '').toLowerCase();
     if (['pending', 'processing'].includes(s)) return 'text-amber-600';
@@ -156,29 +170,35 @@ const ViewDetails = () => {
               <dl className="space-y-2 text-sm sm:text-base">
                 <div className="flex justify-between gap-4 text-gray-700">
                   <dt className="min-w-0">Subtotal</dt>
-                  <dd className="shrink-0 whitespace-nowrap">₹{Number(order.total_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
+                  <dd className="shrink-0 whitespace-nowrap">₹{subtotal.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
                 </div>
-                {order.discount_amount > 0 && (
+                {discount > 0 && (
                   <div className="flex justify-between gap-4 text-green-600">
                     <dt className="min-w-0">Discount</dt>
-                    <dd className="shrink-0 whitespace-nowrap">- ₹{Number(order.discount_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
+                    <dd className="shrink-0 whitespace-nowrap">- ₹{discount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
                   </div>
                 )}
                 {order.shipping_charges != null && (
                   <div className="flex justify-between gap-4 text-gray-700">
                     <dt className="min-w-0">Shipping</dt>
                     <dd className="shrink-0 whitespace-nowrap">
-                      {order.shipping_charges === 0 ? (
+                      {shipping === 0 ? (
                         <span className="text-green-600">Free</span>
                       ) : (
-                        `₹${Number(order.shipping_charges).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
+                        `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
                       )}
                     </dd>
                   </div>
                 )}
+                {blessingCharge > 0 && (
+                  <div className="flex justify-between gap-4 text-gray-700">
+                    <dt className="min-w-0">Special Blessing Service</dt>
+                    <dd className="shrink-0 whitespace-nowrap">₹{blessingCharge.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
+                  </div>
+                )}
                 <div className="flex justify-between gap-4 text-lg font-bold text-primary pt-2 mt-2">
                   <dt className="min-w-0">Total</dt>
-                  <dd className="shrink-0 whitespace-nowrap">₹{Number(order.final_amount ?? order.total_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
+                  <dd className="shrink-0 whitespace-nowrap">₹{finalAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</dd>
                 </div>
               </dl>
             </div>

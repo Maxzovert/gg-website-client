@@ -29,11 +29,17 @@ import ProductCard from "../../components/ProductCard";
 import { API_URL, apiFetch } from "../../config/api.js";
 
 const ProductPage = () => {
-  const OPTIONAL_BLESSING_CHARGE = 101;
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const { addToCart, cartItems } = useCart();
+  const {
+    addToCart,
+    cartItems,
+    includeBlessing,
+    setIncludeBlessing,
+    blessingCharge,
+    OPTIONAL_BLESSING_CHARGE,
+  } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const [product, setProduct] = useState(null);
@@ -61,7 +67,8 @@ const ProductPage = () => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewDeletingId, setReviewDeletingId] = useState(null);
-  const [includeBlessing, setIncludeBlessing] = useState(false);
+  const isRudrakshaProduct =
+    product?.category === "Rudraksha" || product?.category === "Rudrakshas";
 
   // Normalize API review to UI shape
   const normalizeReview = (r) => ({
@@ -146,6 +153,12 @@ const ProductPage = () => {
   useEffect(() => {
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    if (!isRudrakshaProduct && includeBlessing) {
+      setIncludeBlessing(false);
+    }
+  }, [isRudrakshaProduct, includeBlessing, setIncludeBlessing]);
 
   // Fetch reviews for this product
   useEffect(() => {
@@ -307,8 +320,7 @@ const ProductPage = () => {
   };
   
   const calculateTotalAmount = () => {
-    const itemsTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    return itemsTotal + (includeBlessing ? OPTIONAL_BLESSING_CHARGE : 0);
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const handleWishlistToggle = () => {
@@ -474,7 +486,7 @@ const ProductPage = () => {
   );
 
   // For Rudraksha: which Rashis recommend this product (by matching mukhi in subcategory/name)
-  const isRudraksha = product.category === "Rudraksha" || product.category === "Rudrakshas";
+  const isRudraksha = isRudrakshaProduct;
   const getRashisForThisProduct = () => {
     if (!isRudraksha) return [];
     const text = `${product.subcategory || ""} ${product.name || ""}`.toLowerCase();
@@ -764,25 +776,27 @@ const ProductPage = () => {
               </div>
             </div>
 
-            {/* Optional blessing add-on */}
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 sm:p-4">
-              <label className="flex items-start gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={includeBlessing}
-                  onChange={(e) => setIncludeBlessing(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 sm:h-5 sm:w-5 accent-primary shrink-0"
-                />
-                <div className="min-w-0">
-                  <p className="text-sm sm:text-base font-semibold text-gray-900">
-                    Add Special Blessing Service - shuddhi/pran pratishtha (+₹{OPTIONAL_BLESSING_CHARGE})
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    If selected, ₹{OPTIONAL_BLESSING_CHARGE} will be added to your final bill.
-                  </p>
-                </div>
-              </label>
-            </div>
+            {/* Optional blessing add-on (only for Rudraksha) */}
+            {isRudraksha && (
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 sm:p-4">
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={includeBlessing}
+                    onChange={(e) => setIncludeBlessing(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 sm:h-5 sm:w-5 accent-primary shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm sm:text-base font-semibold text-gray-900">
+                      Add Special Blessing Service - shuddhi/pran pratishtha (+₹{OPTIONAL_BLESSING_CHARGE})
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600">
+                      If selected, ₹{OPTIONAL_BLESSING_CHARGE} will be added to your final bill.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            )}
 
             {/* Buy Now and Add to Cart Buttons – full width on mobile, touch-friendly */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -1285,6 +1299,7 @@ const ProductPage = () => {
         onClose={() => setShowCheckout(false)}
         cartItems={cartItems}
         totalAmount={calculateTotalAmount()}
+        blessingCharge={isRudraksha ? blessingCharge : 0}
         userId={userId}
         userEmail={user?.email}
         userName={user?.full_name}
