@@ -150,7 +150,7 @@ const Footer = () => {
                 <FaInstagram className="text-sm" />
               </a>
               <a
-                href="#"
+                href="https://www.youtube.com/@gawri-ganga"
                 aria-label="YouTube"
                 className="w-10 h-10 sm:w-9 sm:h-9 rounded-full border-2 border-white/60 text-white flex items-center justify-center hover:bg-white hover:text-primary transition-colors shrink-0"
               >
