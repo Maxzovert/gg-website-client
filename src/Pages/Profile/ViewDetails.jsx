@@ -132,7 +132,11 @@ const ViewDetails = () => {
                 </span>
                 <span className="hidden sm:inline text-gray-400">·</span>
                 <span className="text-sm text-gray-600">
-                  Payment mode: {order.payment_method === 'easebuzz' ? 'Online Payment' : (order.payment_method || '—').toUpperCase()}
+                  Payment mode: {order.payment_method === 'easebuzz'
+                    ? 'Online Payment'
+                    : order.payment_method === 'wallet'
+                      ? 'Wallet'
+                      : (order.payment_method || '—').toUpperCase()}
                 </span>
               </div>
             </div>

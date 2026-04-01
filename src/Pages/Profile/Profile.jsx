@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaUser, FaShoppingBag, FaMapMarkerAlt, FaSignOutAlt, FaTrash, FaCheck } from 'react-icons/fa';
+import { FaUser, FaShoppingBag, FaMapMarkerAlt, FaSignOutAlt, FaTrash, FaCheck, FaWallet } from 'react-icons/fa';
 import { useToast } from '../../components/Toaster';
 import { apiFetch } from '../../config/api.js';
 
@@ -13,6 +13,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [orders, setOrders] = useState([]);
   const [addresses, setAddresses] = useState([]);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,7 +36,8 @@ const Profile = () => {
       setLoading(true);
       await Promise.all([
         fetchOrders(),
-        fetchAddresses()
+        fetchAddresses(),
+        fetchWalletBalance()
       ]);
     } catch (_error) {
     } finally {
@@ -63,6 +65,16 @@ const Profile = () => {
       }
     } catch (_error) {
     }
+  };
+
+  const fetchWalletBalance = async () => {
+    try {
+      const response = await apiFetch('/api/wallet/balance');
+      const result = await response.json();
+      if (result.success) {
+        setWalletBalance(Number(result?.data?.balance || 0));
+      }
+    } catch (_error) {}
   };
 
   const handleLogout = async () => {
@@ -149,7 +161,7 @@ const Profile = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50/30 to-white py-8 px-4">
+    <div className="min-h-screen bg-linear-to-br from-orange-50/30 to-white py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
@@ -241,6 +253,15 @@ const Profile = () => {
                     <div>
                       <label className="text-sm font-medium text-gray-600">User ID</label>
                       <p className="text-gray-900 font-mono text-sm">{userId}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                        <FaWallet className="text-primary" />
+                        Wallet Balance
+                      </label>
+                      <p className="text-gray-900 font-semibold">
+                        ₹{walletBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      </p>
                     </div>
                   </div>
                 </div>

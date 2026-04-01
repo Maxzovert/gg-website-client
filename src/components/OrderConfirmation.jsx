@@ -10,6 +10,9 @@ const OrderConfirmation = ({
   selectedAddress,
   totalAmount,
   blessingCharge = 0,
+  walletBalance = 0,
+  useWallet = false,
+  walletAmountToUse = 0,
   userId,
   userEmail,
   userName,
@@ -21,10 +24,15 @@ const OrderConfirmation = ({
   const [orderData, setOrderData] = useState(initialOrderData);
   const { clearCart } = useCart();
 
-  const discountAmount = totalAmount * 0.25;
+  const discountAmount = 0;
   const shippingCharges = totalAmount > 1000 ? 0 : 50;
-  const finalAmount = totalAmount - discountAmount + shippingCharges + (Number(blessingCharge) || 0);
+  const grossFinalAmount = totalAmount + shippingCharges + (Number(blessingCharge) || 0);
   const isOnlinePayment = ONLINE_PAYMENT_IDS.includes((paymentMethod || '').toLowerCase());
+  const walletDeduction = useWallet
+    ? Math.min(Number(walletAmountToUse) || 0, Number(walletBalance) || 0, grossFinalAmount)
+    : 0;
+  const isWalletApplied = walletDeduction > 0;
+  const finalAmount = Math.max(0, grossFinalAmount - walletDeduction);
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
@@ -33,6 +41,10 @@ const OrderConfirmation = ({
     }
     if (isOnlinePayment && !userEmail) {
       alert('Email is required for online payment. Please ensure you are logged in with a valid email.');
+      return;
+    }
+    if (isOnlinePayment && isWalletApplied) {
+      alert('Wallet deduction is currently supported with Cash on Delivery flow. Please choose COD to use wallet balance.');
       return;
     }
 
@@ -61,10 +73,12 @@ const OrderConfirmation = ({
             address_id: selectedAddress.id,
             items: orderItems,
             total_amount: totalAmount,
-            discount_amount: discountAmount,
+            discount_amount: 0,
             shipping_charges: shippingCharges,
             blessing_charge: Number(blessingCharge) || 0,
             final_amount: finalAmount,
+            use_wallet: isWalletApplied,
+            wallet_amount_to_use: walletDeduction,
             firstname,
             email,
             phone
@@ -88,10 +102,12 @@ const OrderConfirmation = ({
           address_id: selectedAddress.id,
           items: orderItems,
           total_amount: totalAmount,
-          discount_amount: discountAmount,
+          discount_amount: 0,
           shipping_charges: shippingCharges,
           blessing_charge: Number(blessingCharge) || 0,
           final_amount: finalAmount,
+          use_wallet: isWalletApplied,
+          wallet_amount_to_use: walletDeduction,
           payment_method: orderPaymentMethod,
           notes: Number(blessingCharge) > 0 ? `Special Blessing Service: +₹${Number(blessingCharge)}` : ''
         })
@@ -154,7 +170,11 @@ const OrderConfirmation = ({
             <div>
               <span className="text-sm font-medium text-gray-600">Payment Method:</span>
               <p className="text-gray-900">
-                {orderData.payment_method === 'easebuzz' ? 'Online Payment' : (orderData.payment_method ?? 'COD').toUpperCase()}
+                {orderData.payment_method === 'easebuzz'
+                  ? 'Online Payment'
+                  : orderData.payment_method === 'wallet'
+                    ? 'Wallet'
+                    : (orderData.payment_method ?? 'COD').toUpperCase()}
               </p>
             </div>
             {selectedAddress && (
@@ -232,10 +252,6 @@ const OrderConfirmation = ({
             <span>Subtotal:</span>
             <span>₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
           </div>
-          <div className="flex justify-between text-green-600">
-            <span>Discount (25%):</span>
-            <span>-₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
-          </div>
           <div className="flex justify-between text-gray-700">
             <span>Shipping:</span>
             <span>
@@ -250,6 +266,12 @@ const OrderConfirmation = ({
             <div className="flex justify-between text-gray-700">
               <span>Special Blessing Service:</span>
               <span>₹{Number(blessingCharge).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+            </div>
+          )}
+          {walletDeduction > 0 && (
+            <div className="flex justify-between text-emerald-700">
+              <span>Wallet used:</span>
+              <span>-₹{walletDeduction.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
             </div>
           )}
           <div className="border-t border-gray-300 pt-2 mt-2">
