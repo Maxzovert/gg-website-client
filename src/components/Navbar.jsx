@@ -85,7 +85,7 @@ const Navbar = () => {
             animation-timing-function: ease-in-out;
           }
         `}</style>
-        <header className='bg-[white] shadow-md'>
+        <header className='bg-[#FFFAEB] shadow-md border-b border-[#E9DFC4]'>
             {/* Top Banner */}
             <div className='hidden md:flex items-center justify-evenly h-10 bg-primary text-white text-sm'>
                 <p>Free Shipping</p>

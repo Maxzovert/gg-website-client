@@ -27,6 +27,7 @@ import { useAuth } from "../../context/AuthContext";
 import CheckoutModal from "../../components/CheckoutModal";
 import ProductCard from "../../components/ProductCard";
 import { API_URL, apiFetch } from "../../config/api.js";
+import idrImage from "../../assets/ProductPage/idr.png";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -1019,7 +1020,18 @@ const ProductPage = () => {
                   ))}
                 </section>
             </div>
+
           </div>
+        </div>
+
+        <div className="mt-4 sm:mt-6">
+          <img
+            src={idrImage}
+            alt="IDR information"
+            loading="lazy"
+            decoding="async"
+            className="block w-full rounded-lg border-2 border-primary/40 shadow-sm"
+          />
         </div>
 
         {/* Reviews Section – match provided design */}
