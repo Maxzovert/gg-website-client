@@ -43,10 +43,6 @@ const OrderConfirmation = ({
       alert('Email is required for online payment. Please ensure you are logged in with a valid email.');
       return;
     }
-    if (isOnlinePayment && isWalletApplied) {
-      alert('Wallet deduction is currently supported with Cash on Delivery flow. Please choose COD to use wallet balance.');
-      return;
-    }
 
     setLoading(true);
 
