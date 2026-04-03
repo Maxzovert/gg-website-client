@@ -11,6 +11,9 @@ const CheckoutModal = ({
   cartItems,
   totalAmount,
   blessingCharge = 0,
+  walletBalance = 0,
+  useWallet = false,
+  walletAmountToUse = 0,
   userId,
   userEmail,
   userName,
@@ -56,7 +59,12 @@ const CheckoutModal = ({
 
   const handleNext = () => {
     if (currentStep === 1 && selectedAddress) {
-      setCurrentStep(2);
+      if (payableAfterWallet <= 0) {
+        setPaymentMethod(useWallet && walletApplicableAmount > 0 ? 'wallet' : 'cod');
+        setCurrentStep(3);
+      } else {
+        setCurrentStep(2);
+      }
     } else if (currentStep === 2) {
       setCurrentStep(3);
     }
@@ -93,7 +101,12 @@ const CheckoutModal = ({
     return false;
   };
 
-  const payableAmount = Number(totalAmount || 0) + Number(blessingCharge || 0);
+  const shippingCharges = Number(totalAmount || 0) > 1000 ? 0 : 50;
+  const payableAmount = Number(totalAmount || 0) + Number(blessingCharge || 0) + shippingCharges;
+  const walletApplicableAmount = useWallet
+    ? Math.min(Number(walletAmountToUse) || 0, Number(walletBalance) || 0, payableAmount)
+    : 0;
+  const payableAfterWallet = Math.max(0, payableAmount - walletApplicableAmount);
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -172,7 +185,7 @@ const CheckoutModal = ({
 
           {currentStep === 2 && (
             <PaymentOptions
-              totalAmount={payableAmount}
+              totalAmount={payableAfterWallet}
               onPaymentSelect={(method) => {
                 setPaymentMethod(method);
               }}
@@ -185,6 +198,9 @@ const CheckoutModal = ({
               selectedAddress={selectedAddress}
               totalAmount={totalAmount}
               blessingCharge={blessingCharge}
+              walletBalance={walletBalance}
+              useWallet={useWallet}
+              walletAmountToUse={walletApplicableAmount}
               userId={userId}
               userEmail={userEmail}
               userName={userName}
@@ -219,7 +235,7 @@ const CheckoutModal = ({
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {currentStep === 1 ? 'Continue to Payment' : 'Review Order'}
+              {currentStep === 1 ? (payableAfterWallet <= 0 ? 'Review Order' : 'Continue to Payment') : 'Review Order'}
               <FaChevronRight />
             </button>
           </div>

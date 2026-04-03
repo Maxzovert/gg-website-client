@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
-import rudrakshBanner from '../../assets/RudraksPageImg/rd1.png';
+import rudrakshBanner from '../../assets/RudraksPageImg/rd1.webp';
 import { apiFetch } from '../../config/api.js';
 
 const Rudraksh = () => {
