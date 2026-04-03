@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaArrowRight } from 'react-icons/fa'
-import rudrakshaSection from '../../assets/HomePage/HomeImg1.png'
+import rudrakshaSection from '../../assets/HomePage/HomeImg1.webp'
 
 const RudrakshaSection = () => {
   return (

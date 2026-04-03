@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
-import sprayBanner from '../../assets/Spray/4sp.png';
+import sprayBanner from '../../assets/Spray/4sp.webp';
 import { apiFetch } from '../../config/api.js';
 
 const Spray = () => {
