@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import { useAuth } from '../../context/AuthContext';
 import CheckoutModal from '../../components/CheckoutModal';
+import { apiFetch } from '../../config/api.js';
 
 const Cart = () => {
   const {
@@ -22,6 +23,10 @@ const Cart = () => {
   const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [showCheckout, setShowCheckout] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [useWallet, setUseWallet] = useState(false);
+  const [walletToUse, setWalletToUse] = useState(0);
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
 
   const handleRemoveItem = (productId, productName) => {
     removeFromCart(productId);
@@ -53,6 +58,11 @@ const Cart = () => {
     );
   });
   const totalWithBlessing = totalPrice + (hasRudrakshaInCart ? blessingCharge : 0);
+  const shippingCharges = totalPrice > 1000 ? 0 : 50;
+  const walletAppliedAmount = useWallet
+    ? Math.min(walletToUse || walletBalance, walletBalance, totalWithBlessing + shippingCharges)
+    : 0;
+  const payableAfterWallet = Math.max(0, totalWithBlessing + shippingCharges - walletAppliedAmount);
   const discountPercent = 25;
   const originalTotal = totalPrice / (1 - discountPercent / 100);
   const discountAmount = originalTotal - totalPrice;
@@ -62,6 +72,31 @@ const Cart = () => {
       setIncludeBlessing(false);
     }
   }, [hasRudrakshaInCart, includeBlessing, setIncludeBlessing]);
+
+  useEffect(() => {
+    const fetchWalletAndCampaigns = async () => {
+      if (!isAuthenticated) {
+        setWalletBalance(0);
+        setUseWallet(false);
+        setWalletToUse(0);
+        setActiveCampaigns([]);
+        return;
+      }
+      try {
+        const [walletRes, campaignsRes] = await Promise.all([
+          apiFetch('/api/wallet/balance'),
+          apiFetch('/api/cashback-campaigns/active'),
+        ]);
+        const walletJson = await walletRes.json().catch(() => ({}));
+        const campaignsJson = await campaignsRes.json().catch(() => ({}));
+        setWalletBalance(Number(walletJson?.data?.balance || 0));
+        setActiveCampaigns(Array.isArray(campaignsJson?.data) ? campaignsJson.data : []);
+      } catch (_error) {
+        setWalletBalance(0);
+      }
+    };
+    fetchWalletAndCampaigns();
+  }, [isAuthenticated]);
 
   const showEmptyCart = cartItems.length === 0 && !showCheckout;
 
@@ -237,6 +272,16 @@ const Cart = () => {
                     -₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                   </span>
                 </div>
+                <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
+                  <span>Shipping</span>
+                  <span>
+                    {shippingCharges === 0 ? (
+                      <span className="text-green-600 font-semibold">Free</span>
+                    ) : (
+                      `₹${shippingCharges.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+                    )}
+                  </span>
+                </div>
                 <div className="border-t border-gray-200 pt-2 sm:pt-3 md:pt-4">
                   {hasRudrakshaInCart && (
                     <>
@@ -259,10 +304,34 @@ const Cart = () => {
                       )}
                     </>
                   )}
+                  {isAuthenticated && walletBalance > 0 && (
+                    <div className="mb-2 rounded-md border border-emerald-200 bg-emerald-50 p-2">
+                      <label className="flex items-start gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={useWallet}
+                          onChange={(e) => {
+                            setUseWallet(e.target.checked);
+                            if (e.target.checked) setWalletToUse(walletBalance);
+                          }}
+                          className="mt-0.5 h-4 w-4 accent-primary shrink-0"
+                        />
+                        <span className="text-xs sm:text-sm text-gray-700">
+                          Apply wallet money (Available: ₹{walletBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })})
+                        </span>
+                      </label>
+                      {useWallet && (
+                        <div className="mt-1 flex justify-between text-xs sm:text-sm text-emerald-700">
+                          <span>Wallet deduction</span>
+                          <span>-₹{walletAppliedAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-base sm:text-lg md:text-xl font-bold text-gray-900">Total</span>
                     <span className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">
-                      ₹{totalWithBlessing.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      ₹{payableAfterWallet.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
@@ -306,6 +375,9 @@ const Cart = () => {
         cartItems={cartItems}
         totalAmount={totalPrice}
         blessingCharge={hasRudrakshaInCart ? blessingCharge : 0}
+        walletBalance={walletBalance}
+        useWallet={useWallet}
+        walletAmountToUse={walletAppliedAmount}
         userId={userId}
         userEmail={user?.email}
         userName={user?.full_name}

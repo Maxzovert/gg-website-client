@@ -27,7 +27,7 @@ import { useAuth } from "../../context/AuthContext";
 import CheckoutModal from "../../components/CheckoutModal";
 import ProductCard from "../../components/ProductCard";
 import { API_URL, apiFetch } from "../../config/api.js";
-import idrImage from "../../assets/ProductPage/idr.png";
+import idrImage from "../../assets/ProductPage/idr.webp";
 
 const ProductPage = () => {
   const { id } = useParams();

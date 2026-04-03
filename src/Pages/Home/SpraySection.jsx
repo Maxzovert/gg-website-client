@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import Heading from "../../assets/Sprayelem/Header.png";
-import AmratDhara from "../../assets/Sprayelem/AmratDhara.png";
-import ChakraBalance from "../../assets/Sprayelem/ChakraBalance.png";
-import Maitri from "../../assets/Sprayelem/Maitri.png";
-import Shuddhi from "../../assets/Sprayelem/Shuddhi.png";
+import Heading from "../../assets/Sprayelem/Header.webp";
+import AmratDhara from "../../assets/Sprayelem/AmratDhara.webp";
+import ChakraBalance from "../../assets/Sprayelem/ChakraBalance.webp";
+import Maitri from "../../assets/Sprayelem/Maitri.webp";
+import Shuddhi from "../../assets/Sprayelem/Shuddhi.webp";
 // Mobile backgrounds (same text content, blank space for copy + CTA)
-import AmratMobileBg from "../../assets/Sprayelem/MobileSprayBg/AmratMobileBg.png";
-import ChakraMobileBg from "../../assets/Sprayelem/MobileSprayBg/ChakraMobileBg.png";
-import MaitriMobileBg from "../../assets/Sprayelem/MobileSprayBg/MaitriMobileBg.png";
-import ShuddhiMobileBg from "../../assets/Sprayelem/MobileSprayBg/ShuddhiMobileBg.png";
+import AmratMobileBg from "../../assets/Sprayelem/MobileSprayBg/AmratMobileBg.webp";
+import ChakraMobileBg from "../../assets/Sprayelem/MobileSprayBg/ChakraMobileBg.webp";
+import MaitriMobileBg from "../../assets/Sprayelem/MobileSprayBg/MaitriMobileBg.webp";
+import ShuddhiMobileBg from "../../assets/Sprayelem/MobileSprayBg/ShuddhiMobileBg.webp";
 
 const SpraySection = () => {
   const [activeSlide, setActiveSlide] = useState(0);

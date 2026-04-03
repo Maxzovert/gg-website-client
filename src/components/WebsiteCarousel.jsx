@@ -9,7 +9,6 @@ const WebsiteCarousel = () => {
   const [loading, setLoading] = useState(true)
   const [deviceType, setDeviceType] = useState(null)
   const intervalRef = useRef(null)
-  const currentImage = images?.[currentIndex] || null
 
   // Detect device type based on window width
   const detectDeviceType = () => {
@@ -136,22 +135,27 @@ const WebsiteCarousel = () => {
 
   return (
     <div className="relative w-full h-[500px] overflow-hidden bg-gray-100">
-      {/* Render only the current slide (prevents downloading every carousel image at once). */}
-      <div className="h-full w-full">
-        {currentImage && (
-          <img
-            key={currentImage.id || currentIndex}
-            src={currentImage.image_url}
-            alt={`Carousel ${currentIndex + 1}`}
-            className="w-full h-full object-cover"
-            loading="eager"
-            decoding="async"
-            onError={(e) => {
-              e.target.src =
-                'https://via.placeholder.com/1200x500?text=Image+Not+Found'
-            }}
-          />
-        )}
+      {/* Slide container with smooth horizontal transition */}
+      <div className="h-full w-full overflow-hidden">
+        <div
+          className="flex h-full w-full transition-transform duration-700 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {images.map((image, index) => (
+            <img
+              key={image.id || index}
+              src={image.image_url}
+              alt={`Carousel ${index + 1}`}
+              className="w-full h-full object-cover flex-shrink-0"
+              loading={index === currentIndex ? 'eager' : 'lazy'}
+              decoding="async"
+              onError={(e) => {
+                e.target.src =
+                  'https://via.placeholder.com/1200x500?text=Image+Not+Found'
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Navigation Buttons - Only show if more than one image */}

@@ -1,11 +1,24 @@
 /**
  * Central API base URL and fetch helper.
  * Use apiFetch for requests that may require auth (adds Bearer token when present).
+ *
+ * IMPORTANT:
+ * - We NEVER hardcode the API origin here.
+ * - Always configure `VITE_API_URL` in your environment (.env, CI/CD, hosting).
  */
 
-// In production build, VITE_API_URL must be set (e.g. Docker build-arg or Amplify env).
-export const API_URL =
-  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : '');
+const rawApiUrl = import.meta.env.VITE_API_URL
+
+if (!rawApiUrl) {
+  // Fail fast in development so you remember to set it.
+  // In production this will surface as a clear runtime error instead of silently
+  // calling an incorrect origin.
+  throw new Error(
+    'VITE_API_URL is not defined. Please set it in your .env file (e.g. VITE_API_URL="https://api.yourdomain.com").',
+  )
+}
+
+export const API_URL = rawApiUrl.replace(/\/$/, '')
 
 function getAuthHeaders() {
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('auth_token') : null;
