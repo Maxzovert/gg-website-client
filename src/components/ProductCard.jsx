@@ -4,6 +4,7 @@ import { FaStar, FaShoppingCart, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from './Toaster';
+import { pricingFromProduct } from '../utils/productPricing';
 
 const ProductCard = ({ 
   product, 
@@ -20,11 +21,7 @@ const ProductCard = ({
   const toast = useToast();
   const inWishlist = isInWishlist(product.id);
   // Calculate pricing
-  const pricing = calculatePricing ? calculatePricing(product.price) : {
-    currentPrice: product.price,
-    originalPrice: product.price * 1.25,
-    discount: 25
-  };
+  const pricing = calculatePricing ? calculatePricing(product) : pricingFromProduct(product);
 
   // Get review count
   const reviewCount = getReviewCount ? getReviewCount(product.id) : 5;
@@ -116,10 +113,12 @@ const ProductCard = ({
           </div>
         )}
         {/* Discount Badge */}
-        <div className={`absolute bg-black text-white font-bold rounded shadow-lg ${large ? 'top-2 right-2 sm:top-2.5 sm:right-2.5 text-[11px] sm:text-xs md:text-sm px-2 py-1 sm:px-2.5 sm:py-1' : 'top-1 right-1 sm:top-2 sm:right-2 lg:top-3 lg:right-3 text-[9px] sm:text-[10px] lg:text-xs px-1 py-0.5 sm:px-1.5 sm:py-0.5 lg:px-2.5 lg:py-1'}`}
-        >
-          {pricing.discount}% OFF
-        </div>
+        {pricing.discount > 0 && (
+          <div className={`absolute bg-black text-white font-bold rounded shadow-lg ${large ? 'top-2 right-2 sm:top-2.5 sm:right-2.5 text-[11px] sm:text-xs md:text-sm px-2 py-1 sm:px-2.5 sm:py-1' : 'top-1 right-1 sm:top-2 sm:right-2 lg:top-3 lg:right-3 text-[9px] sm:text-[10px] lg:text-xs px-1 py-0.5 sm:px-1.5 sm:py-0.5 lg:px-2.5 lg:py-1'}`}
+          >
+            {pricing.discount}% OFF
+          </div>
+        )}
       </div>
 
       {/* Product Info */}
@@ -206,10 +205,12 @@ const ProductCard = ({
                 >
                   ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </span>
-                <span className={`text-gray-400 line-through font-medium hidden sm:inline ${large ? 'text-xs sm:text-sm md:text-base' : 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm'}`}
-                >
-                  ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                </span>
+                {pricing.discount > 0 && (
+                  <span className={`text-gray-400 line-through font-medium hidden sm:inline ${large ? 'text-xs sm:text-sm md:text-base' : 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm'}`}
+                  >
+                    ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  </span>
+                )}
               </div>
               {product.stock > 0 ? (
                 <span className={`inline-flex items-center font-semibold text-primary ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}

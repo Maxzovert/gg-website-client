@@ -4,6 +4,7 @@ import { FaArrowRight, FaGem } from 'react-icons/fa';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 const FEATURED_COUNT = 5;
 
@@ -39,16 +40,6 @@ const RudrakhshaProd = () => {
     };
     fetchFeatured();
   }, []);
-
-  const calculatePricing = (price) => {
-    const discountPercent = 25;
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice,
-      discount: discountPercent,
-    };
-  };
 
   const getReviewCount = (productId) => 5 + (productId % 3);
 
@@ -106,7 +97,7 @@ const RudrakhshaProd = () => {
                   product={product}
                   variant="rudraksh"
                   size={isMobileCarousel ? 'default' : 'lg'}
-                  calculatePricing={calculatePricing}
+                  calculatePricing={pricingFromProduct}
                   getReviewCount={getReviewCount}
                 />
               </div>

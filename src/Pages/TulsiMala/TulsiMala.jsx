@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
-import tulsiBanner from '../../assets/HomePage/origin.webp';
+import tulsiBanner from '../../assets/TulsiMala/tcm.webp';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 /** Must match `categories.name` in your database (comparison is case-insensitive). */
 const TULSI_CATEGORY = 'Tulsi Mala';
@@ -118,16 +119,6 @@ const TulsiMala = () => {
     allProducts.length > 0
       ? Math.max(...allProducts.map((p) => p.price || 0), 100000)
       : 100000;
-
-  const calculatePricing = (price) => {
-    const discountPercent = 25;
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice,
-      discount: discountPercent,
-    };
-  };
 
   const getReviewCount = (productId) => 5 + (productId % 3);
 
@@ -381,7 +372,7 @@ const TulsiMala = () => {
                     key={product.id}
                     product={product}
                     variant="rudraksh"
-                    calculatePricing={calculatePricing}
+                    calculatePricing={pricingFromProduct}
                     getReviewCount={getReviewCount}
                   />
                 ))}

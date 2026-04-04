@@ -5,6 +5,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import rudrakshBanner from '../../assets/RudraksPageImg/rd1.webp';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 const Rudraksh = () => {
   const [searchParams] = useSearchParams();
@@ -129,18 +130,6 @@ const Rudraksh = () => {
   const maxPrice = allProducts.length > 0 
     ? Math.max(...allProducts.map(p => p.price || 0), 100000)
     : 100000;
-
-  // Calculate original price and discount
-  const calculatePricing = (price) => {
-    // Default discount percentage (can be customized per product)
-    const discountPercent = 25; // Default 25% discount
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice: originalPrice,
-      discount: discountPercent
-    };
-  };
 
   // Generate random review count (for demo purposes)
   const getReviewCount = (productId) => {
@@ -405,7 +394,7 @@ const Rudraksh = () => {
                   key={product.id}
                   product={product}
                   variant="rudraksh"
-                  calculatePricing={calculatePricing}
+                  calculatePricing={pricingFromProduct}
                   getReviewCount={getReviewCount}
                 />
               ))}

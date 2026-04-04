@@ -30,6 +30,7 @@ import ProductCard from "../../components/ProductCard";
 import { API_URL, apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
 import rdcImage from "../../assets/ProductPage/rdc.webp";
+import { pricingFromProduct } from "../../utils/productPricing";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -285,16 +286,6 @@ const ProductPage = () => {
     }
   };
 
-  const calculatePricing = (price) => {
-    const discountPercent = 25;
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice: originalPrice,
-      discount: discountPercent,
-    };
-  };
-
   const getReviewCount = (productId) => {
     return 5 + (productId % 3);
   };
@@ -480,7 +471,7 @@ const ProductPage = () => {
     );
   }
 
-  const pricing = calculatePricing(product.price);
+  const pricing = pricingFromProduct(product);
   const reviewCount = getReviewCount(product.id);
   const hasMultipleImages = product.images && product.images.length > 1;
 
@@ -594,8 +585,8 @@ const ProductPage = () => {
 
               {/* Main image + Element & Benefits – same width (flex-1), same box style */}
               <div className="flex-1 flex flex-col gap-4 sm:gap-6 min-w-0 order-2">
-                {/* Main Image */}
-                <div className="relative aspect-square w-full max-w-[min(100%,280px)] max-h-[280px] sm:max-w-[min(100%,400px)] sm:max-h-[400px] md:max-w-[min(100%,550px)] md:max-h-[550px] lg:max-w-[min(100%,700px)] lg:max-h-[700px] mx-auto min-w-0 bg-gray-100 rounded-xl overflow-hidden border-2 border-primary/20 group">
+                {/* Main Image – edge-to-edge below lg; constrained gallery box on lg+ */}
+                <div className="relative aspect-square min-w-0 bg-gray-100 overflow-hidden border-primary/20 group max-lg:w-screen max-lg:max-w-[100vw] max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:rounded-none max-lg:border-y-2 max-lg:border-x-0 lg:left-0 lg:translate-x-0 lg:w-full lg:max-w-[min(100%,700px)] lg:mx-auto lg:max-h-[700px] lg:rounded-xl lg:border-2 lg:border-primary/20">
                   {product.images && product.images.length > 0 ? (
                     <>
                       <img
@@ -612,7 +603,7 @@ const ProductPage = () => {
                       <button
                         type="button"
                         onClick={() => setImagePreviewOpen(true)}
-                        className="absolute inset-0 z-[1] cursor-zoom-in rounded-xl bg-transparent"
+                        className="absolute inset-0 z-[1] cursor-zoom-in bg-transparent max-lg:rounded-none lg:rounded-xl"
                         aria-label="View larger image"
                       />
                       {/* Image Navigation Arrows */}
@@ -649,7 +640,8 @@ const ProductPage = () => {
                     </div>
                   )}
                 </div>
-                <div className="w-full max-w-[min(100%,280px)] sm:max-w-[min(100%,400px)] md:max-w-[min(100%,550px)] lg:max-w-[min(100%,700px)] mx-auto min-w-0">
+                {/* rdc: desktop only in gallery column; mobile/tablet copy sits before accordion */}
+                <div className="hidden lg:block w-full max-w-[min(100%,700px)] mx-auto min-w-0">
                   <img
                     src={rdcImage}
                     alt="Additional product information"
@@ -706,23 +698,29 @@ const ProductPage = () => {
                     maximumFractionDigits: 0,
                   })}
                 </span>
-                <span className="text-lg sm:text-xl text-gray-400 line-through font-medium">
-                  ₹
-                  {pricing.originalPrice.toLocaleString("en-IN", {
-                    maximumFractionDigits: 0,
-                  })}
-                </span>
-                <span className="px-2 py-1 bg-red-100 text-red-700 text-xs sm:text-sm font-bold rounded">
-                  {pricing.discount}% OFF
-                </span>
-              </div>
-              <p className="text-sm sm:text-base text-gray-600">
-                You save ₹
-                {(pricing.originalPrice - pricing.currentPrice).toLocaleString(
-                  "en-IN",
-                  { maximumFractionDigits: 0 }
+                {pricing.discount > 0 && (
+                  <>
+                    <span className="text-lg sm:text-xl text-gray-400 line-through font-medium">
+                      ₹
+                      {pricing.originalPrice.toLocaleString("en-IN", {
+                        maximumFractionDigits: 0,
+                      })}
+                    </span>
+                    <span className="px-2 py-1 bg-red-100 text-red-700 text-xs sm:text-sm font-bold rounded">
+                      {pricing.discount}% OFF
+                    </span>
+                  </>
                 )}
-              </p>
+              </div>
+              {pricing.discount > 0 && (
+                <p className="text-sm sm:text-base text-gray-600">
+                  You save ₹
+                  {(pricing.originalPrice - pricing.currentPrice).toLocaleString(
+                    "en-IN",
+                    { maximumFractionDigits: 0 }
+                  )}
+                </p>
+              )}
             </div>
 
             {/* Badges */}
@@ -953,6 +951,17 @@ const ProductPage = () => {
                 Check Rashi →
               </span>
             </Link>
+
+            {/* Certification graphic: before accordion on smaller screens; lg+ stays in gallery column */}
+            <div className="lg:hidden mt-4 min-w-0">
+              <img
+                src={rdcImage}
+                alt="Additional product information"
+                loading="lazy"
+                decoding="async"
+                className="block w-full rounded-xl border-2 border-primary/20 object-contain"
+              />
+            </div>
 
             {/* Accordion – under Check Rashi */}
             <div className="pt-2">
@@ -1338,7 +1347,7 @@ const ProductPage = () => {
                     key={p.id}
                     product={p}
                     variant="default"
-                    calculatePricing={calculatePricing}
+                    calculatePricing={pricingFromProduct}
                     getReviewCount={getReviewCount}
                   />
                 ))}
