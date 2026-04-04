@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { FaRegHeart, FaBars, FaTimes } from "react-icons/fa";
+import { FaRegHeart, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.svg';
 import { LuCircleUserRound } from "react-icons/lu";
@@ -8,9 +8,28 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 
+const ACCESSORY_TYPE_LINKS = [
+    { label: 'Bracelet', to: `/accessories?subcategory=${encodeURIComponent('Bracelet')}` },
+    { label: 'Mala', to: `/accessories?subcategory=${encodeURIComponent('Mala')}` },
+    { label: 'Necklace', to: `/accessories?subcategory=${encodeURIComponent('Necklace')}` },
+]
+
+const MUKHI_NAV_LINKS = Array.from({ length: 14 }, (_, i) => {
+    const label = `${i + 1} Mukhi`
+    return {
+        label,
+        to: `/rudraksha?subcategory=${encodeURIComponent(label)}`,
+    }
+})
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [mobileAccessoriesOpen, setMobileAccessoriesOpen] = useState(false);
+    const [mobileRudrakshaOpen, setMobileRudrakshaOpen] = useState(false);
+    const [desktopAccessoriesOpen, setDesktopAccessoriesOpen] = useState(false);
+    const [desktopRudrakshaOpen, setDesktopRudrakshaOpen] = useState(false);
+    const accessoriesDesktopRef = useRef(null);
+    const rudrakshaDesktopRef = useRef(null);
     const { getTotalItems } = useCart();
     const { getTotalItems: getWishlistCount } = useWishlist();
     const { isAuthenticated } = useAuth();
@@ -33,6 +52,10 @@ const Navbar = () => {
             href: '/rudraksha',
         },
         {
+            name: 'Tulsi Mala',
+            href: '/tulsimala',
+        },
+        {
             name: 'Accessories',
             href: '/accessories',
         },
@@ -48,7 +71,36 @@ const Navbar = () => {
 
     const closeMenu = () => {
         setIsMenuOpen(false);
+        setMobileAccessoriesOpen(false);
+        setMobileRudrakshaOpen(false);
     };
+
+    useEffect(() => {
+        if (!desktopAccessoriesOpen && !desktopRudrakshaOpen) return;
+        const onDown = (e) => {
+            if (
+                desktopAccessoriesOpen &&
+                accessoriesDesktopRef.current &&
+                !accessoriesDesktopRef.current.contains(e.target)
+            ) {
+                setDesktopAccessoriesOpen(false);
+            }
+            if (
+                desktopRudrakshaOpen &&
+                rudrakshaDesktopRef.current &&
+                !rudrakshaDesktopRef.current.contains(e.target)
+            ) {
+                setDesktopRudrakshaOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', onDown);
+        return () => document.removeEventListener('mousedown', onDown);
+    }, [desktopAccessoriesOpen, desktopRudrakshaOpen]);
+
+    useEffect(() => {
+        setDesktopAccessoriesOpen(false);
+        setDesktopRudrakshaOpen(false);
+    }, [location.pathname, location.search]);
 
     const handleUserClick = () => {
         if (isAuthenticated) {
@@ -112,6 +164,119 @@ const Navbar = () => {
                     {navItems.map((item) => {
                         const active = isActive(item.href);
                         const isSprayTab = item.href === '/sprays';
+                        const isRudraksha = item.href === '/rudraksha';
+                        const isAccessories = item.href === '/accessories';
+
+                        if (isRudraksha) {
+                            const rudrakshaActive = location.pathname.startsWith('/rudraksha');
+                            return (
+                                <div
+                                    key={item.name}
+                                    ref={rudrakshaDesktopRef}
+                                    className="relative list-none"
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={() => setDesktopRudrakshaOpen((o) => !o)}
+                                        className={`flex cursor-pointer items-center gap-1 font-semibold transition-all text-base xl:text-lg ${
+                                            rudrakshaActive
+                                                ? 'text-primary font-bold border-b-2 border-primary pb-1'
+                                                : 'text-gray-700 hover:text-primary'
+                                        }`}
+                                        aria-expanded={desktopRudrakshaOpen}
+                                        aria-haspopup="true"
+                                    >
+                                        {item.name}
+                                        <FaChevronDown className={`text-xs transition-transform ${desktopRudrakshaOpen ? 'rotate-180' : ''}`} aria-hidden />
+                                    </button>
+                                    {desktopRudrakshaOpen && (
+                                        <div
+                                            className="absolute left-1/2 top-full z-60 mt-2 w-[min(100vw-2rem,22rem)] -translate-x-1/2 rounded-xl border border-[#E9DFC4] bg-white py-3 shadow-xl xl:left-0 xl:translate-x-0 xl:w-72"
+                                            role="menu"
+                                        >
+                                            <Link
+                                                to="/rudraksha"
+                                                className="block px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5"
+                                                onClick={() => setDesktopRudrakshaOpen(false)}
+                                            >
+                                                All Rudraksha
+                                            </Link>
+                                            <div className="my-2 border-t border-gray-100" />
+                                            <p className="px-4 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">By Mukhi (1–14)</p>
+                                            <div className="max-h-52 overflow-y-auto px-2">
+                                                <div className="grid grid-cols-2 gap-0.5">
+                                                    {MUKHI_NAV_LINKS.map((l) => (
+                                                        <Link
+                                                            key={l.label}
+                                                            to={l.to}
+                                                            className="rounded-md px-2 py-1.5 text-xs font-medium text-gray-800 hover:bg-primary/10 hover:text-primary"
+                                                            onClick={() => setDesktopRudrakshaOpen(false)}
+                                                            role="menuitem"
+                                                        >
+                                                            {l.label}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
+
+                        if (isAccessories) {
+                            const accActive = location.pathname.startsWith('/accessories');
+                            return (
+                                <div
+                                    key={item.name}
+                                    ref={accessoriesDesktopRef}
+                                    className="relative list-none"
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={() => setDesktopAccessoriesOpen((o) => !o)}
+                                        className={`flex cursor-pointer items-center gap-1 font-semibold transition-all text-base xl:text-lg ${
+                                            accActive
+                                                ? 'text-primary font-bold border-b-2 border-primary pb-1'
+                                                : 'text-gray-700 hover:text-primary'
+                                        }`}
+                                        aria-expanded={desktopAccessoriesOpen}
+                                        aria-haspopup="true"
+                                    >
+                                        {item.name}
+                                        <FaChevronDown className={`text-xs transition-transform ${desktopAccessoriesOpen ? 'rotate-180' : ''}`} aria-hidden />
+                                    </button>
+                                    {desktopAccessoriesOpen && (
+                                        <div
+                                            className="absolute left-1/2 top-full z-60 mt-2 w-[min(100vw-2rem,22rem)] -translate-x-1/2 rounded-xl border border-[#E9DFC4] bg-white py-3 shadow-xl xl:left-0 xl:translate-x-0 xl:w-72"
+                                            role="menu"
+                                        >
+                                            <Link
+                                                to="/accessories"
+                                                className="block px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5"
+                                                onClick={() => setDesktopAccessoriesOpen(false)}
+                                            >
+                                                All accessories
+                                            </Link>
+                                            <div className="my-2 border-t border-gray-100" />
+                                            <p className="px-4 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">By type</p>
+                                            {ACCESSORY_TYPE_LINKS.map((l) => (
+                                                <Link
+                                                    key={l.label}
+                                                    to={l.to}
+                                                    className="block px-4 py-2 text-sm text-gray-800 hover:bg-primary/5 hover:text-primary"
+                                                    onClick={() => setDesktopAccessoriesOpen(false)}
+                                                    role="menuitem"
+                                                >
+                                                    {l.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
+
                         return (
                             <Link 
                                 key={item.name} 
@@ -220,6 +385,97 @@ const Navbar = () => {
                         {navItems.map((item) => {
                             const active = isActive(item.href);
                             const isSprayTab = item.href === '/sprays';
+                            const isRudraksha = item.href === '/rudraksha';
+                            const isAccessories = item.href === '/accessories';
+
+                            if (isRudraksha) {
+                                const rudrakshaActive = location.pathname.startsWith('/rudraksha');
+                                return (
+                                    <div key={item.name} className="border-b border-gray-100 last:border-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => setMobileRudrakshaOpen((o) => !o)}
+                                            className={`flex w-full items-center justify-between px-6 py-3.5 text-left text-lg font-semibold transition-colors ${
+                                                rudrakshaActive || mobileRudrakshaOpen
+                                                    ? 'text-primary font-bold bg-primary/10 border-l-4 border-primary'
+                                                    : 'text-gray-700 hover:bg-primary/5'
+                                            }`}
+                                            aria-expanded={mobileRudrakshaOpen}
+                                        >
+                                            {item.name}
+                                            <FaChevronDown className={`shrink-0 text-sm transition-transform ${mobileRudrakshaOpen ? 'rotate-180' : ''}`} aria-hidden />
+                                        </button>
+                                        {mobileRudrakshaOpen && (
+                                            <div className="space-y-1 bg-[#FFFAEB]/80 px-4 py-3 pl-8">
+                                                <Link
+                                                    to="/rudraksha"
+                                                    onClick={closeMenu}
+                                                    className="block rounded-md py-2 text-base font-medium text-primary hover:underline"
+                                                >
+                                                    All Rudraksha
+                                                </Link>
+                                                <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">By Mukhi (1–14)</p>
+                                                <div className="grid grid-cols-2 gap-1 pb-2">
+                                                    {MUKHI_NAV_LINKS.map((l) => (
+                                                        <Link
+                                                            key={l.label}
+                                                            to={l.to}
+                                                            onClick={closeMenu}
+                                                            className="rounded-md py-2 text-sm text-gray-800 hover:text-primary"
+                                                        >
+                                                            {l.label}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }
+
+                            if (isAccessories) {
+                                const accActive = location.pathname.startsWith('/accessories');
+                                return (
+                                    <div key={item.name} className="border-b border-gray-100 last:border-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => setMobileAccessoriesOpen((o) => !o)}
+                                            className={`flex w-full items-center justify-between px-6 py-3.5 text-left text-lg font-semibold transition-colors ${
+                                                accActive || mobileAccessoriesOpen
+                                                    ? 'text-primary font-bold bg-primary/10 border-l-4 border-primary'
+                                                    : 'text-gray-700 hover:bg-primary/5'
+                                            }`}
+                                            aria-expanded={mobileAccessoriesOpen}
+                                        >
+                                            {item.name}
+                                            <FaChevronDown className={`shrink-0 text-sm transition-transform ${mobileAccessoriesOpen ? 'rotate-180' : ''}`} aria-hidden />
+                                        </button>
+                                        {mobileAccessoriesOpen && (
+                                            <div className="space-y-1 bg-[#FFFAEB]/80 px-4 py-3 pl-8">
+                                                <Link
+                                                    to="/accessories"
+                                                    onClick={closeMenu}
+                                                    className="block rounded-md py-2 text-base font-medium text-primary hover:underline"
+                                                >
+                                                    All accessories
+                                                </Link>
+                                                <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">By type</p>
+                                                {ACCESSORY_TYPE_LINKS.map((l) => (
+                                                    <Link
+                                                        key={l.label}
+                                                        to={l.to}
+                                                        onClick={closeMenu}
+                                                        className="block rounded-md py-2 text-base text-gray-800 hover:text-primary"
+                                                    >
+                                                        {l.label}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }
+
                             return (
                                 <Link 
                                     key={item.name} 

@@ -14,6 +14,7 @@ const Spray = lazy(() => import('./Pages/Spray/Spray'))
 const Rudraksh = lazy(() => import('./Pages/Rudraksh/Rudraksh'))
 const Rashi = lazy(() => import('./Pages/Rashi/Rashi'))
 const Accessories = lazy(() => import('./Pages/Accessories/Accessories'))
+const TulsiMala = lazy(() => import('./Pages/TulsiMala/TulsiMala'))
 const ProductPage = lazy(() => import('./Pages/ProductPage/ProductPage'))
 const Cart = lazy(() => import('./Pages/Cart/Cart'))
 const Wishlist = lazy(() => import('./Pages/Wishlist/Wishlist'))
@@ -53,6 +54,7 @@ const App = () => {
                   <Route path="/" element={<Home />} />
                   <Route path="/sprays" element={<Spray />} />
                   <Route path="/rudraksha" element={<Rudraksh />} />
+                  <Route path="/tulsimala" element={<TulsiMala />} />
                   <Route path="/rashi" element={<Rashi />} />
                   <Route path="/accessories" element={<Accessories />} />
                   <Route path="/product/:id" element={<ProductPage />} />

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
@@ -19,6 +20,8 @@ const isRudrakshType = (product) => {
 };
 
 const Accessories = () => {
+  const [searchParams] = useSearchParams();
+  const prevSearchQsRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
     subcategories: [],
@@ -44,6 +47,35 @@ const Accessories = () => {
   useEffect(() => {
     fetchFilterOptions();
   }, []);
+
+  useEffect(() => {
+    const qs = searchParams.toString();
+    const prevQs = prevSearchQsRef.current;
+    prevSearchQsRef.current = qs;
+    if (prevQs && prevQs.length > 0 && qs.length === 0) {
+      setFilters((prev) => ({ ...prev, mukhi: 'all', subcategory: 'all' }));
+      return;
+    }
+    const mukhiParam = searchParams.get('mukhi');
+    const subParam = searchParams.get('subcategory');
+    if (mukhiParam && String(mukhiParam).trim()) {
+      const decoded = decodeURIComponent(String(mukhiParam).trim());
+      setFilters((prev) => ({
+        ...prev,
+        mukhi: decoded,
+        subcategory: 'all',
+      }));
+      return;
+    }
+    if (subParam && String(subParam).trim()) {
+      const decoded = decodeURIComponent(String(subParam).trim());
+      setFilters((prev) => ({
+        ...prev,
+        subcategory: decoded,
+        mukhi: 'all',
+      }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchProducts();

@@ -18,6 +18,7 @@ import {
   FaCompass,
   FaCheckCircle,
   FaTrashAlt,
+  FaTimes,
 } from "react-icons/fa";
 import Loader from "../../components/Loader";
 import { useToast } from "../../components/Toaster";
@@ -28,6 +29,7 @@ import CheckoutModal from "../../components/CheckoutModal";
 import ProductCard from "../../components/ProductCard";
 import { API_URL, apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
+import rdcImage from "../../assets/ProductPage/rdc.webp";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -47,6 +49,7 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [imagePreviewOpen, setImagePreviewOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
   const [elementImages, setElementImages] = useState([]);
@@ -271,6 +274,7 @@ const ProductPage = () => {
         setProduct(result.data);
         // Reset image index when product changes
         setSelectedImageIndex(0);
+        setImagePreviewOpen(false);
       } else {
         setError("Failed to load product");
       }
@@ -436,6 +440,20 @@ const ProductPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (!imagePreviewOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setImagePreviewOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [imagePreviewOpen]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -585,25 +603,39 @@ const ProductPage = () => {
                         alt={product.name}
                         loading="eager"
                         decoding="async"
-                        className="block h-full w-full object-contain object-center"
+                        className="pointer-events-none relative z-0 block h-full w-full object-contain object-center"
                         onError={(e) => {
                           e.target.src =
                             "https://via.placeholder.com/600x600?text=No+Image";
                         }}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setImagePreviewOpen(true)}
+                        className="absolute inset-0 z-[1] cursor-zoom-in rounded-xl bg-transparent"
+                        aria-label="View larger image"
+                      />
                       {/* Image Navigation Arrows */}
                       {hasMultipleImages && (
                         <>
                           <button
-                            onClick={prevImage}
-                            className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-2 rounded-full transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center"
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              prevImage();
+                            }}
+                            className="absolute left-1 sm:left-2 top-1/2 z-[2] -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-2 rounded-full transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center"
                             aria-label="Previous image"
                           >
                             <FaChevronLeft className="text-sm sm:text-base" />
                           </button>
                           <button
-                            onClick={nextImage}
-                            className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-2 rounded-full transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center"
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              nextImage();
+                            }}
+                            className="absolute right-1 sm:right-2 top-1/2 z-[2] -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-2 rounded-full transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 touch-manipulation min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center"
                             aria-label="Next image"
                           >
                             <FaChevronRight className="text-sm sm:text-base" />
@@ -616,6 +648,15 @@ const ProductPage = () => {
                       <span className="text-lg">No Image Available</span>
                     </div>
                   )}
+                </div>
+                <div className="w-full max-w-[min(100%,280px)] sm:max-w-[min(100%,400px)] md:max-w-[min(100%,550px)] lg:max-w-[min(100%,700px)] mx-auto min-w-0">
+                  <img
+                    src={rdcImage}
+                    alt="Additional product information"
+                    loading="lazy"
+                    decoding="async"
+                    className="block w-full rounded-xl border-2 border-primary/20 object-contain"
+                  />
                 </div>
               </div>
             </div>
@@ -1024,15 +1065,17 @@ const ProductPage = () => {
           </div>
         </div>
 
-        <div className="mt-4 sm:mt-6">
-          <img
-            src={idrImage}
-            alt="IDR information"
-            loading="lazy"
-            decoding="async"
-            className="block w-full rounded-lg border-2 border-primary/40 shadow-sm"
-          />
-        </div>
+        {isRudrakshaProduct && (
+          <div className="mt-4 sm:mt-6">
+            <img
+              src={idrImage}
+              alt="IDR information"
+              loading="lazy"
+              decoding="async"
+              className="block w-full rounded-lg border-2 border-primary/40 shadow-sm"
+            />
+          </div>
+        )}
 
         {/* Reviews Section – match provided design */}
         <section className="mt-6 sm:mt-12 min-w-0">
@@ -1316,6 +1359,67 @@ const ProductPage = () => {
         userEmail={user?.email}
         userName={user?.full_name}
       />
+
+      {/* Full-screen image preview */}
+      {imagePreviewOpen && product.images && product.images.length > 0 && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-white p-4 sm:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Product image preview"
+          onClick={() => setImagePreviewOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setImagePreviewOpen(false)}
+            className="absolute right-3 top-3 z-[202] flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-800 transition-colors hover:bg-gray-100 touch-manipulation"
+            aria-label="Close preview"
+          >
+            <FaTimes className="text-xl" />
+          </button>
+          {hasMultipleImages && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevImage();
+                }}
+                className="absolute left-2 top-1/2 z-[202] -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-800 transition-colors hover:bg-gray-100 sm:left-4 sm:h-12 sm:w-12 touch-manipulation"
+                aria-label="Previous image"
+              >
+                <FaChevronLeft className="text-lg sm:text-xl" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextImage();
+                }}
+                className="absolute right-2 top-1/2 z-[202] -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-800 transition-colors hover:bg-gray-100 sm:right-4 sm:h-12 sm:w-12 touch-manipulation"
+                aria-label="Next image"
+              >
+                <FaChevronRight className="text-lg sm:text-xl" />
+              </button>
+            </>
+          )}
+          <div
+            className="relative z-[201] max-h-[90vh] max-w-[min(1200px,calc(100vw-2rem))]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={product.images[selectedImageIndex]}
+              alt={`${product.name} — enlarged`}
+              className="max-h-[90vh] w-auto max-w-full object-contain"
+              decoding="async"
+              onError={(e) => {
+                e.target.src =
+                  "https://via.placeholder.com/800x800?text=No+Image";
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
