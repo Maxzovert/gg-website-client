@@ -5,6 +5,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import accessoriesBanner from '../../assets/Accessories/as1.webp';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 // Mukhi options for Rudraksh accessories (1–14 Mukhi)
 const MUKHI_OPTIONS = [
@@ -166,17 +167,6 @@ const Accessories = () => {
   const maxPrice = allProducts.length > 0
     ? Math.max(...allProducts.map(p => p.price || 0), 100000)
     : 100000;
-
-  // Calculate original price and discount
-  const calculatePricing = (price) => {
-    const discountPercent = 25;
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice: originalPrice,
-      discount: discountPercent
-    };
-  };
 
   // Generate random review count (for demo purposes)
   const getReviewCount = (productId) => {
@@ -473,7 +463,7 @@ const Accessories = () => {
                   key={product.id}
                   product={product}
                   variant="rudraksh"
-                  calculatePricing={calculatePricing}
+                  calculatePricing={pricingFromProduct}
                   getReviewCount={getReviewCount}
                 />
               ))}

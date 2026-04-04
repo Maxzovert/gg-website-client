@@ -5,6 +5,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import ProductCard from '../../components/ProductCard';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
@@ -93,15 +94,7 @@ const Wishlist = () => {
             <div key={item.id} className="relative group">
               <ProductCard
                 product={item}
-                calculatePricing={(price) => {
-                  const discountPercent = 25;
-                  const originalPrice = price / (1 - discountPercent / 100);
-                  return {
-                    currentPrice: price,
-                    originalPrice: originalPrice,
-                    discount: discountPercent
-                  };
-                }}
+                calculatePricing={pricingFromProduct}
                 getReviewCount={(productId) => 5 + (productId % 3)}
                 onAddToCart={handleAddToCart}
               />

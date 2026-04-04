@@ -5,6 +5,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import RashiSection from '../Home/RashiSection';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 // Zodiac dropdown images from local assets (Client/src/assets/Zodiac)
 // Filenames can be lowercase (e.g. aries.jpg) or capitalized (Aries.png); keys are normalized to match rashi values.
@@ -404,16 +405,6 @@ const Rashi = () => {
     }
   };
 
-  const calculatePricing = (price) => {
-    const discountPercent = 25;
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice: originalPrice,
-      discount: discountPercent
-    };
-  };
-
   const getReviewCount = (productId) => {
     return 5 + (productId % 3);
   };
@@ -762,7 +753,7 @@ const Rashi = () => {
                       key={product.id}
                       product={product}
                       variant="rashi"
-                      calculatePricing={calculatePricing}
+                      calculatePricing={pricingFromProduct}
                       getReviewCount={getReviewCount}
                     />
                   ))}

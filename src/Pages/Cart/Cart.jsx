@@ -8,6 +8,7 @@ import CheckoutModal from '../../components/CheckoutModal';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPricing';
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -70,16 +71,6 @@ const Cart = () => {
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
-  const calculatePricing = useCallback((price) => {
-    const discountPercent = 25;
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice,
-      discount: discountPercent,
-    };
-  }, []);
-
   const getReviewCount = useCallback((productId) => {
     const n = Number(productId);
     if (Number.isFinite(n)) return 5 + (n % 3);
@@ -121,9 +112,7 @@ const Cart = () => {
     ? Math.min(walletToUse || walletBalance, walletBalance, totalWithBlessing + shippingCharges)
     : 0;
   const payableAfterWallet = Math.max(0, totalWithBlessing + shippingCharges - walletAppliedAmount);
-  const discountPercent = 25;
-  const originalTotal = totalPrice / (1 - discountPercent / 100);
-  const discountAmount = originalTotal - totalPrice;
+  const { originalTotal, discountAmount } = cartDiscountTotals(cartItems);
 
   useEffect(() => {
     if (!hasRudrakshaInCart && includeBlessing) {
@@ -214,7 +203,7 @@ const Cart = () => {
           <CartMoreProductsSection
             loading={suggestionsLoading}
             products={suggestedProducts}
-            calculatePricing={calculatePricing}
+            calculatePricing={pricingFromProduct}
             getReviewCount={getReviewCount}
             sectionClassName="mt-12 sm:mt-16 pt-8 w-full text-left"
           />
@@ -357,12 +346,14 @@ const Cart = () => {
                   <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
                   <span>₹{originalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                 </div>
-                <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
-                  <span>Discount (25%)</span>
-                  <span className="text-green-600 font-semibold">
-                    -₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                  </span>
-                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
+                    <span>Product discount</span>
+                    <span className="text-green-600 font-semibold">
+                      -₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
                   <span>Shipping</span>
                   <span>
@@ -425,9 +416,11 @@ const Cart = () => {
                       ₹{payableAfterWallet.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    You save ₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                  </p>
+                  {discountAmount > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      You save ₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -462,7 +455,7 @@ const Cart = () => {
         <CartMoreProductsSection
           loading={suggestionsLoading}
           products={suggestedProducts}
-          calculatePricing={calculatePricing}
+          calculatePricing={pricingFromProduct}
           getReviewCount={getReviewCount}
           sectionClassName="mt-10 sm:mt-14 pt-8 sm:pt-10"
         />

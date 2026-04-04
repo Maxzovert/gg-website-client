@@ -58,7 +58,11 @@ export const CartProvider = ({ children }) => {
         // Update quantity if product already exists
         return prev.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? {
+                ...item,
+                quantity: item.quantity + quantity,
+                discount_percent: product.discount_percent ?? item.discount_percent ?? 0,
+              }
             : item
         );
       } else {
@@ -73,7 +77,8 @@ export const CartProvider = ({ children }) => {
           category: product.category || '',
           subcategory: product.subcategory,
           deity: product.deity,
-          planet: product.planet
+          planet: product.planet,
+          discount_percent: product.discount_percent ?? 0,
         }];
       }
     });

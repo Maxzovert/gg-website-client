@@ -36,7 +36,8 @@ export const WishlistProvider = ({ children }) => {
         subcategory: product.subcategory,
         deity: product.deity,
         planet: product.planet,
-        rarity: product.rarity
+        rarity: product.rarity,
+        discount_percent: product.discount_percent ?? 0,
       }];
     });
   }, []);

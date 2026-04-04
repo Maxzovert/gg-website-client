@@ -4,6 +4,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import sprayBanner from '../../assets/Spray/4sp.webp';
 import { apiFetch } from '../../config/api.js';
+import { pricingFromProduct } from '../../utils/productPricing';
 
 const Spray = () => {
   const [products, setProducts] = useState([]);
@@ -121,18 +122,6 @@ const Spray = () => {
   const maxPrice = allProducts.length > 0 
     ? Math.max(...allProducts.map(p => p.price || 0), 100000)
     : 100000;
-
-  // Calculate original price and discount
-  const calculatePricing = (price) => {
-    // Default discount percentage (can be customized per product)
-    const discountPercent = 25; // Default 25% discount
-    const originalPrice = price / (1 - discountPercent / 100);
-    return {
-      currentPrice: price,
-      originalPrice: originalPrice,
-      discount: discountPercent
-    };
-  };
 
   // Generate random review count (for demo purposes)
   const getReviewCount = (productId) => {
@@ -430,7 +419,7 @@ const Spray = () => {
                   key={product.id}
                   product={product}
                   variant="spray"
-                  calculatePricing={calculatePricing}
+                  calculatePricing={pricingFromProduct}
                   getReviewCount={getReviewCount}
                   getEssence={getEssence}
                 />
