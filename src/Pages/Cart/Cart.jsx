@@ -1,11 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import { useAuth } from '../../context/AuthContext';
 import CheckoutModal from '../../components/CheckoutModal';
+import ProductCard from '../../components/ProductCard';
+import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
+
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+const SUGGESTIONS_COUNT = 8;
+
+function CartMoreProductsSection({ loading, products, calculatePricing, getReviewCount, sectionClassName = '' }) {
+  if (!loading && products.length === 0) return null;
+  return (
+    <section className={`border-t border-gray-200 ${sectionClassName}`}>
+      <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+        Add more products to your cart
+      </h2>
+      {loading ? (
+        <div className="flex justify-center py-8 sm:py-12">
+          <Loader size="md" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          {products.map((p) => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              variant="default"
+              calculatePricing={calculatePricing}
+              getReviewCount={getReviewCount}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
 
 const Cart = () => {
   const {
@@ -27,6 +67,24 @@ const Cart = () => {
   const [useWallet, setUseWallet] = useState(false);
   const [walletToUse, setWalletToUse] = useState(0);
   const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+
+  const calculatePricing = useCallback((price) => {
+    const discountPercent = 25;
+    const originalPrice = price / (1 - discountPercent / 100);
+    return {
+      currentPrice: price,
+      originalPrice,
+      discount: discountPercent,
+    };
+  }, []);
+
+  const getReviewCount = useCallback((productId) => {
+    const n = Number(productId);
+    if (Number.isFinite(n)) return 5 + (n % 3);
+    return 5 + (String(productId).length % 3);
+  }, []);
 
   const handleRemoveItem = (productId, productName) => {
     removeFromCart(productId);
@@ -98,6 +156,31 @@ const Cart = () => {
     fetchWalletAndCampaigns();
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadSuggestions = async () => {
+      setSuggestionsLoading(true);
+      try {
+        const res = await apiFetch('/api/products?limit=100');
+        const result = res.ok ? await res.json() : { data: [] };
+        const list = result.success && Array.isArray(result.data) ? result.data : [];
+        if (cancelled) return;
+        const cartIds = new Set(cartItems.map((i) => String(i.id)));
+        const candidates = list.filter((p) => p?.id != null && !cartIds.has(String(p.id)));
+        shuffleInPlace(candidates);
+        setSuggestedProducts(candidates.slice(0, SUGGESTIONS_COUNT));
+      } catch {
+        if (!cancelled) setSuggestedProducts([]);
+      } finally {
+        if (!cancelled) setSuggestionsLoading(false);
+      }
+    };
+    loadSuggestions();
+    return () => {
+      cancelled = true;
+    };
+  }, [cartItems]);
+
   const showEmptyCart = cartItems.length === 0 && !showCheckout;
 
   if (showEmptyCart) {
@@ -127,6 +210,14 @@ const Cart = () => {
               Start Shopping
             </Link>
           </div>
+
+          <CartMoreProductsSection
+            loading={suggestionsLoading}
+            products={suggestedProducts}
+            calculatePricing={calculatePricing}
+            getReviewCount={getReviewCount}
+            sectionClassName="mt-12 sm:mt-16 pt-8 w-full text-left"
+          />
         </div>
       </div>
     );
@@ -367,6 +458,14 @@ const Cart = () => {
             </div>
           </div>
         </div>
+
+        <CartMoreProductsSection
+          loading={suggestionsLoading}
+          products={suggestedProducts}
+          calculatePricing={calculatePricing}
+          getReviewCount={getReviewCount}
+          sectionClassName="mt-10 sm:mt-14 pt-8 sm:pt-10"
+        />
       </div>
 
       <CheckoutModal
