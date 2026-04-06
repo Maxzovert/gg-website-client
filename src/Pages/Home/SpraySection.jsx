@@ -185,7 +185,7 @@ const SpraySection = () => {
                     type="button"
                     className="px-8 py-3.5 rounded-full font-medium text-sm uppercase tracking-[0.2em] text-white bg-[#1a6ba0] hover:bg-[#155a8a] transition-all duration-300 shadow-md"
                   >
-                    Buy Now
+                    Preorder Now
                   </button>
                 </div>
               </div>
@@ -219,7 +219,7 @@ const SpraySection = () => {
                     type="button"
                     className="px-8 py-3.5 rounded-full font-medium text-sm uppercase tracking-[0.2em] text-white bg-[#582683] hover:bg-[#47206b] transition-all duration-300 shadow-md"
                   >
-                    Buy Now
+                    Preorder Now
                   </button>
                 </div>
               </div>
@@ -253,7 +253,7 @@ const SpraySection = () => {
                     type="button"
                     className="px-8 py-3.5 rounded-full font-medium text-sm uppercase tracking-[0.2em] text-white bg-[#E27BB1] hover:bg-[#c9689a] transition-all duration-300 shadow-md"
                   >
-                    Buy Now
+                    Preorder Now
                   </button>
                 </div>
               </div>
@@ -287,7 +287,7 @@ const SpraySection = () => {
                     type="button"
                     className="px-8 py-3.5 rounded-full font-medium text-sm uppercase tracking-[0.2em] text-white bg-[#597B2C] hover:bg-[#486323] transition-all duration-300 shadow-md"
                   >
-                    Buy Now
+                    Preorder Now
                   </button>
                 </div>
               </div>
@@ -313,7 +313,7 @@ const SpraySection = () => {
         </div>
       </div>
 
-      {/* Mobile: images as-is, vertical stack (2 cards in view), text + Buy Now in blank space */}
+      {/* Mobile: images as-is, vertical stack (2 cards in view), text + Preorder Now in blank space */}
       <div className="md:hidden w-full flex flex-col gap-6 px-3 py-4">
         {mobileCards.map((card, i) => (
           <div key={i} className="relative w-full">
@@ -341,7 +341,7 @@ const SpraySection = () => {
                       backgroundColor: card.btnBg,
                     }}
                   >
-                    Buy Now
+                    Preorder Now
                   </button>
                 </div>
               </div>

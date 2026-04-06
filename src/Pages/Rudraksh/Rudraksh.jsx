@@ -7,6 +7,18 @@ import rudrakshBanner from '../../assets/RudraksPageImg/rd1.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 
+const MUKHI_SUBCATEGORIES = Array.from({ length: 14 }, (_, i) => `${i + 1} Mukhi`);
+
+function subcategoryFromSearchParams(sp) {
+  const raw = sp.get('subcategory') ?? sp.get('mukhi');
+  if (raw == null || !String(raw).trim()) return 'all';
+  try {
+    return decodeURIComponent(String(raw).trim());
+  } catch {
+    return String(raw).trim();
+  }
+}
+
 const Rudraksh = () => {
   const [searchParams] = useSearchParams();
   const prevSearchQsRef = useRef(null);
@@ -17,15 +29,15 @@ const Rudraksh = () => {
     planets: [],
     rarities: []
   });
-  const [filters, setFilters] = useState({
-    subcategory: 'all',
+  const [filters, setFilters] = useState(() => ({
+    subcategory: subcategoryFromSearchParams(searchParams),
     deity: 'all',
     planet: 'all',
     rarity: 'all',
     search: '',
     priceMin: 0,
     priceMax: 100000
-  });
+  }));
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
@@ -33,6 +45,18 @@ const Rudraksh = () => {
   useEffect(() => {
     fetchFilterOptions();
   }, []);
+
+  useEffect(() => {
+    if (filters.subcategory === 'all') return;
+    const list = filterOptions.subcategories;
+    if (!list.length) return;
+    const match = list.find(
+      (s) => s.trim().toLowerCase() === filters.subcategory.trim().toLowerCase(),
+    );
+    if (match && match !== filters.subcategory) {
+      setFilters((prev) => ({ ...prev, subcategory: match }));
+    }
+  }, [filterOptions.subcategories, filters.subcategory]);
 
   useEffect(() => {
     const qs = searchParams.toString();
@@ -282,26 +306,24 @@ const Rudraksh = () => {
                 </div>
               </div>
 
-              {/* Subcategory Filter */}
-              {filterOptions.subcategories.length > 0 && (
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subcategory
-                  </label>
-                  <select
-                    value={filters.subcategory}
-                    onChange={(e) => handleFilterChange('subcategory', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                  >
-                    <option value="all">All Subcategories</option>
-                    {filterOptions.subcategories.map((subcat) => (
-                      <option key={subcat} value={subcat}>
-                        {subcat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              {/* Mukhi (subcategory) */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mukhi
+                </label>
+                <select
+                  value={filters.subcategory}
+                  onChange={(e) => handleFilterChange('subcategory', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                >
+                  <option value="all">All Mukhi</option>
+                  {MUKHI_SUBCATEGORIES.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Deity Filter */}
               {filterOptions.deities.length > 0 && (

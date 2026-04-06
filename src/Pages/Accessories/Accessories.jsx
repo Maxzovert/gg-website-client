@@ -7,18 +7,14 @@ import accessoriesBanner from '../../assets/Accessories/as1.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 
-// Mukhi options for Rudraksh accessories (1–14 Mukhi)
-const MUKHI_OPTIONS = [
-  '1 Mukhi', '2 Mukhi', '3 Mukhi', '4 Mukhi', '5 Mukhi', '6 Mukhi', '7 Mukhi',
-  '8 Mukhi', '9 Mukhi', '10 Mukhi', '11 Mukhi', '12 Mukhi', '13 Mukhi', '14 Mukhi'
+const ACCESSORIES_SUBCATEGORIES = [
+  { id: 1, name: 'Mala' },
+  { id: 2, name: 'Bracelet' },
+  { id: 3, name: 'Necklace' },
+  { id: 4, name: 'Earring' },
+  { id: 5, name: 'Ring' },
+  { id: 6, name: 'Other' },
 ];
-
-const isRudrakshType = (product) => {
-  const sub = (product.subcategory || '').toLowerCase();
-  const name = (product.name || '').toLowerCase();
-  const isMukhi = MUKHI_OPTIONS.some(m => sub.includes(m.toLowerCase()) || sub === m.toLowerCase());
-  return isMukhi || sub.includes('rudraksh') || name.includes('rudraksh');
-};
 
 const Accessories = () => {
   const [searchParams] = useSearchParams();
@@ -31,8 +27,6 @@ const Accessories = () => {
     rarities: []
   });
   const [filters, setFilters] = useState({
-    accessoryType: 'all',   // 'all' | 'Rudraksh' | 'Other'
-    mukhi: 'all',           // 'all' | '1 Mukhi' | ... | '14 Mukhi'
     subcategory: 'all',
     deity: 'all',
     planet: 'all',
@@ -54,45 +48,30 @@ const Accessories = () => {
     const prevQs = prevSearchQsRef.current;
     prevSearchQsRef.current = qs;
     if (prevQs && prevQs.length > 0 && qs.length === 0) {
-      setFilters((prev) => ({ ...prev, mukhi: 'all', subcategory: 'all' }));
+      setFilters((prev) => ({ ...prev, subcategory: 'all' }));
       return;
     }
-    const mukhiParam = searchParams.get('mukhi');
     const subParam = searchParams.get('subcategory');
-    if (mukhiParam && String(mukhiParam).trim()) {
-      const decoded = decodeURIComponent(String(mukhiParam).trim());
-      setFilters((prev) => ({
-        ...prev,
-        mukhi: decoded,
-        subcategory: 'all',
-      }));
-      return;
-    }
     if (subParam && String(subParam).trim()) {
       const decoded = decodeURIComponent(String(subParam).trim());
       setFilters((prev) => ({
         ...prev,
         subcategory: decoded,
-        mukhi: 'all',
       }));
     }
   }, [searchParams]);
 
   useEffect(() => {
     fetchProducts();
-  }, [filters.mukhi, filters.subcategory, filters.deity, filters.planet, filters.rarity, filters.search]);
+  }, [filters.subcategory, filters.deity, filters.planet, filters.rarity, filters.search]);
 
   useEffect(() => {
-    // Filter by price and accessory type (Rudraksh / Other) on client side
-    let filtered = allProducts.filter(product => {
+    const filtered = allProducts.filter(product => {
       const price = product.price || 0;
-      if (price < filters.priceMin || price > filters.priceMax) return false;
-      if (filters.accessoryType === 'Rudraksh') return isRudrakshType(product);
-      if (filters.accessoryType === 'Other') return !isRudrakshType(product);
-      return true;
+      return price >= filters.priceMin && price <= filters.priceMax;
     });
     setProducts(filtered);
-  }, [filters.priceMin, filters.priceMax, filters.accessoryType, allProducts]);
+  }, [filters.priceMin, filters.priceMax, allProducts]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -112,8 +91,7 @@ const Accessories = () => {
       setLoading(true);
       const params = new URLSearchParams({
         category: 'Accessories',
-        ...(filters.mukhi !== 'all' && { subcategory: filters.mukhi }),
-        ...(filters.mukhi === 'all' && filters.subcategory !== 'all' && { subcategory: filters.subcategory }),
+        ...(filters.subcategory !== 'all' && { subcategory: filters.subcategory }),
         ...(filters.deity !== 'all' && { deity: filters.deity }),
         ...(filters.planet !== 'all' && { planet: filters.planet }),
         ...(filters.rarity !== 'all' && { rarity: filters.rarity }),
@@ -151,8 +129,6 @@ const Accessories = () => {
 
   const clearFilters = () => {
     setFilters({
-      accessoryType: 'all',
-      mukhi: 'all',
       subcategory: 'all',
       deity: 'all',
       planet: 'all',
@@ -248,41 +224,6 @@ const Accessories = () => {
                 />
               </div>
 
-              {/* Accessory Type: Rudraksh / Other */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Accessory Type
-                </label>
-                <select
-                  value={filters.accessoryType}
-                  onChange={(e) => handleFilterChange('accessoryType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                >
-                  <option value="all">All Types</option>
-                  <option value="Rudraksh">Rudraksh</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              {/* Mukhi Filter (for Rudraksh accessories) */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rudraksh Mukhi
-                </label>
-                <select
-                  value={filters.mukhi}
-                  onChange={(e) => handleFilterChange('mukhi', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                >
-                  <option value="all">All Mukhi</option>
-                  {MUKHI_OPTIONS.map((mukhi) => (
-                    <option key={mukhi} value={mukhi}>
-                      {mukhi}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Price Range Filter */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -354,25 +295,23 @@ const Accessories = () => {
               </div>
 
               {/* Subcategory Filter */}
-              {filterOptions.subcategories.length > 0 && (
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subcategory
-                  </label>
-                  <select
-                    value={filters.subcategory}
-                    onChange={(e) => handleFilterChange('subcategory', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                  >
-                    <option value="all">All Subcategories</option>
-                    {filterOptions.subcategories.map((subcat) => (
-                      <option key={subcat} value={subcat}>
-                        {subcat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Subcategory
+                </label>
+                <select
+                  value={filters.subcategory}
+                  onChange={(e) => handleFilterChange('subcategory', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                >
+                  <option value="all">All Subcategories</option>
+                  {ACCESSORIES_SUBCATEGORIES.map((subcat) => (
+                    <option key={subcat.id} value={subcat.name}>
+                      {subcat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Deity Filter */}
               {filterOptions.deities.length > 0 && (
