@@ -8,7 +8,7 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const siteUrl = (env.VITE_SITE_URL || 'https://gawriganga.com').replace(/\/+$/, '');
+  const siteUrl = (env.VITE_SITE_URL || 'https://www.gawriganga.com').replace(/\/+$/, '');
 
   return {
     plugins: [
