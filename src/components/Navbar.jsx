@@ -60,6 +60,10 @@ const Navbar = () => {
             href: '/accessories',
         },
         {
+            name: 'Combos',
+            href: '/combos',
+        },
+        {
             name: 'Rashi',
             href: '/rashi',
         },
