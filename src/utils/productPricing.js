@@ -1,7 +1,9 @@
 /**
- * Normalize discount from DB/API: 0 means no display discount; cap below 100 to avoid divide-by-zero.
+ * Normalize discount from DB/API. Unset (null/undefined/'') → no UI discount.
+ * Note: Number(null) is 0 in JS — we must branch before Number().
  */
 export function normalizeDiscountPercent(value) {
+  if (value === null || value === undefined || value === '') return 0;
   const d = Number(value);
   if (!Number.isFinite(d) || d <= 0) return 0;
   if (d >= 100) return 99;
@@ -9,7 +11,7 @@ export function normalizeDiscountPercent(value) {
 }
 
 /**
- * `price` is the selling (current) price. `discountPercent` is the markdown from "original" (e.g. 25 => original = price / 0.75).
+ * `price` is the selling (current) price. `discountPercent` from DB (e.g. 25 => original = price / 0.75).
  */
 export function calculateProductPricing(price, discountPercent) {
   const p = Number(price);
@@ -28,11 +30,15 @@ export function calculateProductPricing(price, discountPercent) {
   };
 }
 
-export function pricingFromProduct(product) {
-  return calculateProductPricing(product?.price, product?.discount_percent);
+function discountRawFromProduct(product) {
+  return product?.discount_percent ?? product?.discountPercent;
 }
 
-/** Subtotal at list/original prices vs current prices for cart lines (uses `discount_percent` per item). */
+export function pricingFromProduct(product) {
+  return calculateProductPricing(product?.price, discountRawFromProduct(product));
+}
+
+/** Subtotal at list vs sale; only lines with a positive DB discount show savings. */
 export function cartDiscountTotals(cartItems) {
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
     return { originalTotal: 0, saleTotal: 0, discountAmount: 0 };
@@ -42,10 +48,8 @@ export function cartDiscountTotals(cartItems) {
   for (const item of cartItems) {
     const q = Number(item.quantity) || 0;
     if (q <= 0) continue;
-    const { currentPrice, originalPrice } = calculateProductPricing(
-      item.price,
-      item.discount_percent,
-    );
+    const raw = item.discount_percent ?? item.discountPercent;
+    const { currentPrice, originalPrice } = calculateProductPricing(item.price, raw);
     saleTotal += currentPrice * q;
     originalTotal += originalPrice * q;
   }
