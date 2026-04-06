@@ -9,9 +9,17 @@ import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 
 const ACCESSORY_TYPE_LINKS = [
-    { label: 'Bracelet', to: `/accessories?subcategory=${encodeURIComponent('Bracelet')}` },
     { label: 'Mala', to: `/accessories?subcategory=${encodeURIComponent('Mala')}` },
+    { label: 'Bracelet', to: `/accessories?subcategory=${encodeURIComponent('Bracelet')}` },
     { label: 'Necklace', to: `/accessories?subcategory=${encodeURIComponent('Necklace')}` },
+    { label: 'Earring', to: `/accessories?subcategory=${encodeURIComponent('Earring')}` },
+    { label: 'Ring', to: `/accessories?subcategory=${encodeURIComponent('Ring')}` },
+    { label: 'Other', to: `/accessories?subcategory=${encodeURIComponent('Other')}` },
+]
+const TULSI_MALA_LINKS = [
+    { label: 'Mala', to: `/tulsimala?subcategory=${encodeURIComponent('Mala')}` },
+    { label: 'Necklace', to: `/tulsimala?subcategory=${encodeURIComponent('Necklace')}` },
+    { label: 'Bracelet', to: `/tulsimala?subcategory=${encodeURIComponent('Bracelet')}` },
 ]
 
 const MUKHI_NAV_LINKS = Array.from({ length: 14 }, (_, i) => {
@@ -22,14 +30,29 @@ const MUKHI_NAV_LINKS = Array.from({ length: 14 }, (_, i) => {
     }
 })
 
+/** Desktop mega-menu: high contrast panel + clear sections */
+const megaPanel =
+    'overflow-hidden rounded-2xl border border-gray-200/95 bg-white shadow-[0_22px_56px_-14px_rgba(15,23,42,0.28)] ring-1 ring-gray-950/[0.06]'
+const megaHero =
+    'mx-3 my-3 block rounded-xl bg-primary/12 px-4 py-3 text-center text-sm font-bold text-primary shadow-sm ring-1 ring-primary/15 transition-colors hover:bg-primary/18'
+const megaSectionTitle =
+    'mb-2.5 px-1 text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500'
+const megaListLink =
+    'block rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-800 transition-colors hover:bg-primary/10 hover:text-primary'
+const megaGridLink =
+    'flex min-h-[2.75rem] items-center justify-center rounded-xl border border-gray-100 bg-gray-50/95 px-2 text-sm font-semibold text-gray-800 shadow-sm transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-primary hover:shadow-md'
+
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mobileAccessoriesOpen, setMobileAccessoriesOpen] = useState(false);
+    const [mobileTulsiOpen, setMobileTulsiOpen] = useState(false);
     const [mobileRudrakshaOpen, setMobileRudrakshaOpen] = useState(false);
     const [desktopAccessoriesOpen, setDesktopAccessoriesOpen] = useState(false);
+    const [desktopTulsiOpen, setDesktopTulsiOpen] = useState(false);
     const [desktopRudrakshaOpen, setDesktopRudrakshaOpen] = useState(false);
     const accessoriesDesktopRef = useRef(null);
     const rudrakshaDesktopRef = useRef(null);
+    const tulsiDesktopRef = useRef(null);
     const { getTotalItems } = useCart();
     const { getTotalItems: getWishlistCount } = useWishlist();
     const { isAuthenticated } = useAuth();
@@ -76,11 +99,12 @@ const Navbar = () => {
     const closeMenu = () => {
         setIsMenuOpen(false);
         setMobileAccessoriesOpen(false);
+        setMobileTulsiOpen(false);
         setMobileRudrakshaOpen(false);
     };
 
     useEffect(() => {
-        if (!desktopAccessoriesOpen && !desktopRudrakshaOpen) return;
+        if (!desktopAccessoriesOpen && !desktopRudrakshaOpen && !desktopTulsiOpen) return;
         const onDown = (e) => {
             if (
                 desktopAccessoriesOpen &&
@@ -96,13 +120,21 @@ const Navbar = () => {
             ) {
                 setDesktopRudrakshaOpen(false);
             }
+            if (
+                desktopTulsiOpen &&
+                tulsiDesktopRef.current &&
+                !tulsiDesktopRef.current.contains(e.target)
+            ) {
+                setDesktopTulsiOpen(false);
+            }
         };
         document.addEventListener('mousedown', onDown);
         return () => document.removeEventListener('mousedown', onDown);
-    }, [desktopAccessoriesOpen, desktopRudrakshaOpen]);
+    }, [desktopAccessoriesOpen, desktopRudrakshaOpen, desktopTulsiOpen]);
 
     useEffect(() => {
         setDesktopAccessoriesOpen(false);
+        setDesktopTulsiOpen(false);
         setDesktopRudrakshaOpen(false);
     }, [location.pathname, location.search]);
 
@@ -169,6 +201,7 @@ const Navbar = () => {
                         const active = isActive(item.href);
                         const isSprayTab = item.href === '/sprays';
                         const isRudraksha = item.href === '/rudraksha';
+                        const isTulsi = item.href === '/tulsimala';
                         const isAccessories = item.href === '/accessories';
 
                         if (isRudraksha) {
@@ -178,10 +211,11 @@ const Navbar = () => {
                                     key={item.name}
                                     ref={rudrakshaDesktopRef}
                                     className="relative list-none"
+                                    onMouseEnter={() => setDesktopRudrakshaOpen(true)}
+                                    onMouseLeave={() => setDesktopRudrakshaOpen(false)}
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={() => setDesktopRudrakshaOpen((o) => !o)}
+                                    <Link
+                                        to={item.href}
                                         className={`flex cursor-pointer items-center gap-1 font-semibold transition-all text-base xl:text-lg ${
                                             rudrakshaActive
                                                 ? 'text-primary font-bold border-b-2 border-primary pb-1'
@@ -192,34 +226,37 @@ const Navbar = () => {
                                     >
                                         {item.name}
                                         <FaChevronDown className={`text-xs transition-transform ${desktopRudrakshaOpen ? 'rotate-180' : ''}`} aria-hidden />
-                                    </button>
+                                    </Link>
                                     {desktopRudrakshaOpen && (
                                         <div
-                                            className="absolute left-1/2 top-full z-60 mt-2 w-[min(100vw-2rem,22rem)] -translate-x-1/2 rounded-xl border border-[#E9DFC4] bg-white py-3 shadow-xl xl:left-0 xl:translate-x-0 xl:w-72"
-                                            role="menu"
+                                            className="absolute left-1/2 top-full z-60 w-[min(100vw-2rem,24rem)] -translate-x-1/2 pt-2 xl:left-0 xl:translate-x-0 xl:w-80"
+                                            role="presentation"
                                         >
-                                            <Link
-                                                to="/rudraksha"
-                                                className="block px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5"
-                                                onClick={() => setDesktopRudrakshaOpen(false)}
-                                            >
-                                                All Rudraksha
-                                            </Link>
-                                            <div className="my-2 border-t border-gray-100" />
-                                            <p className="px-4 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">By Mukhi (1–14)</p>
-                                            <div className="max-h-52 overflow-y-auto px-2">
-                                                <div className="grid grid-cols-2 gap-0.5">
-                                                    {MUKHI_NAV_LINKS.map((l) => (
-                                                        <Link
-                                                            key={l.label}
-                                                            to={l.to}
-                                                            className="rounded-md px-2 py-1.5 text-xs font-medium text-gray-800 hover:bg-primary/10 hover:text-primary"
-                                                            onClick={() => setDesktopRudrakshaOpen(false)}
-                                                            role="menuitem"
-                                                        >
-                                                            {l.label}
-                                                        </Link>
-                                                    ))}
+                                            <div className={megaPanel} role="menu">
+                                                <Link
+                                                    to="/rudraksha"
+                                                    className={megaHero}
+                                                    onClick={() => setDesktopRudrakshaOpen(false)}
+                                                >
+                                                    View all Rudraksha
+                                                </Link>
+                                                <div className="border-t border-gray-100 bg-[#FFFAF5] px-3 pb-4 pt-3">
+                                                    <p className={megaSectionTitle}>By Mukhi (1–14)</p>
+                                                    <div className="max-h-[min(18rem,50vh)] overflow-y-auto overscroll-contain pr-0.5">
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            {MUKHI_NAV_LINKS.map((l) => (
+                                                                <Link
+                                                                    key={l.label}
+                                                                    to={l.to}
+                                                                    className={megaGridLink}
+                                                                    onClick={() => setDesktopRudrakshaOpen(false)}
+                                                                    role="menuitem"
+                                                                >
+                                                                    {l.label}
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -235,10 +272,11 @@ const Navbar = () => {
                                     key={item.name}
                                     ref={accessoriesDesktopRef}
                                     className="relative list-none"
+                                    onMouseEnter={() => setDesktopAccessoriesOpen(true)}
+                                    onMouseLeave={() => setDesktopAccessoriesOpen(false)}
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={() => setDesktopAccessoriesOpen((o) => !o)}
+                                    <Link
+                                        to={item.href}
                                         className={`flex cursor-pointer items-center gap-1 font-semibold transition-all text-base xl:text-lg ${
                                             accActive
                                                 ? 'text-primary font-bold border-b-2 border-primary pb-1'
@@ -249,32 +287,91 @@ const Navbar = () => {
                                     >
                                         {item.name}
                                         <FaChevronDown className={`text-xs transition-transform ${desktopAccessoriesOpen ? 'rotate-180' : ''}`} aria-hidden />
-                                    </button>
+                                    </Link>
                                     {desktopAccessoriesOpen && (
                                         <div
-                                            className="absolute left-1/2 top-full z-60 mt-2 w-[min(100vw-2rem,22rem)] -translate-x-1/2 rounded-xl border border-[#E9DFC4] bg-white py-3 shadow-xl xl:left-0 xl:translate-x-0 xl:w-72"
-                                            role="menu"
+                                            className="absolute left-1/2 top-full z-60 w-[min(100vw-2rem,20rem)] -translate-x-1/2 pt-2 xl:left-0 xl:translate-x-0 xl:w-64"
+                                            role="presentation"
                                         >
-                                            <Link
-                                                to="/accessories"
-                                                className="block px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5"
-                                                onClick={() => setDesktopAccessoriesOpen(false)}
-                                            >
-                                                All accessories
-                                            </Link>
-                                            <div className="my-2 border-t border-gray-100" />
-                                            <p className="px-4 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">By type</p>
-                                            {ACCESSORY_TYPE_LINKS.map((l) => (
+                                            <div className={megaPanel} role="menu">
                                                 <Link
-                                                    key={l.label}
-                                                    to={l.to}
-                                                    className="block px-4 py-2 text-sm text-gray-800 hover:bg-primary/5 hover:text-primary"
+                                                    to="/accessories"
+                                                    className={megaHero}
                                                     onClick={() => setDesktopAccessoriesOpen(false)}
-                                                    role="menuitem"
                                                 >
-                                                    {l.label}
+                                                    View all accessories
                                                 </Link>
-                                            ))}
+                                                <div className="space-y-1 border-t border-gray-100 bg-[#FFFAF5] px-2 py-3">
+                                                    <p className={`${megaSectionTitle} px-2`}>By type</p>
+                                                    {ACCESSORY_TYPE_LINKS.map((l) => (
+                                                        <Link
+                                                            key={l.label}
+                                                            to={l.to}
+                                                            className={megaListLink}
+                                                            onClick={() => setDesktopAccessoriesOpen(false)}
+                                                            role="menuitem"
+                                                        >
+                                                            {l.label}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
+                        if (isTulsi) {
+                            const tulsiActive = location.pathname.startsWith('/tulsimala');
+                            return (
+                                <div
+                                    key={item.name}
+                                    ref={tulsiDesktopRef}
+                                    className="relative list-none"
+                                    onMouseEnter={() => setDesktopTulsiOpen(true)}
+                                    onMouseLeave={() => setDesktopTulsiOpen(false)}
+                                >
+                                    <Link
+                                        to={item.href}
+                                        className={`flex cursor-pointer items-center gap-1 font-semibold transition-all text-base xl:text-lg ${
+                                            tulsiActive
+                                                ? 'text-primary font-bold border-b-2 border-primary pb-1'
+                                                : 'text-gray-700 hover:text-primary'
+                                        }`}
+                                        aria-expanded={desktopTulsiOpen}
+                                        aria-haspopup="true"
+                                    >
+                                        {item.name}
+                                        <FaChevronDown className={`text-xs transition-transform ${desktopTulsiOpen ? 'rotate-180' : ''}`} aria-hidden />
+                                    </Link>
+                                    {desktopTulsiOpen && (
+                                        <div
+                                            className="absolute left-1/2 top-full z-60 w-[min(100vw-2rem,20rem)] -translate-x-1/2 pt-2 xl:left-0 xl:translate-x-0 xl:w-64"
+                                            role="presentation"
+                                        >
+                                            <div className={megaPanel} role="menu">
+                                                <Link
+                                                    to="/tulsimala"
+                                                    className={megaHero}
+                                                    onClick={() => setDesktopTulsiOpen(false)}
+                                                >
+                                                    View all Tulsi Mala
+                                                </Link>
+                                                <div className="space-y-1 border-t border-gray-100 bg-[#FFFAF5] px-2 py-3">
+                                                    <p className={`${megaSectionTitle} px-2`}>By type</p>
+                                                    {TULSI_MALA_LINKS.map((l) => (
+                                                        <Link
+                                                            key={l.label}
+                                                            to={l.to}
+                                                            className={megaListLink}
+                                                            onClick={() => setDesktopTulsiOpen(false)}
+                                                            role="menuitem"
+                                                        >
+                                                            {l.label}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -390,6 +487,7 @@ const Navbar = () => {
                             const active = isActive(item.href);
                             const isSprayTab = item.href === '/sprays';
                             const isRudraksha = item.href === '/rudraksha';
+                            const isTulsi = item.href === '/tulsimala';
                             const isAccessories = item.href === '/accessories';
 
                             if (isRudraksha) {
@@ -410,22 +508,24 @@ const Navbar = () => {
                                             <FaChevronDown className={`shrink-0 text-sm transition-transform ${mobileRudrakshaOpen ? 'rotate-180' : ''}`} aria-hidden />
                                         </button>
                                         {mobileRudrakshaOpen && (
-                                            <div className="space-y-1 bg-[#FFFAEB]/80 px-4 py-3 pl-8">
+                                            <div className="mx-4 mb-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-md ring-1 ring-gray-950/5">
                                                 <Link
                                                     to="/rudraksha"
                                                     onClick={closeMenu}
-                                                    className="block rounded-md py-2 text-base font-medium text-primary hover:underline"
+                                                    className="mb-4 block rounded-xl bg-primary/12 py-3.5 text-center text-base font-bold text-primary ring-1 ring-primary/15"
                                                 >
-                                                    All Rudraksha
+                                                    View all Rudraksha
                                                 </Link>
-                                                <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">By Mukhi (1–14)</p>
-                                                <div className="grid grid-cols-2 gap-1 pb-2">
+                                                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                                                    By Mukhi (1–14)
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-2">
                                                     {MUKHI_NAV_LINKS.map((l) => (
                                                         <Link
                                                             key={l.label}
                                                             to={l.to}
                                                             onClick={closeMenu}
-                                                            className="rounded-md py-2 text-sm text-gray-800 hover:text-primary"
+                                                            className="flex min-h-12 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 py-2 text-sm font-semibold text-gray-800 active:bg-primary/15 active:text-primary"
                                                         >
                                                             {l.label}
                                                         </Link>
@@ -455,25 +555,75 @@ const Navbar = () => {
                                             <FaChevronDown className={`shrink-0 text-sm transition-transform ${mobileAccessoriesOpen ? 'rotate-180' : ''}`} aria-hidden />
                                         </button>
                                         {mobileAccessoriesOpen && (
-                                            <div className="space-y-1 bg-[#FFFAEB]/80 px-4 py-3 pl-8">
+                                            <div className="mx-4 mb-4 rounded-2xl border border-gray-200 bg-white p-3 shadow-md ring-1 ring-gray-950/5">
                                                 <Link
                                                     to="/accessories"
                                                     onClick={closeMenu}
-                                                    className="block rounded-md py-2 text-base font-medium text-primary hover:underline"
+                                                    className="mb-3 block rounded-xl bg-primary/12 py-3.5 text-center text-base font-bold text-primary ring-1 ring-primary/15"
                                                 >
-                                                    All accessories
+                                                    View all accessories
                                                 </Link>
-                                                <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-gray-500">By type</p>
-                                                {ACCESSORY_TYPE_LINKS.map((l) => (
-                                                    <Link
-                                                        key={l.label}
-                                                        to={l.to}
-                                                        onClick={closeMenu}
-                                                        className="block rounded-md py-2 text-base text-gray-800 hover:text-primary"
-                                                    >
-                                                        {l.label}
-                                                    </Link>
-                                                ))}
+                                                <p className="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                                                    By type
+                                                </p>
+                                                <div className="flex flex-col gap-1">
+                                                    {ACCESSORY_TYPE_LINKS.map((l) => (
+                                                        <Link
+                                                            key={l.label}
+                                                            to={l.to}
+                                                            onClick={closeMenu}
+                                                            className="rounded-xl px-4 py-3 text-base font-semibold text-gray-800 active:bg-primary/10 active:text-primary"
+                                                        >
+                                                            {l.label}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }
+                            if (isTulsi) {
+                                const tulsiActive = location.pathname.startsWith('/tulsimala');
+                                return (
+                                    <div key={item.name} className="border-b border-gray-100 last:border-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => setMobileTulsiOpen((o) => !o)}
+                                            className={`flex w-full items-center justify-between px-6 py-3.5 text-left text-lg font-semibold transition-colors ${
+                                                tulsiActive || mobileTulsiOpen
+                                                    ? 'text-primary font-bold bg-primary/10 border-l-4 border-primary'
+                                                    : 'text-gray-700 hover:bg-primary/5'
+                                            }`}
+                                            aria-expanded={mobileTulsiOpen}
+                                        >
+                                            {item.name}
+                                            <FaChevronDown className={`shrink-0 text-sm transition-transform ${mobileTulsiOpen ? 'rotate-180' : ''}`} aria-hidden />
+                                        </button>
+                                        {mobileTulsiOpen && (
+                                            <div className="mx-4 mb-4 rounded-2xl border border-gray-200 bg-white p-3 shadow-md ring-1 ring-gray-950/5">
+                                                <Link
+                                                    to="/tulsimala"
+                                                    onClick={closeMenu}
+                                                    className="mb-3 block rounded-xl bg-primary/12 py-3.5 text-center text-base font-bold text-primary ring-1 ring-primary/15"
+                                                >
+                                                    View all Tulsi Mala
+                                                </Link>
+                                                <p className="mb-1 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                                                    By type
+                                                </p>
+                                                <div className="flex flex-col gap-1">
+                                                    {TULSI_MALA_LINKS.map((l) => (
+                                                        <Link
+                                                            key={l.label}
+                                                            to={l.to}
+                                                            onClick={closeMenu}
+                                                            className="rounded-xl px-4 py-3 text-base font-semibold text-gray-800 active:bg-primary/10 active:text-primary"
+                                                        >
+                                                            {l.label}
+                                                        </Link>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>

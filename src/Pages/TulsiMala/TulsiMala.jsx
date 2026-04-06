@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { FiFilter } from 'react-icons/fi';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
@@ -8,8 +9,15 @@ import { pricingFromProduct } from '../../utils/productPricing';
 
 /** Must match `categories.name` in your database (comparison is case-insensitive). */
 const TULSI_CATEGORY = 'Tulsi Mala';
+const TULSI_MALA_SUBCATEGORIES = [
+  { id: 1, name: 'Mala' },
+  { id: 2, name: 'Necklace' },
+  { id: 3, name: 'Bracelet' },
+];
 
 const TulsiMala = () => {
+  const [searchParams] = useSearchParams();
+  const prevSearchQsRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
     subcategories: [],
@@ -33,6 +41,24 @@ const TulsiMala = () => {
   useEffect(() => {
     fetchFilterOptions();
   }, []);
+
+  useEffect(() => {
+    const qs = searchParams.toString();
+    const prevQs = prevSearchQsRef.current;
+    prevSearchQsRef.current = qs;
+    if (prevQs && prevQs.length > 0 && qs.length === 0) {
+      setFilters((prev) => ({ ...prev, subcategory: 'all' }));
+      return;
+    }
+    const subParam = searchParams.get('subcategory');
+    if (subParam && String(subParam).trim()) {
+      const decoded = decodeURIComponent(String(subParam).trim());
+      setFilters((prev) => ({
+        ...prev,
+        subcategory: decoded,
+      }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchProducts();
@@ -270,23 +296,21 @@ const TulsiMala = () => {
               </div>
 
               {/* Subcategory Filter */}
-              {filterOptions.subcategories.length > 0 && (
-                <div className="mb-6">
-                  <label className="mb-2 block text-sm font-medium text-gray-700">Subcategory</label>
-                  <select
-                    value={filters.subcategory}
-                    onChange={(e) => handleFilterChange('subcategory', e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  >
-                    <option value="all">All Subcategories</option>
-                    {filterOptions.subcategories.map((subcat) => (
-                      <option key={subcat} value={subcat}>
-                        {subcat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div className="mb-6">
+                <label className="mb-2 block text-sm font-medium text-gray-700">Subcategory</label>
+                <select
+                  value={filters.subcategory}
+                  onChange={(e) => handleFilterChange('subcategory', e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                >
+                  <option value="all">All Subcategories</option>
+                  {TULSI_MALA_SUBCATEGORIES.map((subcat) => (
+                    <option key={subcat.id} value={subcat.name}>
+                      {subcat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               {/* Deity Filter */}
               {filterOptions.deities.length > 0 && (
