@@ -164,7 +164,7 @@ const FeaturedProductsSection = () => {
                       Add to cart
                     </button>
                     <Link
-                      to={`/product/${heroProduct.id}`}
+                      to={`/product/${heroProduct.slug || heroProduct.id}`}
                       className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white transition hover:bg-primary/90"
                     >
                       View details
@@ -202,7 +202,7 @@ const FeaturedProductsSection = () => {
                   key={product.id}
                   className="group grid grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)] items-start sm:items-center gap-2.5 sm:gap-3 rounded-2xl border-2 border-amber-200/90 bg-white/90 p-2.5 sm:p-3 shadow-sm transition hover:border-primary/35 hover:shadow-md"
                 >
-                  <Link to={`/product/${product.id}`} className="h-[72px] w-[72px] sm:h-20 sm:w-20 overflow-hidden rounded-lg sm:rounded-xl bg-stone-100">
+                  <Link to={`/product/${product.slug || product.id}`} className="h-[72px] w-[72px] sm:h-20 sm:w-20 overflow-hidden rounded-lg sm:rounded-xl bg-stone-100">
                     {image ? (
                       <img
                         src={image}
@@ -218,7 +218,7 @@ const FeaturedProductsSection = () => {
                   </Link>
 
                   <div className="min-w-0">
-                    <Link to={`/product/${product.id}`} className="line-clamp-2 text-xs sm:text-base font-semibold text-stone-900 block">
+                    <Link to={`/product/${product.slug || product.id}`} className="line-clamp-2 text-xs sm:text-base font-semibold text-stone-900 block">
                       {product.name}
                     </Link>
                     <p className="mt-1 text-xs sm:text-sm font-bold text-primary">{formatInr(pricing.currentPrice)}</p>
@@ -238,7 +238,7 @@ const FeaturedProductsSection = () => {
                         Add to cart
                       </button>
                       <Link
-                        to={`/product/${product.id}`}
+                        to={`/product/${product.slug || product.id}`}
                         className="inline-flex items-center gap-1.5 rounded-lg border border-amber-300/80 bg-amber-50 px-2 py-1 text-[11px] sm:text-xs font-semibold text-amber-800 transition hover:border-amber-400 hover:bg-amber-100"
                       >
                         View details

@@ -251,7 +251,7 @@ const Cart = () => {
               >
                 {/* Product Image */}
                 <Link
-                  to={`/product/${item.id}`}
+                  to={`/product/${item.slug || item.id}`}
                   className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100 shrink-0"
                 >
                   {item.images && item.images.length > 0 ? (
@@ -274,7 +274,7 @@ const Cart = () => {
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 min-w-0">
                   <div className="flex-1 min-w-0">
                     <Link
-                      to={`/product/${item.id}`}
+                      to={`/product/${item.slug || item.id}`}
                       className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 hover:text-primary transition-colors mb-1 block line-clamp-2"
                     >
                       {item.name}

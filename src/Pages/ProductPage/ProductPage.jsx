@@ -33,7 +33,7 @@ import rdcImage from "../../assets/ProductPage/rdc.webp";
 import { pricingFromProduct } from "../../utils/productPricing";
 
 const ProductPage = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
   const {
@@ -157,7 +157,7 @@ const ProductPage = () => {
 
   useEffect(() => {
     fetchProduct();
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     if (!isRudrakshaProduct && includeBlessing) {
@@ -259,7 +259,7 @@ const ProductPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await apiFetch(`/api/products/${id}`);
+      const response = await apiFetch(`/api/products/${slug}`);
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -303,7 +303,7 @@ const ProductPage = () => {
       return;
     }
     if (!isAuthenticated) {
-      navigate('/auth', { state: { from: { pathname: `/product/${id}` } } });
+      navigate('/auth', { state: { from: { pathname: `/product/${slug}` } } });
       return;
     }
     // Add to cart first if not already in cart
