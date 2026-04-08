@@ -5,11 +5,7 @@ import rudrakshaSection from '../../assets/HomePage/HomeImg1.webp'
 
 const RudrakshaSection = () => {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center border-t border-stone-200/80 overflow-hidden bg-amber-50/70">
-      {/* Premium background */}
-      <div className="absolute inset-0 bg-linear-to-b from-amber-50/90 via-primary/5 to-stone-100/90"/>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,var(--color-primary)/0.08,transparent_50%)]" />
-
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[#FFFAEB]">
       <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 flex-1 flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 xl:gap-16 items-center">
           {/* Image left – bordered frame, padding so border doesn’t touch image */}

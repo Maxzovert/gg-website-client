@@ -5,10 +5,7 @@ import rdcImage from '../../assets/ProductPage/rdc.webp'
 
 const AuthenticCertifiedSection = () => {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center border-t border-stone-200/80 overflow-hidden bg-stone-50/80">
-      <div className="absolute inset-0 bg-linear-to-b from-stone-50/95 via-orange-50/40 to-amber-50/60" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_75%_45%_at_50%_100%,var(--color-primary)/0.07,transparent_55%)]" />
-
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-[#FFFAEB]">
       <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 flex-1 flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 xl:gap-16 items-center">
           <div className="text-center lg:text-left">

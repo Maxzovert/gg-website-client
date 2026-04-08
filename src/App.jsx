@@ -31,6 +31,7 @@ const RefundCancellation = lazy(() => import('./Pages/Policies/RefundCancellatio
 const TermsAndConditions = lazy(() => import('./Pages/Policies/TermsAndConditions'))
 const ShippingPolicy = lazy(() => import('./Pages/Policies/ShippingPolicy'))
 const PrivacyPolicy = lazy(() => import('./Pages/Policies/PrivacyPolicy'))
+const PurposeProducts = lazy(() => import('./Pages/PurposeProducts/PurposeProducts'))
 
 const PageLoader = () => (
   <div className="min-h-[60vh] flex items-center justify-center">
@@ -57,6 +58,7 @@ const App = () => {
                   <Route path="/tulsimala" element={<TulsiMala />} />
                   <Route path="/rashi" element={<Rashi />} />
                   <Route path="/accessories" element={<Accessories />} />
+                  <Route path="/purpose-products" element={<PurposeProducts />} />
                   <Route path="/product/:slug" element={<ProductPage />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
