@@ -90,7 +90,7 @@ const ProductCard = ({
 
   return (
     <Link 
-      to={`/product/${product.id}`}
+      to={`/product/${product.slug || product.id}`}
       className={`bg-white shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col ${large ? 'rounded-2xl' : 'rounded-xl'}`}
     >
       {/* Product Image */}
