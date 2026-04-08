@@ -72,7 +72,7 @@ const FeaturedProductsSection = () => {
 
   if (loading) {
     return (
-      <section className="border-t border-stone-200/80 bg-stone-50/60 py-8 md:py-14">
+      <section className="bg-[#FFFAEB] py-8 md:py-14">
         <div className="mx-auto flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
           <Loader />
         </div>
@@ -87,7 +87,7 @@ const FeaturedProductsSection = () => {
 
   return (
     <section
-      className="relative overflow-hidden border-t border-stone-200/80 bg-amber-50 py-8 md:py-14"
+      className="relative overflow-hidden bg-[#FFFAEB] py-8 md:py-14"
       aria-labelledby="featured-products-heading"
     >
       <div className="pointer-events-none absolute left-0 top-0 h-44 w-44 rounded-full bg-primary/8 blur-3xl" />

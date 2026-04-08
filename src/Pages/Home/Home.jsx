@@ -9,19 +9,32 @@ import RudrakhshaProd from './RudrakhshaProd'
 import OriginImg from '../../assets/HomePage/origin.webp'
 import LimitedTimeCashbackOffer from './LimitedTimeCashbackOffer'
 import FeaturedProductsSection from './FeaturedProductsSection'
+import ShopByPurposeSection from './ShopByPurposeSection'
+
+const SectionDivider = () => (
+  <div className="mx-auto flex w-[92%] max-w-7xl items-center justify-center py-3 sm:py-4">
+    <div className="h-[2px] w-full rounded-full bg-linear-to-r from-transparent via-orange-300/90 to-transparent" />
+  </div>
+)
 
 const Home = () => {
   return (
-    <>
+    <div className="bg-[#FFFAEB]">
       <WebsiteCarousel />
       <RudrakshaSection />
+      <SectionDivider />
       <LimitedTimeCashbackOffer />
+      <SectionDivider />
       <FeaturedProductsSection />
+      <SectionDivider />
+      <RashiSection />
       <SpraySection />
       <RudrakhshaProd />
-      <RashiSection />
+      <SectionDivider />
+      <ShopByPurposeSection />
+      <SectionDivider />
       <AuthenticCertifiedSection />
-      <section className="w-full border-t border-stone-200/60 bg-stone-50/40">
+      <section className="w-full bg-[#FFFAEB]">
         <img
           src={OriginImg}
           alt="Why Gawri Ganga — our story and values"
@@ -29,8 +42,9 @@ const Home = () => {
           loading="lazy"
         />
       </section>
+      <SectionDivider />
       <FAQAccordion />
-    </>
+    </div>
   )
 }
 

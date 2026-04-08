@@ -45,7 +45,7 @@ const RudrakhshaProd = () => {
 
   if (loading) {
     return (
-      <section className="py-10 md:py-14 border-t border-stone-200/80 bg-linear-to-b from-amber-50/60 via-white to-stone-50/80">
+      <section className="py-10 md:py-14 bg-[#FFFAEB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
           <Loader />
         </div>
@@ -59,11 +59,9 @@ const RudrakhshaProd = () => {
 
   return (
     <section
-      className="relative py-10 md:py-14 border-t border-stone-200/80 overflow-x-clip overflow-y-visible bg-linear-to-b from-amber-50/70 via-white to-amber-50/40"
+      className="relative py-10 md:py-14 overflow-x-clip overflow-y-visible bg-[#FFFAEB]"
       aria-labelledby="rudrakhsha-featured-heading"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_40%_at_50%_0%,var(--color-primary)/0.12,transparent_55%)]" />
-
       <div className="relative max-w-400 mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-10">
           <p className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-primary mb-3">

@@ -17,7 +17,7 @@ import rudrakshaSection from '../../assets/HomePage/HomeImg1.webp';
 const LimitedTimeCashbackOffer = () => {
   return (
     <section
-      className="relative overflow-hidden border-y border-amber-200/80 bg-linear-to-r from-amber-50 via-white to-orange-50/90"
+      className="relative overflow-hidden bg-[#FFFAEB]"
       aria-labelledby="limited-cashback-heading"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-20%,var(--color-primary)/0.12,transparent_55%)]" />

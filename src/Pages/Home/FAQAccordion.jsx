@@ -67,8 +67,7 @@ const FAQAccordion = () => {
   }
 
   return (
-    <section id="faqs" className="bg-gray-50 border-t border-gray-200">
-      <div className="h-1 bg-primary" />
+    <section id="faqs" className="bg-[#FFFAEB]">
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
         <h2 className="font-heading font-bold text-primary text-2xl md:text-3xl text-center mb-8 md:mb-10">
           FAQs

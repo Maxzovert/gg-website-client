@@ -32,10 +32,7 @@ const RashiSection = ({ hideCta = false }) => {
   }))
 
   return (
-    <section className="relative bg-linear-to-b from-primary/5 to-gray-50 border-t border-gray-200 overflow-hidden">
-      {/* Decorative top accent */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-primary/30" />
-
+    <section className="relative bg-[#FFFAEB] overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
         {/* Section header */}
         <div className="text-center mb-6 md:mb-8">
@@ -49,8 +46,8 @@ const RashiSection = ({ hideCta = false }) => {
 
         {/* Moving zodiac row with edge fade */}
         <div className="relative py-4 md:py-5">
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-linear-to-r from-gray-50 to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-linear-to-l from-gray-50 to-transparent z-10" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-linear-to-r from-[#FFFAEB] to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-linear-to-l from-[#FFFAEB] to-transparent z-10" />
           <div className="rashi-scroll-container overflow-hidden">
             <div className="flex animate-zodiac-scroll w-max">
               {[1, 2].map((copy) => (
