@@ -10,6 +10,8 @@ const CheckoutModal = ({
   onClose,
   cartItems,
   totalAmount,
+  couponCode = null,
+  couponDiscount = 0,
   blessingCharge = 0,
   walletBalance = 0,
   useWallet = false,
@@ -102,7 +104,10 @@ const CheckoutModal = ({
   };
 
   const shippingCharges = Number(totalAmount || 0) > 1000 ? 0 : 50;
-  const payableAmount = Number(totalAmount || 0) + Number(blessingCharge || 0) + shippingCharges;
+  const payableAmount =
+    Math.max(0, Number(totalAmount || 0) - Number(couponDiscount || 0)) +
+    Number(blessingCharge || 0) +
+    shippingCharges;
   const walletApplicableAmount = useWallet
     ? Math.min(Number(walletAmountToUse) || 0, Number(walletBalance) || 0, payableAmount)
     : 0;
@@ -197,6 +202,8 @@ const CheckoutModal = ({
               cartItems={cartItems}
               selectedAddress={selectedAddress}
               totalAmount={totalAmount}
+              couponCode={couponCode}
+              couponDiscount={couponDiscount}
               blessingCharge={blessingCharge}
               walletBalance={walletBalance}
               useWallet={useWallet}

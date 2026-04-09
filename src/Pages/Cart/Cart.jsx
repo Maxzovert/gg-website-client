@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import { useAuth } from '../../context/AuthContext';
@@ -19,6 +19,42 @@ function shuffleInPlace(arr) {
 }
 
 const SUGGESTIONS_COUNT = 8;
+const CONFETTI_PIECES = Array.from({ length: 24 }, (_, index) => ({
+  id: index,
+  left: `${(index * 97) % 100}%`,
+  delay: `${(index % 8) * 0.08}s`,
+  duration: `${1.2 + (index % 5) * 0.2}s`,
+  rotation: `${(index * 37) % 360}deg`,
+}));
+
+const formatMoney = (value) => `₹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+const toPaise = (value) => Math.round(Number(value || 0) * 100);
+const meetsMinimumOrder = (subtotal, minimum) => {
+  const min = Number(minimum || 0);
+  const sub = Number(subtotal || 0);
+  if (Number.isInteger(min)) {
+    return Math.round(sub) >= min;
+  }
+  return toPaise(sub) >= toPaise(min);
+};
+
+function getCouponHeadline(coupon) {
+  if (!coupon) return '';
+  return String(coupon.discount_type).toLowerCase() === 'percentage'
+    ? `${coupon.discount_value}% OFF`
+    : `${formatMoney(coupon.discount_value)} OFF`;
+}
+
+function isCouponLive(coupon) {
+  if (!coupon) return false;
+  if (coupon.is_currently_valid !== undefined && coupon.is_currently_valid !== null) {
+    return Boolean(coupon.is_currently_valid);
+  }
+  const now = Date.now();
+  const start = coupon.start_date ? new Date(coupon.start_date).getTime() : null;
+  const end = coupon.expiry_date ? new Date(coupon.expiry_date).getTime() : null;
+  return (!start || now >= start) && (!end || now <= end);
+}
 
 function CartMoreProductsSection({ loading, products, calculatePricing, getReviewCount, sectionClassName = '' }) {
   if (!loading && products.length === 0) return null;
@@ -70,6 +106,12 @@ const Cart = () => {
   const [activeCampaigns, setActiveCampaigns] = useState([]);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+  const [selectedCouponCode, setSelectedCouponCode] = useState('');
+  const [privateCouponCode, setPrivateCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [showCouponCelebration, setShowCouponCelebration] = useState(false);
 
   const getReviewCount = useCallback((productId) => {
     const n = Number(productId);
@@ -106,13 +148,21 @@ const Cart = () => {
       subcategory.includes('mukhi')
     );
   });
-  const totalWithBlessing = totalPrice + (hasRudrakshaInCart ? blessingCharge : 0);
+  const couponDiscount = Number(appliedCoupon?.discount_amount || 0);
+  const subtotalAfterCoupon = Math.max(0, totalPrice - couponDiscount);
+  const totalWithBlessing = subtotalAfterCoupon + (hasRudrakshaInCart ? blessingCharge : 0);
   const shippingCharges = totalPrice > 1000 ? 0 : 50;
   const walletAppliedAmount = useWallet
     ? Math.min(walletToUse || walletBalance, walletBalance, totalWithBlessing + shippingCharges)
     : 0;
   const payableAfterWallet = Math.max(0, totalWithBlessing + shippingCharges - walletAppliedAmount);
   const { originalTotal, discountAmount } = cartDiscountTotals(cartItems);
+  const selectedCoupon = availableCoupons.find((coupon) => coupon.code === selectedCouponCode) || null;
+  const selectedCouponMinAmount = Number(selectedCoupon?.minimum_order_amount || 0);
+  const selectedCouponMeetsMinimum =
+    !selectedCoupon || meetsMinimumOrder(totalPrice, selectedCouponMinAmount);
+  const selectedCouponMissingAmount = Math.max(0, selectedCouponMinAmount - totalPrice);
+  const selectedCouponIsLive = !selectedCoupon || isCouponLive(selectedCoupon);
 
   useEffect(() => {
     if (!hasRudrakshaInCart && includeBlessing) {
@@ -146,6 +196,19 @@ const Cart = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const res = await apiFetch('/api/coupons/public');
+        const data = await res.json().catch(() => ({}));
+        setAvailableCoupons(Array.isArray(data?.data) ? data.data : []);
+      } catch (_error) {
+        setAvailableCoupons([]);
+      }
+    };
+    fetchCoupons();
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     const loadSuggestions = async () => {
       setSuggestionsLoading(true);
@@ -170,22 +233,101 @@ const Cart = () => {
     };
   }, [cartItems]);
 
+  useEffect(() => {
+    setAppliedCoupon(null);
+    setSelectedCouponCode('');
+    setPrivateCouponCode('');
+  }, [cartItems, totalPrice]);
+
+  const applyCouponByCode = async (couponCode) => {
+    if (!isAuthenticated) {
+      navigate('/auth', { state: { from: { pathname: '/cart' } } });
+      return;
+    }
+    setCouponLoading(true);
+    try {
+      const payloadItems = cartItems.map((item) => ({
+        product_id: item.id,
+        product_price: item.price,
+        quantity: item.quantity,
+      }));
+      const res = await apiFetch('/api/coupons/validate', {
+        method: 'POST',
+        body: JSON.stringify({
+          code: couponCode,
+          items: payloadItems,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data?.message || 'Failed to apply coupon');
+      }
+      setAppliedCoupon({
+        code: data.data.code,
+        discount_amount: Number(data.data.discount_amount || 0),
+      });
+      setShowCouponCelebration(true);
+      setTimeout(() => setShowCouponCelebration(false), 1800);
+      setPrivateCouponCode(data.data.code || '');
+      setSelectedCouponCode(data.data.code || selectedCouponCode);
+      toast.success(`Coupon ${data.data.code} applied`);
+    } catch (error) {
+      setAppliedCoupon(null);
+      toast.error(error.message || 'Failed to apply coupon');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!selectedCouponCode) {
+      toast.info('Please select a coupon first');
+      return;
+    }
+    if (selectedCoupon && !selectedCouponMeetsMinimum) {
+      toast.error(
+        `Minimum purchase for ${selectedCoupon.code} is ₹${selectedCouponMinAmount.toLocaleString('en-IN')}`,
+      );
+      return;
+    }
+    if (selectedCoupon && !selectedCouponIsLive) {
+      toast.error('This coupon is not active yet or already expired');
+      return;
+    }
+    await applyCouponByCode(selectedCouponCode);
+  };
+
+  const handleApplyPrivateCoupon = async () => {
+    const code = String(privateCouponCode || '').trim().toUpperCase();
+    if (!code) {
+      toast.info('Please enter a coupon code');
+      return;
+    }
+    await applyCouponByCode(code);
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setPrivateCouponCode('');
+    toast.success('Coupon removed');
+  };
+
   const showEmptyCart = cartItems.length === 0 && !showCheckout;
 
   if (showEmptyCart) {
     return (
-      <div className="min-h-screen py-8 sm:py-12 bg-linear-to-br from-orange-50/30 to-white">
-        <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
+      <div className="min-h-screen py-8 sm:py-12 bg-linear-to-br from-amber-50 via-white to-orange-50/40">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           <Link
             to="/"
-            className="mb-6 sm:mb-8 flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+            className="mb-6 sm:mb-8 inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-semibold"
           >
             <FaArrowLeft className="text-sm sm:text-base" />
             <span className="text-sm sm:text-base">Continue Shopping</span>
           </Link>
 
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <FaShoppingCart className="text-6xl sm:text-8xl text-gray-300 mb-6" />
+          <div className="rounded-2xl border border-primary/10 bg-white/80 backdrop-blur-sm shadow-lg flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+            <FaShoppingCart className="text-6xl sm:text-8xl text-primary/20 mb-6" />
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
               Your Cart is Empty
             </h1>
@@ -194,7 +336,7 @@ const Cart = () => {
             </p>
             <Link
               to="/"
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-semibold text-base sm:text-lg"
+              className="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-semibold text-base sm:text-lg shadow-md"
             >
               Start Shopping
             </Link>
@@ -214,24 +356,45 @@ const Cart = () => {
 
   return (
     <>
-    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white">
-      <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
+    {showCouponCelebration && (
+      <div className="pointer-events-none fixed inset-0 z-100 overflow-hidden">
+        {CONFETTI_PIECES.map((piece) => (
+          <span
+            key={piece.id}
+            className="cart-confetti-piece"
+            style={{
+              left: piece.left,
+              animationDelay: piece.delay,
+              animationDuration: piece.duration,
+              transform: `rotate(${piece.rotation})`,
+            }}
+          />
+        ))}
+      </div>
+    )}
+    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-[#f7f7fb] via-white to-[#fff6ec]">
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8 rounded-3xl border border-black/5 bg-white/90 backdrop-blur-md shadow-[0_10px_40px_rgba(17,24,39,0.06)] p-4 sm:p-6">
           <Link
             to="/"
-            className="mb-4 sm:mb-6 flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+            className="mb-4 sm:mb-6 inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-semibold text-sm"
           >
             <FaArrowLeft className="text-sm sm:text-base" />
             <span className="text-sm sm:text-base">Continue Shopping</span>
           </Link>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">
-              Shopping Cart
-            </h1>
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900">
+                Shopping Cart
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                Review your items and checkout securely.
+              </p>
+            </div>
             <button
               onClick={handleClearCart}
-              className="text-sm sm:text-base text-red-600 hover:text-red-700 font-medium transition-colors"
+              className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-semibold transition-colors border border-red-200 hover:border-red-300 px-3 py-2 rounded-lg bg-red-50/50"
             >
               Clear Cart
             </button>
@@ -243,16 +406,30 @@ const Cart = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-2 sm:space-y-4">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+            <div className="bg-white rounded-2xl border border-black/5 p-3 sm:p-4 shadow-sm">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <span className="text-gray-600">Free shipping unlocked above ₹1000</span>
+                <span className={`font-semibold ${totalPrice > 1000 ? 'text-emerald-600' : 'text-primary'}`}>
+                  {totalPrice > 1000 ? 'Unlocked' : `₹${Math.max(0, 1000 - totalPrice).toLocaleString('en-IN')} away`}
+                </span>
+              </div>
+              <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-linear-to-r from-primary to-orange-400 rounded-full transition-all"
+                  style={{ width: `${Math.min(100, (totalPrice / 1000) * 100)}%` }}
+                />
+              </div>
+            </div>
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg sm:rounded-xl shadow-md border border-primary/20 p-2 sm:p-4 md:p-6 flex gap-2 sm:gap-4"
+                className="group bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-black/5 p-3 sm:p-4 md:p-6 flex gap-3 sm:gap-4 hover:shadow-[0_14px_36px_rgba(17,24,39,0.08)] transition-all"
               >
                 {/* Product Image */}
                 <Link
                   to={`/product/${item.slug || item.id}`}
-                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100 shrink-0"
+                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-xl overflow-hidden bg-gray-100 shrink-0 ring-1 ring-black/5"
                 >
                   {item.images && item.images.length > 0 ? (
                     <img
@@ -286,17 +463,22 @@ const Cart = () => {
                         {item.planet && ` • ${item.planet}`}
                       </p>
                     )}
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-primary">
-                      ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-primary">
+                        ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      </p>
+                      <span className="text-[11px] sm:text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        per item
+                      </span>
+                    </div>
                   </div>
 
                   {/* Quantity Controls and Actions */}
                   <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
-                    <div className="flex items-center border-2 border-primary rounded-lg">
+                    <div className="flex items-center border border-gray-200 rounded-xl bg-gray-50">
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
-                        className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-xl"
                         disabled={item.quantity <= 1}
                       >
                         <FaMinus className="text-xs sm:text-sm" />
@@ -306,7 +488,7 @@ const Cart = () => {
                       </span>
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
-                        className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-xl"
                         disabled={item.quantity >= item.stock}
                       >
                         <FaPlus className="text-xs sm:text-sm" />
@@ -314,7 +496,8 @@ const Cart = () => {
                     </div>
 
                     {/* Item Total - Hidden on very small screens */}
-                    <div className="text-right hidden xs:block">
+                    <div className="text-right hidden xs:block min-w-20">
+                      <p className="text-[11px] sm:text-xs text-gray-500">Item total</p>
                       <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-primary">
                         ₹{(item.price * item.quantity).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                       </p>
@@ -323,7 +506,7 @@ const Cart = () => {
                     {/* Remove Button */}
                     <button
                       onClick={() => handleRemoveItem(item.id, item.name)}
-                      className="p-1.5 sm:p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                      className="p-1.5 sm:p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0 opacity-80 group-hover:opacity-100"
                       aria-label="Remove item"
                     >
                       <FaTrash className="text-sm sm:text-base md:text-lg" />
@@ -336,7 +519,7 @@ const Cart = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg sm:rounded-xl shadow-md border border-primary/20 p-3 sm:p-4 md:p-6 sticky top-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-[0_16px_36px_rgba(17,24,39,0.09)] border border-black/5 p-3 sm:p-4 md:p-6 sticky top-4">
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6">
                 Order Summary
               </h2>
@@ -364,7 +547,155 @@ const Cart = () => {
                     )}
                   </span>
                 </div>
+                {availableCoupons.length > 0 && (
+                  <div className="rounded-xl border border-black/10 bg-linear-to-br from-white to-amber-50/70 p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <FaTag className="text-primary text-sm" />
+                        <p className="text-xs sm:text-sm font-semibold text-gray-800">Coupons & offers</p>
+                      </div>
+                      <p className="text-[11px] sm:text-xs text-gray-500">{availableCoupons.length} available</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-2">
+                      {availableCoupons.map((coupon) => {
+                        const isSelected = selectedCouponCode === coupon.code;
+                        const minAmount = Number(coupon.minimum_order_amount || 0);
+                        const meetsMin = totalPrice >= minAmount;
+                        const isLive = isCouponLive(coupon);
+                        return (
+                          <div
+                            key={coupon.id}
+                            className={`rounded-lg border transition ${
+                              isSelected
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 bg-white hover:border-primary/40'
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setSelectedCouponCode(coupon.code)}
+                              className="text-left w-full p-2"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <p className="text-xs sm:text-sm font-bold text-gray-900">{coupon.code}</p>
+                                  <p className="text-[11px] sm:text-xs text-gray-600">{getCouponHeadline(coupon)}</p>
+                                </div>
+                                <span
+                                  className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-semibold ${
+                                    !isLive
+                                      ? 'bg-amber-100 text-amber-700'
+                                      : meetsMin
+                                        ? 'bg-emerald-100 text-emerald-700'
+                                        : 'bg-red-100 text-red-600'
+                                  }`}
+                                >
+                                  {!isLive ? 'Not live' : meetsMin ? 'Eligible' : `Min ${formatMoney(minAmount)}`}
+                                </span>
+                              </div>
+                            </button>
+
+                            {isSelected && (
+                              <div className="border-t border-gray-200 bg-white p-2 text-[11px] sm:text-xs text-gray-700">
+                                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                                  <p>Offer: <span className="font-semibold">{getCouponHeadline(coupon)}</span></p>
+                                  <p>Min order: <span className="font-semibold">{formatMoney(minAmount)}</span></p>
+                                  <p>
+                                    Max off:{' '}
+                                    <span className="font-semibold">
+                                      {coupon.maximum_discount != null
+                                        ? formatMoney(coupon.maximum_discount)
+                                        : 'No cap'}
+                                    </span>
+                                  </p>
+                                  <p>
+                                    Valid till:{' '}
+                                    <span className="font-semibold">
+                                      {coupon.expiry_date
+                                        ? new Date(coupon.expiry_date).toLocaleDateString('en-IN')
+                                        : 'No expiry'}
+                                    </span>
+                                  </p>
+                                </div>
+                                {selectedCoupon && !selectedCouponMeetsMinimum && (
+                                  <p className="text-red-600 font-semibold mt-2">
+                                    Add {formatMoney(selectedCouponMissingAmount)} more to unlock this coupon.
+                                  </p>
+                                )}
+                                {selectedCoupon && !selectedCouponIsLive && (
+                                  <p className="text-amber-700 font-semibold mt-2">
+                                    This coupon is not active for current date/time.
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-2 flex gap-2">
+                      {!appliedCoupon ? (
+                        <button
+                          type="button"
+                          onClick={handleApplyCoupon}
+                          disabled={couponLoading || !selectedCouponCode || !selectedCouponMeetsMinimum || !selectedCouponIsLive}
+                          className="flex-1 px-3 py-2 rounded-lg bg-linear-to-r from-primary to-orange-400 text-white text-xs sm:text-sm disabled:opacity-50 font-semibold shadow-sm"
+                        >
+                          {couponLoading ? 'Applying...' : 'Apply selected coupon'}
+                        </button>
+                      ) : (
+                        <>
+                          <div className="flex-1 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs sm:text-sm text-emerald-700 font-semibold flex items-center gap-2">
+                            <FaCheckCircle className="shrink-0" />
+                            {appliedCoupon.code} saved {formatMoney(couponDiscount)}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleRemoveCoupon}
+                            className="px-3 py-2 rounded-lg border border-red-300 text-red-600 text-xs sm:text-sm font-semibold"
+                          >
+                            Remove
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    {!appliedCoupon && (
+                      <div className="mt-3 border-t border-gray-200 pt-3">
+                        <p className="text-[11px] sm:text-xs text-gray-600 font-medium mb-2">
+                          Have a coupon code?
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={privateCouponCode}
+                            onChange={(e) => setPrivateCouponCode(e.target.value.toUpperCase())}
+                            placeholder="Enter Coupon code"
+                            className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyPrivateCoupon}
+                            disabled={couponLoading || !String(privateCouponCode || '').trim()}
+                            className="px-3 py-2 rounded-lg border border-primary text-primary text-xs sm:text-sm disabled:opacity-50 font-semibold"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="border-t border-gray-200 pt-2 sm:pt-3 md:pt-4">
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600 mb-2">
+                      <span>Coupon discount ({appliedCoupon.code})</span>
+                      <span className="text-green-600 font-semibold">
+                        -₹{couponDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  )}
                   {hasRudrakshaInCart && (
                     <>
                       <label className="mb-2 sm:mb-3 flex items-start gap-2 cursor-pointer select-none">
@@ -437,17 +768,20 @@ const Cart = () => {
                   setShowCheckout(true);
                 }}
                 disabled={cartItems.length === 0}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all font-semibold text-sm sm:text-base md:text-lg shadow-lg hover:shadow-xl mb-2 sm:mb-3 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-linear-to-r from-primary to-orange-400 text-white rounded-xl hover:brightness-95 transition-all font-semibold text-sm sm:text-base md:text-lg shadow-lg hover:shadow-xl mb-2 sm:mb-3 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 Proceed to Checkout
               </button>
 
               <Link
                 to="/"
-                className="block w-full text-center px-4 sm:px-6 py-2 sm:py-3 border-2 border-primary text-primary rounded-lg hover:bg-primary/10 transition-all font-semibold text-xs sm:text-sm md:text-base"
+                className="block w-full text-center px-4 sm:px-6 py-2 sm:py-3 border-2 border-primary text-primary rounded-xl hover:bg-primary/10 transition-all font-semibold text-xs sm:text-sm md:text-base"
               >
                 Continue Shopping
               </Link>
+              <p className="text-[11px] sm:text-xs text-gray-500 text-center mt-3">
+                Secure checkout • Trusted payment gateway • Easy returns
+              </p>
             </div>
           </div>
         </div>
@@ -466,6 +800,8 @@ const Cart = () => {
         onClose={() => setShowCheckout(false)}
         cartItems={cartItems}
         totalAmount={totalPrice}
+        couponCode={appliedCoupon?.code || null}
+        couponDiscount={couponDiscount}
         blessingCharge={hasRudrakshaInCart ? blessingCharge : 0}
         walletBalance={walletBalance}
         useWallet={useWallet}
