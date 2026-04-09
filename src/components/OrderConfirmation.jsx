@@ -9,6 +9,8 @@ const OrderConfirmation = ({
   cartItems,
   selectedAddress,
   totalAmount,
+  couponCode = null,
+  couponDiscount = 0,
   blessingCharge = 0,
   walletBalance = 0,
   useWallet = false,
@@ -24,9 +26,9 @@ const OrderConfirmation = ({
   const [orderData, setOrderData] = useState(initialOrderData);
   const { clearCart } = useCart();
 
-  const discountAmount = 0;
+  const discountAmount = Number(couponDiscount || 0);
   const shippingCharges = totalAmount > 1000 ? 0 : 50;
-  const grossFinalAmount = totalAmount + shippingCharges + (Number(blessingCharge) || 0);
+  const grossFinalAmount = Math.max(0, totalAmount - discountAmount) + shippingCharges + (Number(blessingCharge) || 0);
   const isOnlinePayment = ONLINE_PAYMENT_IDS.includes((paymentMethod || '').toLowerCase());
   const walletDeduction = useWallet
     ? Math.min(Number(walletAmountToUse) || 0, Number(walletBalance) || 0, grossFinalAmount)
@@ -69,7 +71,8 @@ const OrderConfirmation = ({
             address_id: selectedAddress.id,
             items: orderItems,
             total_amount: totalAmount,
-            discount_amount: 0,
+            discount_amount: discountAmount,
+            coupon_code: couponCode,
             shipping_charges: shippingCharges,
             blessing_charge: Number(blessingCharge) || 0,
             final_amount: finalAmount,
@@ -98,7 +101,8 @@ const OrderConfirmation = ({
           address_id: selectedAddress.id,
           items: orderItems,
           total_amount: totalAmount,
-          discount_amount: 0,
+          discount_amount: discountAmount,
+          coupon_code: couponCode,
           shipping_charges: shippingCharges,
           blessing_charge: Number(blessingCharge) || 0,
           final_amount: finalAmount,
@@ -262,6 +266,12 @@ const OrderConfirmation = ({
             <div className="flex justify-between text-gray-700">
               <span>Special Blessing Service:</span>
               <span>₹{Number(blessingCharge).toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
+            </div>
+          )}
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-emerald-700">
+              <span>Coupon ({couponCode || 'Applied'}):</span>
+              <span>-₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
             </div>
           )}
           {walletDeduction > 0 && (

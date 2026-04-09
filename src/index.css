@@ -115,3 +115,53 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 48px;
   border-radius: 2px;
 }
+
+/* Cart coupon celebration */
+@keyframes coupon-pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-20vh) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(110vh) rotate(640deg);
+  }
+}
+
+.cart-coupon-celebration {
+  animation: coupon-pop-in 420ms ease-out forwards;
+}
+
+.cart-confetti-piece {
+  position: absolute;
+  top: -10vh;
+  width: 10px;
+  height: 18px;
+  border-radius: 3px;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.cart-confetti-piece:nth-child(4n + 1) { background: #ff914d; }
+.cart-confetti-piece:nth-child(4n + 2) { background: #22c55e; }
+.cart-confetti-piece:nth-child(4n + 3) { background: #f43f5e; }
+.cart-confetti-piece:nth-child(4n + 4) { background: #3b82f6; }
