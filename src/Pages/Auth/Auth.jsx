@@ -12,7 +12,6 @@ const Auth = () => {
   const [otp, setOtp] = useState('');
   const [otpRequested, setOtpRequested] = useState(false);
   const [otpLength, setOtpLength] = useState(6);
-  const [devOtp, setDevOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const { sendPhoneOtp, verifyPhoneOtp } = useAuth();
   const toast = useToast();
@@ -45,7 +44,6 @@ const Auth = () => {
       } else {
         setOtpRequested(true);
         setOtp('');
-        setDevOtp(data?.dev_otp || '');
         if (typeof data?.otp_length === 'number' && data.otp_length > 0) {
           setOtpLength(data.otp_length);
         }
@@ -99,7 +97,6 @@ const Auth = () => {
   const handleEditPhone = () => {
     setOtpRequested(false);
     setOtp('');
-    setDevOtp('');
   };
 
   return (
@@ -154,11 +151,6 @@ const Auth = () => {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
-                Dev test: <span className="font-mono font-semibold">9999999999</span> + OTP{' '}
-                <span className="font-mono font-semibold">123456</span>
-              </p>
-
               <button
                 type="submit"
                 disabled={loading}
@@ -194,12 +186,6 @@ const Auth = () => {
                   autoFocus
                 />
               </div>
-
-              {!!devOtp && (
-                <p className="text-center text-xs text-emerald-600 bg-emerald-50 rounded-lg py-2 px-3">
-                  Dev mode — OTP: <span className="font-mono font-bold">{devOtp}</span>
-                </p>
-              )}
 
               <button
                 type="submit"
