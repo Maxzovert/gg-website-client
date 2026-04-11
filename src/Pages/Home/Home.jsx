@@ -7,6 +7,7 @@ import AuthenticCertifiedSection from './AuthenticCertifiedSection'
 import RudrakshaSection from './RudrakshaSection'
 import RudrakhshaProd from './RudrakhshaProd'
 import OriginImg from '../../assets/HomePage/origin.webp'
+import StartupIndiaImg from '../../assets/HomePage/SIC.webp'
 import LimitedTimeCashbackOffer from './LimitedTimeCashbackOffer'
 import FeaturedProductsSection from './FeaturedProductsSection'
 import ShopByPurposeSection from './ShopByPurposeSection'
@@ -42,8 +43,15 @@ const Home = () => {
           loading="lazy"
         />
       </section>
-      <SectionDivider />
       <FAQAccordion />
+      <section className="w-full bg-[#FFFAEB]">
+        <img
+          src={StartupIndiaImg}
+          alt="Why Gawri Ganga — our story and values"
+          className="block h-auto w-full max-w-none object-contain object-center"
+          loading="lazy"
+        />
+      </section>
     </div>
   )
 }

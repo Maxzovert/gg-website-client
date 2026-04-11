@@ -50,56 +50,6 @@ export const AuthProvider = ({ children }) => {
     };
   }, [API_URL]);
 
-  const signUp = async (email, password, metadata = {}) => {
-    try {
-      if (!API_URL) throw new Error('API URL is not configured');
-      const res = await apiFetch('/api/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          email,
-          password,
-          full_name: metadata.full_name,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to sign up');
-      }
-
-      if (data.token) {
-        window.localStorage.setItem('auth_token', data.token);
-      }
-      setUser(data.user || null);
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error };
-    }
-  };
-
-  const signIn = async (email, password) => {
-    try {
-      if (!API_URL) throw new Error('API URL is not configured');
-      const res = await apiFetch('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Failed to sign in');
-      }
-
-      if (data.token) {
-        window.localStorage.setItem('auth_token', data.token);
-      }
-      setUser(data.user || null);
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error };
-    }
-  };
-
   const signOut = async () => {
     try {
       if (API_URL) {
@@ -114,11 +64,55 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const sendPhoneOtp = async (phone_number) => {
+    try {
+      if (!API_URL) throw new Error('API URL is not configured');
+      const res = await apiFetch('/api/auth/otp/send', {
+        method: 'POST',
+        body: JSON.stringify({ phone_number }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to send OTP');
+      }
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  };
+
+  const verifyPhoneOtp = async (phone_number, otp, metadata = {}) => {
+    try {
+      if (!API_URL) throw new Error('API URL is not configured');
+      const res = await apiFetch('/api/auth/otp/verify', {
+        method: 'POST',
+        body: JSON.stringify({
+          phone_number,
+          otp,
+          email: metadata.email,
+          full_name: metadata.full_name,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to verify OTP');
+      }
+
+      if (data.token) {
+        window.localStorage.setItem('auth_token', data.token);
+      }
+      setUser(data.user || null);
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  };
+
   const value = {
     user,
     loading,
-    signUp,
-    signIn,
+    sendPhoneOtp,
+    verifyPhoneOtp,
     signOut,
     isAuthenticated: !!user,
     userId: user?.id || null

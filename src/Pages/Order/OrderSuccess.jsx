@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FaCheckCircle, FaShoppingBag, FaSpinner } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../config/api.js';
+import { trackPurchase } from '../../utils/analytics.js';
 
 const REDIRECT_DELAY_MS = 2500;
 
@@ -52,6 +53,17 @@ const OrderSuccess = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(!!orderId);
   const [showModal, setShowModal] = useState(true);
+  const purchaseTracked = useRef(false);
+
+  useEffect(() => {
+    if (!order || purchaseTracked.current) return;
+    purchaseTracked.current = true;
+    trackPurchase({
+      transactionId: order.id,
+      value: order.final_amount,
+      items: order.order_items || [],
+    });
+  }, [order]);
 
   useEffect(() => {
     if (!orderId) {
