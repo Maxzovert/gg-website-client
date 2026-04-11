@@ -33,19 +33,19 @@ const RashiSection = ({ hideCta = false }) => {
 
   return (
     <section className="relative bg-[#FFFAEB] overflow-hidden">
-      <div className="relative max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10">
+      <div className="relative mx-auto max-w-7xl px-4 py-7 sm:px-5 sm:py-8 md:px-6 md:py-9 lg:py-10">
         {/* Section header */}
-        <div className="text-center mb-6 md:mb-8">
-          <h2 className="font-heading font-bold text-gray-800 text-xl md:text-2xl mb-1">
+        <div className="mb-5 text-center md:mb-7">
+          <h2 className="mb-1 font-heading text-lg font-bold text-gray-800 sm:text-xl md:text-2xl">
             Discover by your Rashi
           </h2>
-          <p className="text-gray-600 text-sm md:text-base max-w-md mx-auto">
+          <p className="mx-auto max-w-md text-xs text-gray-600 sm:text-sm md:text-base">
             Find the Rudraksha that aligns with your zodiac sign
           </p>
         </div>
 
         {/* Moving zodiac row with edge fade */}
-        <div className="relative py-4 md:py-5">
+        <div className="relative py-3 sm:py-4 md:py-5">
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 md:w-20 bg-linear-to-r from-[#FFFAEB] to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:w-20 bg-linear-to-l from-[#FFFAEB] to-transparent z-10" />
           <div className="rashi-scroll-container overflow-hidden">
@@ -58,7 +58,7 @@ const RashiSection = ({ hideCta = false }) => {
                       to="/rashi"
                       className="flex flex-col items-center gap-2.5 shrink-0 group group/zodiac"
                     >
-                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-primary/20 bg-white shadow-md ring-2 ring-white group-hover/zodiac:border-primary group-hover/zodiac:shadow-lg group-hover/zodiac:scale-105 transition-all duration-300 shrink-0">
+                      <div className="size-14 shrink-0 overflow-hidden rounded-full border-2 border-primary/20 bg-white shadow-md ring-2 ring-white transition-all duration-300 group-hover/zodiac:scale-105 group-hover/zodiac:border-primary group-hover/zodiac:shadow-lg sm:size-16 md:size-17 lg:size-20">
                         <img
                           src={item.url}
                           alt={item.key}

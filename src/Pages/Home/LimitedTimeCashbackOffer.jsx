@@ -85,8 +85,8 @@ const LimitedTimeCashbackOffer = () => {
         <FaPrayingHands className="h-6 w-6" aria-hidden />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1920px] px-3 py-8 sm:px-4 sm:py-10 md:px-6 lg:px-8 xl:px-12">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border-2 border-primary/25 bg-white/80 p-5 shadow-lg shadow-primary/10 backdrop-blur-sm sm:p-8 md:p-10">
+      <div className="relative mx-auto w-full max-w-7xl px-3 py-7 sm:px-4 sm:py-9 md:px-6 md:py-10 lg:px-8 xl:px-10 xl:py-11">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border-2 border-primary/25 bg-white/80 p-4 shadow-lg shadow-primary/10 backdrop-blur-sm sm:p-6 md:p-8 lg:p-10">
           {/* Inner corner flourishes */}
           <div
             className="pointer-events-none absolute left-0 top-0 h-16 w-16 border-l-2 border-t-2 border-amber-300/50 rounded-tl-2xl"
@@ -119,11 +119,11 @@ const LimitedTimeCashbackOffer = () => {
               </p>
               <h2
                 id="limited-cashback-heading"
-                className="font-heading text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl md:text-4xl"
+                className="font-heading text-xl font-bold tracking-tight text-stone-900 sm:text-2xl md:text-3xl lg:text-[2rem]"
               >
                 ₹1,000 cashback in your wallet
               </h2>
-              <p className="mt-3 text-base text-stone-600 sm:text-lg">
+              <p className="mt-2.5 text-sm text-stone-600 sm:mt-3 sm:text-base md:text-lg">
                 We’re crediting <strong className="text-stone-800">₹1,000</strong> to your Gawri Ganga wallet for the{' '}
                 <strong className="text-primary">first 100 customers</strong> only. Use it on your next purchase and shop
                 more on Rudraksha, sprays, and more.

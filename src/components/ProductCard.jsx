@@ -160,12 +160,12 @@ const ProductCard = ({
         </h3>
 
         {/* Short Description - Only on larger screens (lg and above) */}
-        {(product.short_description || product.shortDescription) ? (
+        {/* {(product.short_description || product.shortDescription) ? (
           <p className={`hidden lg:block text-gray-500 mb-2 line-clamp-2 leading-snug ${large ? 'text-base' : 'text-sm'}`}
           >
             {product.short_description || product.shortDescription}
           </p>
-        ) : null}
+        ) : null} */}
 
         {/* Benefits (for Rashi variant) */}
         {variant === 'rashi' && product.benefits && (

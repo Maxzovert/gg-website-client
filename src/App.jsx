@@ -27,6 +27,7 @@ const ViewDetails = lazy(() => import('./Pages/Profile/ViewDetails'))
 const OrderSuccess = lazy(() => import('./Pages/Order/OrderSuccess'))
 const OrderFailed = lazy(() => import('./Pages/Order/OrderFailed'))
 const About = lazy(() => import('./Pages/About/About'))
+const Blog = lazy(() => import('./Pages/Blog/Blog'))
 const Contact = lazy(() => import('./Pages/Contact/Contact'))
 const TermsOfService = lazy(() => import('./Pages/Policies/TermsOfService'))
 const RefundCancellation = lazy(() => import('./Pages/Policies/RefundCancellation'))
@@ -71,6 +72,7 @@ const App = () => {
                   <Route path="/order-success" element={<OrderSuccess />} />
                   <Route path="/order-failed" element={<OrderFailed />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/blog" element={<Blog />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/refund-cancellation" element={<RefundCancellation />} />
