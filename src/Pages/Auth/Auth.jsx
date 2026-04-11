@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaUser, FaMobileAlt, FaKey } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
+import { trackLogin } from '../../utils/analytics.js';
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpRequested, setOtpRequested] = useState(false);
+  const [devOtp, setDevOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { sendPhoneOtp, verifyPhoneOtp } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get redirect path from location state or default to home
   const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
@@ -24,67 +25,84 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await signIn(email, password);
+      if (!otpRequested) {
+        const { data, error } = await sendPhoneOtp(phoneNumber);
         if (error) {
-          toast.error(error.message || 'Failed to sign in');
+          toast.error(error.message || 'Failed to send OTP');
         } else {
-          toast.success('Signed in successfully');
-          navigate(from, { replace: true });
+          setOtpRequested(true);
+          setDevOtp(data?.dev_otp || '');
+          toast.success('OTP sent successfully');
         }
       } else {
-        const { error } = await signUp(email, password, { full_name: name });
+        const { error } = await verifyPhoneOtp(phoneNumber, otp, {
+          full_name: name,
+          email,
+        });
         if (error) {
-          toast.error(error.message || 'Failed to sign up');
+          toast.error(error.message || 'Failed to verify OTP');
         } else {
-          toast.success('Account created! You can sign in now.');
-          setIsLogin(true);
+          trackLogin('otp');
+          toast.success('Phone verified successfully');
+          navigate(from, { replace: true });
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleEditPhone = () => {
+    setOtpRequested(false);
+    setOtp('');
+    setDevOtp('');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50/30 to-white py-8 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-50/30 to-white py-8 px-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary mb-2">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h1>
-            <p className="text-gray-600">
-              {isLogin ? 'Sign in to continue' : 'Sign up to get started'}
-            </p>
+            <h1 className="text-3xl font-bold text-primary mb-2">Phone OTP Login</h1>
+            <p className="text-gray-600">Authenticate with phone OTP, full name, and email.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Enter your name"
-                    required={!isLogin}
-                  />
-                </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
+              <div className="relative">
+                <FaMobileAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Enter 10-digit mobile number"
+                  required
+                  disabled={otpRequested}
+                />
               </div>
-            )}
+            </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+              <div className="relative">
+                <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
               <div className="relative">
                 <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -98,57 +116,52 @@ const Auth = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Enter your password"
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <FaEyeSlash className="w-5 h-5" /> : <FaEye className="w-5 h-5" />}
-                </button>
+            {!otpRequested && (
+              <p className="text-xs text-gray-500">
+                Demo development login: phone <span className="font-semibold">9999999999</span> with OTP{' '}
+                <span className="font-semibold">123456</span>.
+              </p>
+            )}
+
+            {otpRequested && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-700">Enter OTP</label>
+                  <button
+                    type="button"
+                    onClick={handleEditPhone}
+                    className="text-xs text-primary hover:text-primary/80"
+                  >
+                    Change phone
+                  </button>
+                </div>
+                <div className="relative">
+                  <FaKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter OTP"
+                    required
+                  />
+                </div>
+                {!!devOtp && (
+                  <p className="text-xs text-emerald-600 mt-2">
+                    Dev OTP received from API: <span className="font-semibold">{devOtp}</span>
+                  </p>
+                )}
               </div>
-            </div>
+            )}
 
             <button
               type="submit"
               disabled={loading}
               className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up'}
+              {loading ? 'Please wait...' : otpRequested ? 'Verify OTP & Login' : 'Send OTP'}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-primary hover:text-primary/80 font-medium"
-            >
-              {isLogin ? (
-                <>
-                  Don't have an account? <span className="underline">Sign up</span>
-                </>
-              ) : (
-                <>
-                  Already have an account? <span className="underline">Sign in</span>
-                </>
-              )}
-            </button>
-          </div>
         </div>
       </div>
     </div>

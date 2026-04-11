@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
+import CookieConsent from './components/CookieConsent'
+import RouteSeo from './components/RouteSeo'
 import Footer from './components/Footer'
 import Loader from './components/Loader'
 import { ToastProvider } from './components/Toaster'
@@ -47,7 +49,9 @@ const App = () => {
         <CartProvider>
           <WishlistProvider>
             <div className="min-h-screen flex flex-col">
+              <RouteSeo />
               <ScrollToTop />
+              <CookieConsent />
               <Navbar />
               <main className="flex-1">
                 <Suspense fallback={<PageLoader />}>
