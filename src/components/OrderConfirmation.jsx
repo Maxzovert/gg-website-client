@@ -3,6 +3,7 @@ import { FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaShoppingBag } from 'react-i
 import { useCart } from '../context/CartContext';
 import { apiFetch } from '../config/api.js';
 import { trackBeginCheckout } from '../utils/analytics.js';
+import { paymentGatewayEmail } from '../utils/checkoutContact.js';
 
 const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
 
@@ -17,7 +18,7 @@ const OrderConfirmation = ({
   useWallet = false,
   walletAmountToUse = 0,
   userId,
-  userEmail,
+  userPhone,
   userName,
   paymentMethod,
   onOrderPlaced,
@@ -42,8 +43,9 @@ const OrderConfirmation = ({
       alert('Please select a delivery address');
       return;
     }
-    if (isOnlinePayment && !userEmail) {
-      alert('Email is required for online payment. Please ensure you are logged in with a valid email.');
+    const gatewayEmail = paymentGatewayEmail(userPhone);
+    if (isOnlinePayment && !gatewayEmail) {
+      alert('A verified mobile number is required for online payment. Please sign in again.');
       return;
     }
 
@@ -59,10 +61,10 @@ const OrderConfirmation = ({
 
       if (isOnlinePayment) {
         const firstname = (selectedAddress.receiver_name || userName || 'Customer').trim() || 'Customer';
-        const email = (userEmail || '').trim();
+        const email = gatewayEmail;
         const phone = String(selectedAddress.receiver_phone || '').replace(/\D/g, '').slice(0, 10) || '0000000000';
         if (!email) {
-          alert('Email is required for online payment. Please ensure you are logged in with a valid email.');
+          alert('A verified mobile number is required for online payment.');
           setLoading(false);
           return;
         }

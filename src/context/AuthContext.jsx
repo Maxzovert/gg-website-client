@@ -64,12 +64,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const sendPhoneOtp = async (phone_number) => {
+  const sendPhoneOtp = async (phone_number, metadata = {}) => {
     try {
       if (!API_URL) throw new Error('API URL is not configured');
       const res = await apiFetch('/api/auth/otp/send', {
         method: 'POST',
-        body: JSON.stringify({ phone_number }),
+        body: JSON.stringify({
+          phone_number,
+          ...(Object.prototype.hasOwnProperty.call(metadata, 'full_name')
+            ? { full_name: metadata.full_name }
+            : {}),
+          ...(metadata.is_signup === true ? { is_signup: true } : {}),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -89,8 +95,10 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({
           phone_number,
           otp,
-          email: metadata.email,
-          full_name: metadata.full_name,
+          ...(metadata?.full_name != null && metadata.full_name !== ''
+            ? { full_name: metadata.full_name }
+            : {}),
+          ...(metadata?.is_signup === true ? { is_signup: true } : {}),
         }),
       });
       const data = await res.json();

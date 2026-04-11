@@ -17,7 +17,7 @@ const CheckoutModal = ({
   useWallet = false,
   walletAmountToUse = 0,
   userId,
-  userEmail,
+  userPhone,
   userName,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -209,7 +209,7 @@ const CheckoutModal = ({
               useWallet={useWallet}
               walletAmountToUse={walletApplicableAmount}
               userId={userId}
-              userEmail={userEmail}
+              userPhone={userPhone}
               userName={userName}
               paymentMethod={paymentMethod}
               onOrderPlaced={handleOrderPlaced}

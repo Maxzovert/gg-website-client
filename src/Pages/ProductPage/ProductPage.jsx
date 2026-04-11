@@ -303,7 +303,7 @@ const ProductPage = () => {
       return;
     }
     if (!isAuthenticated) {
-      navigate('/auth', { state: { from: { pathname: `/product/${slug}` } } });
+      navigate('/login', { state: { from: { pathname: `/product/${slug}` } } });
       return;
     }
     // Add to cart first if not already in cart
@@ -1365,7 +1365,7 @@ const ProductPage = () => {
         totalAmount={calculateTotalAmount()}
         blessingCharge={isRudraksha ? blessingCharge : 0}
         userId={userId}
-        userEmail={user?.email}
+        userPhone={user?.phone_number}
         userName={user?.full_name}
       />
 

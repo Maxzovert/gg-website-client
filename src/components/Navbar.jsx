@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FaRegHeart, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from '../assets/gglogo.svg';
@@ -56,7 +56,6 @@ const Navbar = () => {
     const { getTotalItems } = useCart();
     const { getTotalItems: getWishlistCount } = useWishlist();
     const { isAuthenticated } = useAuth();
-    const navigate = useNavigate();
     const cartCount = getTotalItems();
     const wishlistCount = getWishlistCount();
     const location = useLocation();
@@ -137,14 +136,6 @@ const Navbar = () => {
         setDesktopTulsiOpen(false);
         setDesktopRudrakshaOpen(false);
     }, [location.pathname, location.search]);
-
-    const handleUserClick = () => {
-        if (isAuthenticated) {
-            navigate('/profile');
-        } else {
-            navigate('/auth', { state: { from: location } });
-        }
-    };
 
     const isActive = (href) => {
         if (href === '/') {
@@ -427,7 +418,7 @@ const Navbar = () => {
                 {/* Right Side Icons */}
                 <div className='flex items-center gap-5 md:gap-7 lg:gap-9'>
                     {/* Desktop Icons */}
-                    <div className='hidden md:flex items-center gap-5 lg:gap-7'>
+                    <div className='hidden md:flex items-center gap-4 lg:gap-6'>
                         <Link to="/wishlist" className="relative">
                             <FaRegHeart className='text-primary text-2xl lg:text-3xl cursor-pointer hover:scale-110 transition-transform' />
                             {wishlistCount > 0 && (
@@ -444,15 +435,19 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
-                        <LuCircleUserRound 
-                            onClick={handleUserClick}
-                            className='text-primary text-2xl lg:text-3xl cursor-pointer hover:scale-110 transition-transform'
-                            title={isAuthenticated ? 'View Profile' : 'Sign In'}
-                        />
+                        <Link
+                            to={isAuthenticated ? '/profile' : '/login'}
+                            state={isAuthenticated ? undefined : { from: location }}
+                            className="rounded-lg text-primary p-1 transition-colors hover:bg-primary/10 hover:scale-105"
+                            title={isAuthenticated ? 'Account' : 'Sign in'}
+                            aria-label={isAuthenticated ? 'Account' : 'Sign in or sign up'}
+                        >
+                            <LuCircleUserRound className="text-2xl lg:text-3xl" />
+                        </Link>
                     </div>
 
                     {/* Mobile Icons - Only Cart and User */}
-                    <div className='md:hidden flex items-center gap-5'>
+                    <div className='md:hidden flex items-center gap-3'>
                         <Link to="/cart" className="relative">
                             <CgShoppingBag className='text-primary text-2xl cursor-pointer' />
                             {cartCount > 0 && (
@@ -461,11 +456,15 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
-                        <LuCircleUserRound 
-                            onClick={handleUserClick}
-                            className='text-primary text-2xl cursor-pointer'
-                            title={isAuthenticated ? 'View Profile' : 'Sign In'}
-                        />
+                        <Link
+                            to={isAuthenticated ? '/profile' : '/login'}
+                            state={isAuthenticated ? undefined : { from: location }}
+                            className="rounded-lg p-1 text-primary hover:bg-primary/10"
+                            title={isAuthenticated ? 'Account' : 'Sign in'}
+                            aria-label={isAuthenticated ? 'Account' : 'Sign in or sign up'}
+                        >
+                            <LuCircleUserRound className="text-2xl" />
+                        </Link>
                     </div>
 
                     {/* Mobile Hamburger Menu Button */}
@@ -661,6 +660,15 @@ const Navbar = () => {
                                 </Link>
                             );
                         })}
+                        {isAuthenticated && (
+                            <Link
+                                to="/profile"
+                                onClick={closeMenu}
+                                className="block border-b border-gray-100 px-6 py-3.5 text-lg font-semibold text-primary hover:bg-primary/5"
+                            >
+                                My account
+                            </Link>
+                        )}
                         {/* Mobile Menu Heart Icon */}
                         <Link
                             to="/wishlist"

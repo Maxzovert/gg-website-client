@@ -12,7 +12,7 @@ const AuthCallback = () => {
       if (user) {
         navigate('/', { replace: true });
       } else {
-        navigate('/auth', { replace: true });
+        navigate('/login', { replace: true });
       }
     }, 1000);
 

@@ -9,7 +9,7 @@ import { ToastProvider } from './components/Toaster'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { AuthProvider } from './context/AuthContext'
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 
 const Home = lazy(() => import('./Pages/Home/Home'))
 const Spray = lazy(() => import('./Pages/Spray/Spray'))
@@ -77,7 +77,9 @@ const App = () => {
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/shipping-policy" element={<ShippingPolicy />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/login" element={<Auth />} />
+                  <Route path="/signup" element={<Auth />} />
+                  <Route path="/auth" element={<Navigate to="/login" replace />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
                 </Routes>
                 </Suspense>

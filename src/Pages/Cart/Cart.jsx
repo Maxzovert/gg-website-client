@@ -241,7 +241,7 @@ const Cart = () => {
 
   const applyCouponByCode = async (couponCode) => {
     if (!isAuthenticated) {
-      navigate('/auth', { state: { from: { pathname: '/cart' } } });
+      navigate('/login', { state: { from: { pathname: '/cart' } } });
       return;
     }
     setCouponLoading(true);
@@ -762,7 +762,7 @@ const Cart = () => {
                     return;
                   }
                   if (!isAuthenticated) {
-                    navigate('/auth', { state: { from: { pathname: '/cart' } } });
+                    navigate('/login', { state: { from: { pathname: '/cart' } } });
                     return;
                   }
                   setShowCheckout(true);
@@ -807,7 +807,7 @@ const Cart = () => {
         useWallet={useWallet}
         walletAmountToUse={walletAppliedAmount}
         userId={userId}
-        userEmail={user?.email}
+        userPhone={user?.phone_number}
         userName={user?.full_name}
       />
     </div>
