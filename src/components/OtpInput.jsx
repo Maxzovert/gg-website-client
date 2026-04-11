@@ -92,7 +92,7 @@ const OtpInput = ({ length = 6, value = '', onChange, disabled = false, autoFocu
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={i === 0 ? handlePaste : undefined}
           onFocus={(e) => e.target.select()}
-          className="h-12 w-10 sm:h-14 sm:w-12 rounded-xl border-2 border-gray-200 bg-white text-center text-xl font-semibold tracking-widest text-gray-900 shadow-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-50"
+          className="h-12 w-10 sm:h-14 sm:w-12 rounded-xl border-2 border-orange-100 bg-white text-center text-xl font-semibold tracking-widest text-stone-900 shadow-sm shadow-orange-900/5 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-50"
         />
       ))}
     </div>
