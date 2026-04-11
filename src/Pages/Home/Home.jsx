@@ -11,6 +11,8 @@ import StartupIndiaImg from '../../assets/HomePage/SIC.webp'
 import LimitedTimeCashbackOffer from './LimitedTimeCashbackOffer'
 import FeaturedProductsSection from './FeaturedProductsSection'
 import ShopByPurposeSection from './ShopByPurposeSection'
+import GawriGangaIntroSection from './GawriGangaIntroSection'
+import WhyTrustGawriGangaSection from './WhyTrustGawriGangaSection'
 
 const SectionDivider = () => (
   <div className="mx-auto flex w-[92%] max-w-7xl items-center justify-center py-3 sm:py-4">
@@ -22,16 +24,21 @@ const Home = () => {
   return (
     <div className="bg-[#FFFAEB]">
       <WebsiteCarousel />
-      <RudrakshaSection />
-      <SectionDivider />
-      <LimitedTimeCashbackOffer />
+      {/* <GawriGangaIntroSection /> */}
+      {/* <SectionDivider /> */}
+      <RudrakhshaProd />
       <SectionDivider />
       <FeaturedProductsSection />
       <SectionDivider />
-      <RashiSection />
-      <SpraySection />
-      <RudrakhshaProd />
+      <LimitedTimeCashbackOffer />
       <SectionDivider />
+      <RudrakshaSection />
+      <SectionDivider />
+      <SpraySection />
+      <SectionDivider />
+      <RashiSection />
+      <SectionDivider />
+      <WhyTrustGawriGangaSection />
       <ShopByPurposeSection />
       <SectionDivider />
       <AuthenticCertifiedSection />

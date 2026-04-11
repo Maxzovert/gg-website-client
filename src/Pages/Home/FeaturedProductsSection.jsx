@@ -72,7 +72,7 @@ const FeaturedProductsSection = () => {
 
   if (loading) {
     return (
-      <section className="bg-[#FFFAEB] py-8 md:py-14">
+      <section className="bg-[#FFFAEB] py-7 sm:py-9 md:py-11 lg:py-12">
         <div className="mx-auto flex max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
           <Loader />
         </div>
@@ -87,7 +87,7 @@ const FeaturedProductsSection = () => {
 
   return (
     <section
-      className="relative overflow-hidden bg-[#FFFAEB] py-8 md:py-14"
+      className="relative overflow-hidden bg-[#FFFAEB] py-7 sm:py-9 md:py-11 lg:py-12"
       aria-labelledby="featured-products-heading"
     >
       <div className="pointer-events-none absolute left-0 top-0 h-44 w-44 rounded-full bg-primary/8 blur-3xl" />
@@ -100,7 +100,7 @@ const FeaturedProductsSection = () => {
               <FaStar className="text-amber-500" aria-hidden />
               Curated picks
             </p>
-            <h2 id="featured-products-heading" className="font-heading text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl md:text-4xl">
+            <h2 id="featured-products-heading" className="font-heading text-xl font-bold tracking-tight text-stone-900 sm:text-2xl md:text-3xl lg:text-[2rem]">
               Featured Products
             </h2>
           </div>
@@ -115,7 +115,7 @@ const FeaturedProductsSection = () => {
 
         <div className="grid gap-5 lg:grid-cols-12">
           <article className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-primary/20 bg-white shadow-md transition hover:-translate-y-0.5 hover:shadow-xl lg:col-span-7">
-            <div className="relative h-full min-h-[410px] sm:min-h-[520px] w-full overflow-hidden">
+            <div className="relative h-full min-h-[min(58vh,22rem)] w-full overflow-hidden sm:min-h-[min(52vh,26rem)] md:min-h-112 lg:min-h-120 xl:min-h-128">
               {heroImage ? (
                 <img
                   src={heroImage}
