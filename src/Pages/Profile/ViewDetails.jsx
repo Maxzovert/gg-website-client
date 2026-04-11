@@ -15,7 +15,7 @@ const ViewDetails = () => {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      navigate('/auth', { state: { from: { pathname: `/orders/${orderId}` } } });
+      navigate('/login', { state: { from: { pathname: `/orders/${orderId}` } } });
       return;
     }
     if (!orderId) {

@@ -21,7 +21,7 @@ const Profile = () => {
     if (authLoading) return;
     
     if (!user) {
-      navigate('/auth', { state: { from: { pathname: '/profile' } } });
+      navigate('/login', { state: { from: { pathname: '/profile' } } });
       return;
     }
     fetchUserData();
@@ -174,9 +174,13 @@ const Profile = () => {
             {/* User Info */}
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {user?.full_name || user?.email || 'User'}
+                {user?.full_name || 'User'}
               </h1>
-              <p className="text-gray-600 mb-4">{user?.email || ''}</p>
+              <p className="text-gray-600 mb-4">
+                {user?.phone_number
+                  ? `+91 ${user.phone_number}`
+                  : ''}
+              </p>
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">{orders.length}</div>
@@ -247,8 +251,10 @@ const Profile = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Account Information</h2>
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Email</label>
-                      <p className="text-gray-900">{user?.email}</p>
+                      <label className="text-sm font-medium text-gray-600">Mobile</label>
+                      <p className="text-gray-900">
+                        {user?.phone_number ? `+91 ${user.phone_number}` : '—'}
+                      </p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">User ID</label>

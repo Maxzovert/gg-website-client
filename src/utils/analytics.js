@@ -88,6 +88,12 @@ export function trackLogin(method = 'otp') {
   window.gtag('event', 'login', { method });
 }
 
+export function trackSignUp(method = 'otp') {
+  if (getStoredConsent() !== 'analytics') return;
+  ensureGtagStub();
+  window.gtag('event', 'sign_up', { method });
+}
+
 export function trackBeginCheckout(value, items = []) {
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();

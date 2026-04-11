@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
           '/shipping-policy',
           '/privacy-policy',
         ],
-        exclude: ['/auth', '/auth/callback', '/cart', '/wishlist', '/profile'],
+        exclude: ['/auth', '/login', '/signup', '/auth/callback', '/cart', '/wishlist', '/profile'],
         readable: true,
       }),
     ],
