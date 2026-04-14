@@ -7,6 +7,7 @@ import AuthenticCertifiedSection from './AuthenticCertifiedSection'
 import RudrakshaSection from './RudrakshaSection'
 import RudrakhshaProd from './RudrakhshaProd'
 import AccessoriesProd from './AccessoriesProd'
+import TulsiProd from './TulsiProd'
 import OriginImg from '../../assets/HomePage/origin.webp'
 import StartupIndiaImg from '../../assets/HomePage/SIC.webp'
 import LimitedTimeCashbackOffer from './LimitedTimeCashbackOffer'
@@ -28,8 +29,8 @@ const Home = () => {
       {/* <GawriGangaIntroSection /> */}
       {/* <SectionDivider /> */}
       <AccessoriesProd />
-      <SectionDivider />
       <RudrakhshaProd />
+      <TulsiProd />
       <SectionDivider />
       <FeaturedProductsSection />
       {/* <SectionDivider />

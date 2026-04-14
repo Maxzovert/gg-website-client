@@ -13,6 +13,10 @@ import { Routes, Route, Navigate } from "react-router-dom"
 
 const Home = lazy(() => import('./Pages/Home/Home'))
 const Spray = lazy(() => import('./Pages/Spray/Spray'))
+const AmratDharaProductPage = lazy(() => import('./Pages/Spray/AmratDharaProductPage'))
+const MaitriProductPage = lazy(() => import('./Pages/Spray/MaitriProductPage'))
+const ChakraBalanceProductPage = lazy(() => import('./Pages/Spray/ChakraBalanceProductPage'))
+const ShuddhiProductPage = lazy(() => import('./Pages/Spray/ShuddhiProductPage'))
 const Rudraksh = lazy(() => import('./Pages/Rudraksh/Rudraksh'))
 const Rashi = lazy(() => import('./Pages/Rashi/Rashi'))
 const Accessories = lazy(() => import('./Pages/Accessories/Accessories'))
@@ -59,6 +63,10 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/sprays" element={<Spray />} />
+                  <Route path="/sprays/amrat-dhara" element={<AmratDharaProductPage />} />
+                  <Route path="/sprays/maitri" element={<MaitriProductPage />} />
+                  <Route path="/sprays/chakra-balance" element={<ChakraBalanceProductPage />} />
+                  <Route path="/sprays/shuddhi" element={<ShuddhiProductPage />} />
                   <Route path="/rudraksha" element={<Rudraksh />} />
                   <Route path="/tulsimala" element={<TulsiMala />} />
                   <Route path="/rashi" element={<Rashi />} />

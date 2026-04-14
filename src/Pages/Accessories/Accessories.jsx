@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { FiFilter } from 'react-icons/fi';
+import { FaArrowRight } from 'react-icons/fa';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import accessoriesBanner from '../../assets/Accessories/as1.webp';
@@ -15,6 +16,110 @@ const ACCESSORIES_SUBCATEGORIES = [
   { id: 5, name: 'Ring' },
   { id: 6, name: 'Other' },
 ];
+const EXPLORE_COUNT = 5;
+
+const getRandomProducts = (items, count) => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, count);
+};
+
+const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isMobileCarousel, setIsMobileCarousel] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 639px)').matches : false
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 639px)');
+    const onChange = () => setIsMobileCarousel(mql.matches);
+    onChange();
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    const fetchExploreProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await apiFetch(
+          `/api/products?category=${encodeURIComponent(category)}`
+        );
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const result = await response.json();
+        const list = result.success && Array.isArray(result.data) ? result.data : [];
+        setProducts(getRandomProducts(list, EXPLORE_COUNT));
+      } catch (_err) {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExploreProducts();
+  }, [category]);
+
+  const getReviewCount = (productId) => 5 + (productId % 3);
+
+  if (loading) {
+    return (
+      <section className="py-10 md:py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
+          <Loader />
+        </div>
+      </section>
+    );
+  }
+
+  if (products.length === 0) return null;
+
+  return (
+    <section className="relative py-10 md:py-14 overflow-x-clip overflow-y-visible">
+      <div className="relative max-w-400 mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mb-8 md:mb-10">
+          <h2 className="font-heading font-bold text-stone-800 text-2xl sm:text-3xl md:text-4xl tracking-tight mb-3">
+            {heading}
+          </h2>
+        </div>
+
+        <div
+          className="flex flex-nowrap max-sm:gap-3 max-sm:-mx-4 max-sm:px-4 max-sm:py-1 max-sm:pb-3 overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:py-0 md:grid-cols-3 lg:grid-cols-5 sm:gap-5 md:gap-6 lg:gap-7 [scrollbar-width:thin]"
+          role="list"
+        >
+          {products.map((product) => (
+            <div
+              key={product.id}
+              role="listitem"
+              className="relative shrink-0 snap-start w-[min(calc(100vw-3.75rem),208px)] sm:w-auto sm:min-w-0 sm:shrink"
+            >
+              <ProductCard
+                product={product}
+                variant="rudraksh"
+                size={isMobileCarousel ? 'default' : 'lg'}
+                calculatePricing={pricingFromProduct}
+                getReviewCount={getReviewCount}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 md:mt-10 flex justify-center">
+          <Link
+            to={linkTo}
+            className="inline-flex items-center gap-2 text-primary font-semibold text-sm sm:text-base hover:text-primary/80 transition-colors"
+          >
+            {linkText}
+            <FaArrowRight className="text-sm" aria-hidden />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const Accessories = () => {
   const [searchParams] = useSearchParams();
@@ -411,6 +516,18 @@ const Accessories = () => {
           </div>
         </div>
       </div>
+      <ExploreCollectionSection
+        heading="Explore Rudraksha Collection"
+        category="Rudraksha"
+        linkTo="/rudraksha"
+        linkText="View all Rudraksha"
+      />
+      <ExploreCollectionSection
+        heading="Explore Tulsi Mala Collection"
+        category="Tulsi Mala"
+        linkTo="/tulsimala"
+        linkText="View all Tulsi Mala"
+      />
     </div>
   );
 };
