@@ -6,6 +6,7 @@ import SpraySection from '../Home/SpraySection'
 import AuthenticCertifiedSection from './AuthenticCertifiedSection'
 import RudrakshaSection from './RudrakshaSection'
 import RudrakhshaProd from './RudrakhshaProd'
+import AccessoriesProd from './AccessoriesProd'
 import OriginImg from '../../assets/HomePage/origin.webp'
 import StartupIndiaImg from '../../assets/HomePage/SIC.webp'
 import LimitedTimeCashbackOffer from './LimitedTimeCashbackOffer'
@@ -26,15 +27,17 @@ const Home = () => {
       <WebsiteCarousel />
       {/* <GawriGangaIntroSection /> */}
       {/* <SectionDivider /> */}
+      <AccessoriesProd />
+      <SectionDivider />
       <RudrakhshaProd />
       <SectionDivider />
       <FeaturedProductsSection />
-      <SectionDivider />
-      <LimitedTimeCashbackOffer />
-      <SectionDivider />
-      <RudrakshaSection />
+      {/* <SectionDivider />
+      <LimitedTimeCashbackOffer /> */}
       <SectionDivider />
       <SpraySection />
+      <SectionDivider />
+      <RudrakshaSection />
       <SectionDivider />
       <RashiSection />
       <SectionDivider />
