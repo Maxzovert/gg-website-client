@@ -20,6 +20,26 @@ const ROUTE_META = [
     keywords: HOME_KEYWORDS,
   },
   { path: '/sprays', title: 'Spiritual Sprays | Gawri Ganga', description: DEFAULT_DESC },
+  {
+    path: '/sprays/amrat-dhara',
+    title: 'Amrat Dhara Aura Spray | Gawri Ganga',
+    description: 'Discover Amrat Dhara Lavender Aura Spray for calmness, relaxation, and a peaceful spiritual atmosphere.',
+  },
+  {
+    path: '/sprays/maitri',
+    title: 'Maitri Aura Spray | Gawri Ganga',
+    description: 'Explore Maitri Aura Spray for emotional warmth, balance, and a soothing spiritual ambience.',
+  },
+  {
+    path: '/sprays/chakra-balance',
+    title: 'Chakra Balance Aura Spray | Gawri Ganga',
+    description: 'Explore Chakra Balance Aura Spray for energy alignment, positivity, and spiritual harmony.',
+  },
+  {
+    path: '/sprays/shuddhi',
+    title: 'Shuddhi Aura Spray | Gawri Ganga',
+    description: 'Explore Shuddhi Aura Spray for purification, freshness, and spiritual clarity.',
+  },
   { path: '/rudraksha', title: 'Rudraksha Collection | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/tulsimala', title: 'Tulsi Mala | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/rashi', title: 'Shop by Rashi | Gawri Ganga', description: DEFAULT_DESC },
