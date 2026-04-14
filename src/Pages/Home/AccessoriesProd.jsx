@@ -17,7 +17,7 @@ const getRandomProducts = (items, count) => {
   return shuffled.slice(0, count);
 };
 
-const RudrakhshaProd = () => {
+const AccessoriesProd = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMobileCarousel, setIsMobileCarousel] = useState(() =>
@@ -36,7 +36,7 @@ const RudrakhshaProd = () => {
     const fetchFeatured = async () => {
       try {
         setLoading(true);
-        const response = await apiFetch('/api/products?category=Rudraksha');
+        const response = await apiFetch('/api/products?category=Accessories');
         if (!response.ok) throw new Error('Failed to fetch');
         const result = await response.json();
         const list = result.success && Array.isArray(result.data) ? result.data : [];
@@ -69,7 +69,7 @@ const RudrakhshaProd = () => {
   return (
     <section
       className="relative py-10 md:py-14 overflow-x-clip overflow-y-visible bg-[#FFFAEB]"
-      aria-labelledby="rudrakhsha-featured-heading"
+      aria-labelledby="accessories-featured-heading"
     >
       <div className="relative max-w-400 mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="text-center max-w-3xl mx-auto mb-8 md:mb-10">
@@ -78,17 +78,17 @@ const RudrakhshaProd = () => {
             Handpicked for you
           </p>
           <h2
-            id="rudrakhsha-featured-heading"
+            id="accessories-featured-heading"
             className="font-heading font-bold text-stone-800 text-2xl sm:text-3xl md:text-4xl tracking-tight mb-3"
           >
-            Our Curated Rudraksha Collection
+            Our Curated Accessories Collection
           </h2>
         </div>
 
         <div
           className="flex flex-nowrap max-sm:gap-3 max-sm:-mx-4 max-sm:px-4 max-sm:py-1 max-sm:pb-3 overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:py-0 md:grid-cols-3 lg:grid-cols-5 sm:gap-5 md:gap-6 lg:gap-7 [scrollbar-width:thin]"
           role="list"
-          aria-label="Featured Rudraksha products, scroll horizontally on small screens"
+          aria-label="Featured accessories products, scroll horizontally on small screens"
         >
           {products.map((product) => (
             <div
@@ -114,10 +114,10 @@ const RudrakhshaProd = () => {
 
         <div className="mt-8 md:mt-10 flex justify-center">
           <Link
-            to="/rudraksha"
+            to="/accessories"
             className="inline-flex items-center gap-2 text-primary font-semibold text-sm sm:text-base hover:text-primary/80 transition-colors"
           >
-            View full Rudraksha collection
+            View full Accessories collection
             <FaArrowRight className="text-sm" aria-hidden />
           </Link>
         </div>
@@ -126,4 +126,4 @@ const RudrakhshaProd = () => {
   );
 };
 
-export default RudrakhshaProd;
+export default AccessoriesProd;
