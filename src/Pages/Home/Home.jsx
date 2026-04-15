@@ -15,6 +15,7 @@ import FeaturedProductsSection from './FeaturedProductsSection'
 import ShopByPurposeSection from './ShopByPurposeSection'
 import GawriGangaIntroSection from './GawriGangaIntroSection'
 import WhyTrustGawriGangaSection from './WhyTrustGawriGangaSection'
+import OurCollection from './OurCollection'
 
 const SectionDivider = () => (
   <div className="mx-auto flex w-[92%] max-w-7xl items-center justify-center py-3 sm:py-4">
@@ -37,6 +38,8 @@ const Home = () => {
       <LimitedTimeCashbackOffer /> */}
       <SectionDivider />
       <SpraySection />
+      <SectionDivider />
+      <OurCollection/>
       <SectionDivider />
       <RudrakshaSection />
       <SectionDivider />
