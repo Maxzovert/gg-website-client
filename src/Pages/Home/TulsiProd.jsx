@@ -6,7 +6,8 @@ import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 
-const FEATURED_COUNT = 5;
+const MOBILE_FEATURED_COUNT = 6;
+const DESKTOP_FEATURED_COUNT = 5;
 const TULSI_CATEGORY = 'Tulsi Mala';
 
 const getRandomProducts = (items, count) => {
@@ -43,7 +44,8 @@ const TulsiProd = () => {
         if (!response.ok) throw new Error('Failed to fetch');
         const result = await response.json();
         const list = result.success && Array.isArray(result.data) ? result.data : [];
-        setProducts(getRandomProducts(list, FEATURED_COUNT));
+        const featuredCount = isMobileCarousel ? MOBILE_FEATURED_COUNT : DESKTOP_FEATURED_COUNT;
+        setProducts(getRandomProducts(list, featuredCount));
       } catch (_err) {
         setProducts([]);
       } finally {
@@ -51,7 +53,7 @@ const TulsiProd = () => {
       }
     };
     fetchFeatured();
-  }, []);
+  }, [isMobileCarousel]);
 
   const getReviewCount = (productId) => 5 + (productId % 3);
 
@@ -82,20 +84,20 @@ const TulsiProd = () => {
             id="tulsi-featured-heading"
             className="font-heading font-bold text-stone-800 text-2xl sm:text-3xl md:text-4xl tracking-tight mb-3"
           >
-            Our Curated Tulsi Mala Collection
+            Our Tulsi Mala Collection
           </h2>
         </div>
 
         <div
-          className="flex flex-nowrap max-sm:gap-3 max-sm:-mx-4 max-sm:px-4 max-sm:py-1 max-sm:pb-3 overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:py-0 md:grid-cols-3 lg:grid-cols-5 sm:gap-5 md:gap-6 lg:gap-7 [scrollbar-width:thin]"
+          className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-5 lg:gap-7"
           role="list"
-          aria-label="Featured Tulsi products, scroll horizontally on small screens"
+          aria-label="Featured Tulsi products"
         >
           {products.map((product) => (
             <div
               key={product.id}
               role="listitem"
-              className="relative shrink-0 snap-start w-[min(calc(100vw-3.75rem),208px)] sm:w-auto sm:min-w-0 sm:shrink rounded-lg sm:rounded-2xl p-px sm:p-[3px] bg-linear-to-br from-amber-400/90 via-primary/50 to-amber-600/80 shadow-md sm:shadow-lg shadow-amber-900/10"
+              className="relative w-full rounded-lg sm:rounded-2xl p-px sm:p-[3px] bg-linear-to-br from-amber-400/90 via-primary/50 to-amber-600/80 shadow-md sm:shadow-lg shadow-amber-900/10"
             >
               <span className="absolute -top-0.5 sm:-top-1 left-1/2 -translate-x-1/2 z-20 max-w-[calc(100%-6px)] truncate rounded-full bg-primary px-1.5 py-px sm:px-3 sm:py-1 text-[8px] sm:text-[11px] sm:leading-normal md:text-sm font-bold uppercase tracking-wide text-white shadow-md text-center">
                 Highlighted
