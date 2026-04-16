@@ -78,6 +78,9 @@ const Contact = () => {
                   <br />
                   New Delhi, India
                 </p>
+                <p className="about-body mt-2 text-stone-500 text-xs sm:text-sm font-medium">
+                  Gawri Ganga is owned by BNB Basket and Boxes Gifting Solutions.
+                </p>
               </div>
             </div>
             <div className="flex gap-4">

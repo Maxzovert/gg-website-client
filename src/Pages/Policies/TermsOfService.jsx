@@ -14,7 +14,12 @@ const TermsOfService = () => {
         <p className="about-body mt-4 text-stone-600 text-lg">
           Last updated: {new Date().toLocaleDateString('en-IN')}
         </p>
-        <div className="mt-10 space-y-10 about-body text-stone-700 leading-relaxed">
+        <div className="mt-8 space-y-10 about-body text-stone-700 leading-relaxed">
+          <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-800/10">
+            <p className="text-stone-700">
+              Welcome to <strong>Gawri Ganga</strong>, a brand proudly owned and operated by <strong>BNB Basket and Boxes Gifting Solutions</strong>. The following Terms of Service govern your access to and use of our website.
+            </p>
+          </div>
           <section>
             <h2 className="about-heading text-xl sm:text-2xl font-semibold text-stone-800 mb-3">
               1. Acceptance of Terms
@@ -53,8 +58,8 @@ const TermsOfService = () => {
             </h2>
             <p>
               For questions about these Terms of Service, please contact us at{' '}
-              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
-                support@gawriganga.com
+              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
+                gawrigangaofficial@gmail.com
               </a>{' '}
               or visit our <Link to="/contact" className="text-primary hover:underline">Contact</Link> page.
             </p>

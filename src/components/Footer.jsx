@@ -56,7 +56,7 @@ const Footer = () => {
               Discover authentic rudraksha, aura sprays and spiritual accessories at Gawri Ganga.
             </p>
             <a
-              href="mailto:support@gawriganga.com"
+              href="mailto:gawrigangaofficial@gmail.com"
               className="mt-3 text-white font-semibold hover:underline text-sm break-all"
             >
               gawrigangaofficial@gmail.com
@@ -169,9 +169,10 @@ const Footer = () => {
 
         {/* Bottom bar */}
         <div className="mt-8 sm:mt-10 md:mt-12 pt-6 border-t border-white/30 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-          <p className="text-white/90 text-sm">
-            © {new Date().getFullYear()} Gawri Ganga. All rights reserved.
-          </p>
+          <div className="text-white/90 text-sm">
+            <p>© {new Date().getFullYear()} Gawri Ganga. All rights reserved.</p>
+            <p className="mt-1 text-xs text-white/80">Gawri Ganga is owned by BNB Basket and Boxes Gifting Solutions</p>
+          </div>
           <div className="flex flex-wrap justify-center sm:justify-end gap-4 text-sm">
             <Link to="/privacy-policy" className="text-white/90 hover:text-white transition-colors py-1">
               Privacy Policy
