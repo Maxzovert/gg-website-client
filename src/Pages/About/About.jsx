@@ -147,7 +147,7 @@ const About = () => {
             <p className="about-body text-stone-600 text-base sm:text-lg leading-relaxed text-center">
               To honour the spiritual and cultural significance of Rudraksha by
               making authentic, certified beads accessible to seekers everywhere.
-              As a traditional spiritual brand now going online, we aim to carry
+              As a traditional spiritual brand now going online, Gawri Ganga (proudly operated by BNB Basket and Boxes Gifting Solutions) aims to carry
               forward the same values of trust, authenticity, and devotion that
               have defined us for forty years—so that every customer can hold a
               piece of that legacy in their hands.
