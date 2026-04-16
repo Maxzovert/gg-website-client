@@ -175,7 +175,7 @@ const About = () => {
               Thank you for being part of our journey.
             </p>
             <p className="about-body mt-3 text-stone-500 text-sm sm:text-base">
-              Visit us: A-59, Sector-27, Noida-201301, New Delhi, India
+              Visit us: A27, GROUND FLOOR, SECTOR 27, Noida, Gautambuddha Nagar, Uttar Pradesh, 201301
             </p>
             <Link
               to="/"

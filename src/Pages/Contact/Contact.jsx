@@ -74,12 +74,8 @@ const Contact = () => {
                   Visit us
                 </h3>
                 <p className="about-body text-stone-600 text-sm sm:text-base leading-relaxed">
-                  A-59, Sector-27, Noida-201301,
-                  <br />
-                  New Delhi, India
-                </p>
-                <p className="about-body mt-2 text-stone-500 text-xs sm:text-sm font-medium">
-                  Gawri Ganga is owned by BNB Basket and Boxes Gifting Solutions.
+                  A27, GROUND FLOOR, SECTOR 27,
+                  Noida, Gautambuddha Nagar, Uttar Pradesh, 201301
                 </p>
               </div>
             </div>
