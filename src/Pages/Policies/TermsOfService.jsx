@@ -17,7 +17,7 @@ const TermsOfService = () => {
         <div className="mt-8 space-y-10 about-body text-stone-700 leading-relaxed">
           <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-800/10">
             <p className="text-stone-700">
-              Welcome to <strong>Gawri Ganga</strong>, a brand proudly owned and operated by <strong>BNB Basket and Boxes Gifting Solutions</strong>. The following Terms of Service govern your access to and use of our website.
+              Welcome to <strong>Gawri Ganga</strong>, a brand proudly owned and operated by <strong>BNB Basket and Boxes Gifting Solutions Private Limited</strong>. The following Terms of Service govern your access to and use of our website.
             </p>
           </div>
           <section>
