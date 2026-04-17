@@ -20,9 +20,16 @@ if (!rawApiUrl) {
 
 export const API_URL = rawApiUrl.replace(/\/$/, '')
 
-function getAuthHeaders() {
+function isFormDataBody(body) {
+  return typeof FormData !== 'undefined' && body instanceof FormData;
+}
+
+function getAuthHeaders(body) {
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('auth_token') : null;
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = {};
+  if (!isFormDataBody(body)) {
+    headers['Content-Type'] = 'application/json';
+  }
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
 }
@@ -38,7 +45,7 @@ export function apiFetch(path, options = {}) {
     ...options,
     credentials: 'include',
     headers: {
-      ...getAuthHeaders(),
+      ...getAuthHeaders(options.body),
       ...(options.headers || {}),
     },
   });

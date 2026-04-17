@@ -27,7 +27,7 @@ import { useWishlist } from "../../context/WishlistContext";
 import { useAuth } from "../../context/AuthContext";
 import CheckoutModal from "../../components/CheckoutModal";
 import ProductCard from "../../components/ProductCard";
-import { API_URL, apiFetch } from "../../config/api.js";
+import { apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
 import rdcImage from "../../assets/ProductPage/rdc.webp";
 import { pricingFromProduct } from "../../utils/productPricing";
@@ -63,7 +63,6 @@ const ProductPage = () => {
   const [reviewHover, setReviewHover] = useState(0);
   const [reviewName, setReviewName] = useState("");
   const [reviewComment, setReviewComment] = useState("");
-  const [userReviews, setUserReviews] = useState([]);
   const [reviewSort, setReviewSort] = useState("recent");
   const [reviewPerPage, setReviewPerPage] = useState(10);
   const [reviewPage, setReviewPage] = useState(1);
@@ -71,6 +70,8 @@ const ProductPage = () => {
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewImageFile, setReviewImageFile] = useState(null);
+  const [reviewImagePreview, setReviewImagePreview] = useState("");
   const [reviewDeletingId, setReviewDeletingId] = useState(null);
   const isRudrakshaProduct =
     product?.category === "Rudraksha" || product?.category === "Rudrakshas";
@@ -164,6 +165,12 @@ const ProductPage = () => {
       setIncludeBlessing(false);
     }
   }, [isRudrakshaProduct, includeBlessing, setIncludeBlessing]);
+
+  useEffect(() => {
+    if (user?.full_name && !reviewName.trim()) {
+      setReviewName(user.full_name);
+    }
+  }, [user?.full_name]);
 
   // Fetch reviews for this product
   useEffect(() => {
@@ -341,7 +348,7 @@ const ProductPage = () => {
   const fetchReviewsForProduct = async () => {
     if (!product?.id) return;
     try {
-      const res = await fetch(`${API_URL}/api/reviews/product/${product.id}`);
+      const res = await apiFetch(`/api/reviews/product/${product.id}`);
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setReviews(json.data);
@@ -350,22 +357,88 @@ const ProductPage = () => {
     }
   };
 
+  const clearReviewImage = () => {
+    if (reviewImagePreview && reviewImagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(reviewImagePreview);
+    }
+    setReviewImageFile(null);
+    setReviewImagePreview("");
+  };
+
+  const handleReviewImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be 5MB or smaller.");
+      return;
+    }
+    if (reviewImagePreview && reviewImagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(reviewImagePreview);
+    }
+    setReviewImageFile(file);
+    setReviewImagePreview(URL.createObjectURL(file));
+  };
+
+  const ensureReviewAuth = () => {
+    if (authLoading) {
+      toast.info("Please wait, checking authentication...");
+      return false;
+    }
+    if (!isAuthenticated) {
+      toast.info("Please sign in to write a review.");
+      navigate("/login", { state: { from: { pathname: `/product/${slug}` } } });
+      return false;
+    }
+    return true;
+  };
+
+  const handleReviewFormToggle = () => {
+    if (!showReviewForm) {
+      if (!ensureReviewAuth()) return;
+      if (!reviewName.trim() && user?.full_name) {
+        setReviewName(user.full_name);
+      }
+    }
+    setShowReviewForm((v) => !v);
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!product?.id) return;
-    if (!reviewName.trim() || !reviewComment.trim() || reviewRating < 1) {
-      toast.error("Please fill name, comment and select a rating.");
+    if (!ensureReviewAuth()) return;
+    if (!reviewName.trim() || reviewRating < 1) {
+      toast.error("Please add your name and select a rating.");
       return;
     }
     setReviewSubmitting(true);
     try {
+      let uploadedImageUrl = null;
+      if (reviewImageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append("image", reviewImageFile);
+        const uploadRes = await apiFetch("/api/reviews/upload-image", {
+          method: "POST",
+          body: imageFormData,
+        });
+        const uploadJson = await uploadRes.json();
+        if (!uploadRes.ok || !uploadJson.success) {
+          throw new Error(uploadJson.message || "Failed to upload review image.");
+        }
+        uploadedImageUrl = uploadJson.data?.image_url || null;
+      }
+
       const res = await apiFetch("/api/reviews", {
         method: "POST",
         body: JSON.stringify({
           product_id: product.id,
           reviewer_name: reviewName.trim(),
           rating: reviewRating,
-          comment: reviewComment.trim(),
+          comment: reviewComment.trim() || null,
+          image_url: uploadedImageUrl,
         }),
       });
       const json = await res.json();
@@ -373,6 +446,7 @@ const ProductPage = () => {
         setReviewName("");
         setReviewComment("");
         setReviewRating(0);
+        clearReviewImage();
         setShowReviewForm(false);
         setReviewPage(1);
         await fetchReviewsForProduct();
@@ -380,8 +454,8 @@ const ProductPage = () => {
       } else {
         toast.error(json.message || "Failed to submit review.");
       }
-    } catch (_err) {
-      toast.error("Failed to submit review.");
+    } catch (err) {
+      toast.error(err?.message || "Failed to submit review.");
     } finally {
       setReviewSubmitting(false);
     }
@@ -407,6 +481,14 @@ const ProductPage = () => {
       setReviewDeletingId(null);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (reviewImagePreview && reviewImagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(reviewImagePreview);
+      }
+    };
+  }, [reviewImagePreview]);
 
   const handleQuantityChange = (delta) => {
     setQuantity((prev) => {
@@ -1134,12 +1216,12 @@ const ProductPage = () => {
               <div className="flex flex-col items-start lg:items-end shrink-0">
                 <button
                   type="button"
-                  onClick={() => setShowReviewForm((v) => !v)}
+                  onClick={handleReviewFormToggle}
                   className="text-gray-900 font-semibold text-sm sm:text-base mb-2 hover:text-primary transition-colors"
                 >
                   Click to review
                 </button>
-                <div className="flex gap-0.5 cursor-pointer" onClick={() => setShowReviewForm(true)} aria-hidden>
+                <div className="flex gap-0.5 cursor-pointer" onClick={handleReviewFormToggle} aria-hidden>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <FaRegStar
                       key={star}
@@ -1196,6 +1278,34 @@ const ProductPage = () => {
                       className="w-full min-w-0 px-3 sm:px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none resize-y"
                     />
                   </div>
+                  <div className="min-w-0">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
+                      Upload product image (optional)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={handleReviewImageChange}
+                      className="w-full min-w-0 px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-white file:mr-3 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-primary file:font-medium"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">JPG, PNG, WEBP (max 5MB)</p>
+                    {reviewImagePreview && (
+                      <div className="mt-3 flex items-start gap-3">
+                        <img
+                          src={reviewImagePreview}
+                          alt="Review upload preview"
+                          className="h-20 w-20 rounded-lg border border-gray-200 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={clearReviewImage}
+                          className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100"
+                        >
+                          Remove image
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex gap-2">
                     <button
                       type="submit"
@@ -1206,7 +1316,10 @@ const ProductPage = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowReviewForm(false)}
+                      onClick={() => {
+                        setShowReviewForm(false);
+                        clearReviewImage();
+                      }}
                       className="px-4 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100"
                     >
                       Cancel
@@ -1268,11 +1381,11 @@ const ProductPage = () => {
                   <Loader size="md" />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 [column-gap:1rem] sm:[column-gap:1.25rem]">
                   {paginatedReviews.map((review) => (
                     <div
                       key={review.id}
-                      className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm min-w-0 overflow-hidden flex flex-col relative"
+                      className="mb-4 break-inside-avoid bg-white border border-gray-200 rounded-xl p-4 shadow-sm min-w-0 overflow-hidden relative"
                     >
                       {review.user_id && userId === review.user_id && (
                         <button
@@ -1299,13 +1412,13 @@ const ProductPage = () => {
                         <span className="text-gray-500 text-xs sm:text-sm">{review.date}</span>
                       </div>
                       {review.imageUrl && (
-                        <div className="mb-3 rounded-lg overflow-hidden aspect-square max-h-40 bg-gray-100">
+                        <div className="mb-3 rounded-lg overflow-hidden bg-gray-100">
                           <img
                             src={review.imageUrl}
                             alt="Review"
                             loading="lazy"
                             decoding="async"
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto object-cover"
                           />
                         </div>
                       )}
@@ -1319,7 +1432,7 @@ const ProductPage = () => {
                           </span>
                         )}
                       </div>
-                      <p className="text-gray-700 text-xs sm:text-base leading-relaxed break-words mt-auto">
+                      <p className="text-gray-700 text-xs sm:text-base leading-relaxed break-words">
                         {review.text}
                       </p>
                     </div>

@@ -136,10 +136,10 @@ const Auth = () => {
         Home
       </Link>
 
-      <div className="flex min-h-screen items-center justify-center px-4 pb-10 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:py-12">
-        <div className="w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-orange-950/10 ring-1 ring-primary/15 lg:flex lg:min-h-[min(640px,calc(100vh-8rem))]">
+      <div className="flex min-h-screen items-center justify-center px-3 pb-8 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:py-12">
+        <div className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl shadow-orange-950/10 ring-1 ring-primary/15 sm:rounded-3xl lg:flex lg:min-h-[min(640px,calc(100vh-8rem))]">
           {/* Brand column — browns flow into site primary */}
-          <aside className="relative flex flex-col justify-between gap-8 bg-linear-to-br from-[#2a1d18] via-[#4a2d1c] to-[#8f4518] px-8 py-10 text-white sm:px-10 sm:py-12 lg:w-[46%] lg:shrink-0 lg:py-14">
+          <aside className="relative flex flex-col justify-between gap-6 bg-linear-to-br from-[#2a1d18] via-[#4a2d1c] to-[#8f4518] px-5 py-7 text-white sm:gap-8 sm:px-10 sm:py-12 lg:w-[46%] lg:shrink-0 lg:py-14">
             <div
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_100%_0%,rgba(255,145,77,0.45),transparent_50%)]"
               aria-hidden
@@ -158,16 +158,16 @@ const Auth = () => {
               <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#ffd8bc]">
                 Purity · Power · Protection
               </p>
-              <h1 className="mt-3 font-heading text-2xl font-bold leading-snug text-white sm:text-3xl">
+              <h1 className="mt-3 font-heading text-xl font-bold leading-snug text-white sm:text-3xl">
                 {isSignup ? 'Join Gawri Ganga' : 'Welcome back'}
               </h1>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#fdeeda]/95 sm:text-base">
+              <p className="mt-2 max-w-sm text-xs leading-relaxed text-[#fdeeda]/95 sm:text-base">
                 Authentic Rudraksha, malas, aura sprays & spiritual accessories sanctified with care for devotees
                 across India.
               </p>
             </div>
 
-            <ul className="relative grid gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
+            <ul className="relative hidden gap-3 sm:grid sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
               {TRUST_POINTS.map(({ Icon, title, desc }) => (
                 <li
                   key={title}
@@ -184,13 +184,13 @@ const Auth = () => {
           </aside>
 
           {/* Form column — warm white, ties to left via orange accents */}
-          <div className="flex flex-1 flex-col justify-center border-t border-orange-100/90 bg-linear-to-br from-white via-[#FFFCFA] to-[#FFF6EE] px-6 py-10 sm:px-10 sm:py-12 lg:border-l lg:border-t-0 lg:border-orange-100 lg:px-12 lg:py-14">
+          <div className="flex flex-1 flex-col justify-center border-t border-orange-100/90 bg-linear-to-br from-white via-[#FFFCFA] to-[#FFF6EE] px-4 py-8 sm:px-10 sm:py-12 lg:border-l lg:border-t-0 lg:border-orange-100 lg:px-12 lg:py-14">
             <div className="mx-auto w-full max-w-md">
-              <div className="mb-8">
-                <h2 className="font-heading text-2xl font-bold text-primary sm:text-3xl">
+              <div className="mb-6 sm:mb-8">
+                <h2 className="font-heading text-xl font-bold text-primary sm:text-3xl">
                   {otpRequested ? 'Verify your number' : isSignup ? 'Create your account' : 'Sign in to continue'}
                 </h2>
-                <p className="mt-2 text-sm text-stone-600 sm:text-base">
+                <p className="mt-2 text-xs text-stone-600 sm:text-base">
                   {otpRequested
                     ? 'Enter the OTP we sent to your mobile.'
                     : isSignup
@@ -200,7 +200,7 @@ const Auth = () => {
               </div>
 
               {!otpRequested ? (
-                <form onSubmit={handleSendOtp} className="space-y-6">
+                <form onSubmit={handleSendOtp} className="space-y-5 sm:space-y-6">
                   {isSignup && (
                     <div>
                       <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-stone-500">
@@ -298,7 +298,7 @@ const Auth = () => {
                 </form>
               )}
 
-              <p className="mt-8 border-t border-orange-100/90 pt-8 text-center text-sm text-stone-600">
+              <p className="mt-6 border-t border-orange-100/90 pt-6 text-center text-sm text-stone-600 sm:mt-8 sm:pt-8">
                 {isSignup ? (
                   <>
                     Already have an account?{' '}

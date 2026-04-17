@@ -9,7 +9,8 @@ import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 
 const MUKHI_SUBCATEGORIES = Array.from({ length: 14 }, (_, i) => `${i + 1} Mukhi`);
-const EXPLORE_COUNT = 5;
+const DESKTOP_EXPLORE_COUNT = 5;
+const MOBILE_EXPLORE_COUNT = 6;
 
 const getRandomProducts = (items, count) => {
   const shuffled = [...items];
@@ -45,7 +46,8 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
         if (!response.ok) throw new Error('Failed to fetch products');
         const result = await response.json();
         const list = result.success && Array.isArray(result.data) ? result.data : [];
-        setProducts(getRandomProducts(list, EXPLORE_COUNT));
+        const exploreCount = isMobileCarousel ? MOBILE_EXPLORE_COUNT : DESKTOP_EXPLORE_COUNT;
+        setProducts(getRandomProducts(list, exploreCount));
       } catch (_err) {
         setProducts([]);
       } finally {
@@ -54,7 +56,7 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
     };
 
     fetchExploreProducts();
-  }, [category]);
+  }, [category, isMobileCarousel]);
 
   const getReviewCount = (productId) => 5 + (productId % 3);
 
@@ -80,14 +82,14 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
         </div>
 
         <div
-          className="flex flex-nowrap max-sm:gap-3 max-sm:-mx-4 max-sm:px-4 max-sm:py-1 max-sm:pb-3 overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:py-0 md:grid-cols-3 lg:grid-cols-5 sm:gap-5 md:gap-6 lg:gap-7 [scrollbar-width:thin]"
+          className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-5 lg:gap-7"
           role="list"
         >
           {products.map((product) => (
             <div
               key={product.id}
               role="listitem"
-              className="relative shrink-0 snap-start w-[min(calc(100vw-3.75rem),208px)] sm:w-auto sm:min-w-0 sm:shrink"
+              className="relative min-w-0"
             >
               <ProductCard
                 product={product}
