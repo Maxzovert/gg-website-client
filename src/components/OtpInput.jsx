@@ -75,7 +75,7 @@ const OtpInput = ({ length = 6, value = '', onChange, disabled = false, autoFocu
   };
 
   return (
-    <div className="flex justify-center gap-2 sm:gap-3" role="group" aria-label="One-time password">
+    <div className="flex flex-wrap justify-center gap-1.5 sm:gap-3" role="group" aria-label="One-time password">
       {Array.from({ length: safeLen }, (_, i) => (
         <input
           key={i}
@@ -92,7 +92,7 @@ const OtpInput = ({ length = 6, value = '', onChange, disabled = false, autoFocu
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={i === 0 ? handlePaste : undefined}
           onFocus={(e) => e.target.select()}
-          className="h-12 w-10 sm:h-14 sm:w-12 rounded-xl border-2 border-orange-100 bg-white text-center text-xl font-semibold tracking-widest text-stone-900 shadow-sm shadow-orange-900/5 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-50"
+          className="h-11 w-9 rounded-xl border-2 border-orange-100 bg-white text-center text-lg font-semibold tracking-widest text-stone-900 shadow-sm shadow-orange-900/5 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-50 sm:h-14 sm:w-12 sm:text-xl"
         />
       ))}
     </div>
