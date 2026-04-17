@@ -171,7 +171,7 @@ const Footer = () => {
         <div className="mt-8 sm:mt-10 md:mt-12 pt-6 border-t border-white/30 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
           <div className="text-white/90 text-sm">
             <p>© {new Date().getFullYear()} Gawri Ganga. All rights reserved.</p>
-            <p className="mt-1 text-xs text-white/80">Gawri Ganga is owned by BNB Basket and Boxes Gifting Solutions</p>
+            <p className="mt-1 text-xs text-white/80">Gawri Ganga is owned by BNB Basket and Boxes Gifting Solutions Private Limited</p>
           </div>
           <div className="flex flex-wrap justify-center sm:justify-end gap-4 text-sm">
             <Link to="/privacy-policy" className="text-white/90 hover:text-white transition-colors py-1">
