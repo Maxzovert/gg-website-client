@@ -9,6 +9,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPricing';
+import { getMaxOrderQuantity } from '../../utils/productPreorder';
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -489,7 +490,7 @@ const Cart = () => {
                       <button
                         onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
                         className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-xl"
-                        disabled={item.quantity >= item.stock}
+                        disabled={item.quantity >= getMaxOrderQuantity(item)}
                       >
                         <FaPlus className="text-xs sm:text-sm" />
                       </button>

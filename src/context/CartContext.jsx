@@ -62,6 +62,8 @@ export const CartProvider = ({ children }) => {
                 ...item,
                 quantity: item.quantity + quantity,
                 discount_percent: product.discount_percent ?? item.discount_percent ?? 0,
+                stock: product.stock ?? item.stock,
+                sale_type: product.sale_type ?? item.sale_type ?? 'order',
               }
             : item
         );
@@ -69,11 +71,13 @@ export const CartProvider = ({ children }) => {
         // Add new product to cart
         return [...prev, {
           id: product.id,
+          slug: product.slug || null,
           name: product.name,
           price: product.price,
           images: product.images || [],
           quantity: quantity,
           stock: product.stock,
+          sale_type: product.sale_type || 'order',
           category: product.category || '',
           subcategory: product.subcategory,
           deity: product.deity,

@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from './Toaster';
 import { pricingFromProduct } from '../utils/productPricing';
+import { formatMeasuresSummary } from '../utils/productMeasures';
 
 const SPRAY_THEMES = {
   amratDhara: {
@@ -89,6 +90,12 @@ const SprayProductCard = ({
   const reviewCount = getReviewCount ? getReviewCount(product.id) : 5;
   const essence = getEssence ? getEssence(product.subcategory) : null;
   const theme = resolveSprayTheme(product);
+  const descriptionText = String(
+    product.description ||
+      product.short_description ||
+      product.shortDescription ||
+      ''
+  ).trim();
   const isAmratDhara = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('amrat dhara');
   const isMaitri = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('maitri');
   const isChakraBalance = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('chakra balance');
@@ -208,6 +215,12 @@ const SprayProductCard = ({
             {product.name}
           </h3>
 
+          {Array.isArray(product.measures) && product.measures.length > 0 ? (
+            <p className="mb-2 text-xs font-semibold text-gray-800 sm:text-sm" title={formatMeasuresSummary(product.measures)}>
+              {formatMeasuresSummary(product.measures)}
+            </p>
+          ) : null}
+
           <div className="mb-4 flex items-center gap-1.5">
             <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
@@ -216,6 +229,20 @@ const SprayProductCard = ({
             </div>
             <span className="text-xs font-medium text-gray-500 sm:text-sm">({reviewCount})</span>
           </div>
+
+          {descriptionText ? (
+            <div className="mb-2 min-w-0">
+              <p
+                className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500 sm:text-xs"
+                style={{ color: theme.essenceText }}
+              >
+                Description
+              </p>
+              <p className="line-clamp-4 text-sm leading-relaxed text-gray-600 sm:line-clamp-5 sm:text-base">
+                {descriptionText}
+              </p>
+            </div>
+          ) : null}
 
           <div className="mt-auto pt-3" style={{ borderTop: `1px solid ${theme.accent}33` }}>
             <div className="mb-3 flex items-end justify-between gap-2">
