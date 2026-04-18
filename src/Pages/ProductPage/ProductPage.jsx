@@ -31,6 +31,7 @@ import { apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
 import rdcImage from "../../assets/ProductPage/rdc.webp";
 import { pricingFromProduct } from "../../utils/productPricing";
+import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from "../../utils/productPreorder";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -491,13 +492,21 @@ const ProductPage = () => {
   }, [reviewImagePreview]);
 
   const handleQuantityChange = (delta) => {
+    if (!product) return;
+    const max = getMaxOrderQuantity(product);
     setQuantity((prev) => {
       const newQuantity = prev + delta;
       if (newQuantity < 1) return 1;
-      if (newQuantity > (product?.stock || 1)) return product?.stock || 1;
+      if (newQuantity > max) return max;
       return newQuantity;
     });
   };
+
+  useEffect(() => {
+    if (!product) return;
+    const max = getMaxOrderQuantity(product);
+    setQuantity((q) => Math.min(Math.max(1, q), max));
+  }, [product?.id, product?.stock, product?.sale_type]);
 
   const nextImage = () => {
     if (product?.images && product.images.length > 0) {
@@ -556,6 +565,9 @@ const ProductPage = () => {
   const pricing = pricingFromProduct(product);
   const reviewCount = getReviewCount(product.id);
   const hasMultipleImages = product.images && product.images.length > 1;
+  const isPreorder = isProductPreorder(product);
+  const canPurchase = productCanBePurchased(product);
+  const maxOrderQty = getMaxOrderQuantity(product);
 
   // Derive possible keys to match rudraksha with element/benefit images (e.g. "1 Mukhi" or "1")
   const getMatchKeys = () => {
@@ -829,6 +841,30 @@ const ProductPage = () => {
               )}
             </div>
 
+            {/* Measurements (product_measure_value + product_measure_unit) */}
+            {Array.isArray(product.measures) && product.measures.length > 0 && (
+              <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+                <p className="text-xs sm:text-sm font-semibold text-gray-900 px-3 py-2 bg-gray-50 border-b border-gray-200">
+                  Measurements
+                </p>
+                <div className="divide-y divide-gray-100">
+                  {product.measures.map((m, idx) => (
+                    <div
+                      key={`${m.unit_name || ''}-${m.value || ''}-${idx}`}
+                      className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
+                    >
+                      <span className="text-gray-600 shrink-0">
+                        {(m.unit_name || "Unit").trim() || "Unit"}
+                      </span>
+                      <span className="font-semibold text-gray-900 text-right tabular-nums">
+                        {(m.value != null ? String(m.value) : "").trim() || "—"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Recommended for Rashis (Rudraksha only) */}
             {isRudraksha && recommendedRashis.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 py-2">
@@ -875,7 +911,7 @@ const ProductPage = () => {
                 </span>
                 <button
                   onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= product.stock}
+                  disabled={!canPurchase || quantity >= maxOrderQty}
                   className="px-3 sm:px-4 py-2.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation min-h-[44px] sm:min-h-0"
                   aria-label="Increase quantity"
                 >
@@ -884,7 +920,14 @@ const ProductPage = () => {
               </div>
               {/* Stock Status */}
               <div className="w-full sm:w-auto">
-                {product.stock > 0 ? (
+                {isPreorder ? (
+                  <span className="inline-flex items-center text-sm sm:text-base font-semibold text-amber-800">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full mr-2 shrink-0"></span>
+                    {product.stock > 0
+                      ? `Pre-order — ${product.stock} available now`
+                      : 'Pre-order — ships when ready'}
+                  </span>
+                ) : product.stock > 0 ? (
                   <span className="inline-flex items-center text-sm sm:text-base font-semibold text-primary">
                     <span className="w-2 h-2 bg-primary rounded-full mr-2 shrink-0"></span>
                     In Stock ({product.stock} available)
@@ -924,18 +967,18 @@ const ProductPage = () => {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                disabled={!canPurchase}
                 className="w-full sm:flex-1 px-6 py-4 min-h-[48px] sm:min-h-0 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl touch-manipulation"
               >
                 <FaShoppingCart className="text-xl shrink-0" />
-                <span>{product.stock > 0 ? "Add to Cart" : "Out of Stock"}</span>
+                <span>{canPurchase ? "Add to Cart" : "Out of Stock"}</span>
               </button>
               <button
                 onClick={handleBuyNow}
-                disabled={product.stock === 0}
+                disabled={!canPurchase}
                 className="w-full sm:flex-1 px-6 py-4 min-h-[48px] sm:min-h-0 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl touch-manipulation"
               >
-                Buy Now
+                {isPreorder ? "Preorder" : "Buy Now"}
               </button>
             </div>
 

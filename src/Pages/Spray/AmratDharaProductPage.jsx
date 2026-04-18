@@ -1,22 +1,25 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaPlus, FaMinus, FaTruck, FaShieldAlt, FaLeaf } from 'react-icons/fa';
 import { apiFetch } from '../../config/api';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getMaxOrderQuantity, isProductPreorder, productCanBePurchased } from '../../utils/productPreorder';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
+import CheckoutModal from '../../components/CheckoutModal';
 import amratDharaBg from '../../assets/Sprayelem/Amratdhara/amratdharabg.png';
 import bigWave from '../../assets/Sprayelem/Amratdhara/bigwave.png';
 import smallWave from '../../assets/Sprayelem/Amratdhara/small wave.png';
 import smallWave2 from '../../assets/Sprayelem/Amratdhara/smallwave2.png';
 
 const AmratDharaProductPage = () => {
-  const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const { addToCart, cartItems } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
   const toast = useToast();
 
   const [product, setProduct] = useState(null);
@@ -32,6 +35,7 @@ const AmratDharaProductPage = () => {
   const [reviewName, setReviewName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
     const fetchAmratDhara = async () => {
@@ -92,10 +96,36 @@ const AmratDharaProductPage = () => {
     fetchReviews(product.id);
   }, [product?.id]);
 
-  const handleAddToCart = () => {
+  useEffect(() => {
     if (!product) return;
+    const max = getMaxOrderQuantity(product);
+    setQuantity((q) => Math.min(Math.max(1, q), max));
+  }, [product?.id, product?.stock, product?.sale_type]);
+
+  const calculateTotalAmount = () =>
+    cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+  const handleAddToCart = () => {
+    if (!product || !productCanBePurchased(product)) return;
     addToCart(product, quantity);
     toast.success(`${quantity} ${quantity > 1 ? 'items' : 'item'} of ${product.name} added to cart!`);
+  };
+
+  const handleBuyNow = () => {
+    if (!product || !productCanBePurchased(product)) return;
+    if (authLoading) {
+      toast.info('Please wait, checking authentication...');
+      return;
+    }
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: '/sprays/amrat-dhara' } } });
+      return;
+    }
+    const existingItem = cartItems.find((item) => item.id === product.id);
+    if (!existingItem) {
+      addToCart(product, quantity);
+    }
+    setShowCheckout(true);
   };
 
   const handleWishlist = () => {
@@ -166,6 +196,10 @@ const AmratDharaProductPage = () => {
     );
   }
 
+  const isPreorder = isProductPreorder(product);
+  const canPurchase = productCanBePurchased(product);
+  const maxOrderQty = getMaxOrderQuantity(product);
+
   return (
     <section className="relative overflow-hidden">
       <img src={amratDharaBg} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
@@ -225,25 +259,53 @@ const AmratDharaProductPage = () => {
                   <span className="text-3xl font-bold text-[#1a6ba0]">₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
-                <p className={`text-sm font-semibold ${product.stock > 0 ? 'text-[#1a6ba0]' : 'text-red-600'}`}>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</p>
+                {isPreorder ? (
+                  <p className="text-sm font-semibold text-amber-800">
+                    {Number(product.stock) > 0 ? `Pre-order — ${product.stock} available` : 'Pre-order — ships when ready'}
+                  </p>
+                ) : product.stock > 0 ? (
+                  <p className="text-sm font-semibold text-[#1a6ba0]">In Stock</p>
+                ) : (
+                  <p className="text-sm font-semibold text-red-600">Out of Stock</p>
+                )}
               </div>
 
               <div className="mt-4">
                 <p className="mb-2 text-sm font-semibold text-[#1a6ba0]">Quantity</p>
                 <div className="inline-flex items-center rounded-xl border border-[#1a6ba0]/30">
-                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-10 w-10 text-[#1a6ba0]"><FaMinus className="mx-auto text-xs" /></button>
+                  <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="h-10 w-10 text-[#1a6ba0]"><FaMinus className="mx-auto text-xs" /></button>
                   <span className="min-w-12 text-center font-semibold text-[#1a6ba0]">{quantity}</span>
-                  <button onClick={() => setQuantity((q) => Math.min(10, q + 1))} className="h-10 w-10 text-[#1a6ba0]"><FaPlus className="mx-auto text-xs" /></button>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.min(maxOrderQty, q + 1))}
+                    disabled={!canPurchase || quantity >= maxOrderQty}
+                    className="h-10 w-10 text-[#1a6ba0] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <FaPlus className="mx-auto text-xs" />
+                  </button>
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center gap-3">
-                <button onClick={handleWishlist} className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#1a6ba0]/35 text-[#1a6ba0]">
+              <div className="mt-5 flex flex-wrap items-center gap-2 sm:gap-3">
+                <button type="button" onClick={handleWishlist} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#1a6ba0]/35 text-[#1a6ba0]">
                   {inWishlist ? <FaHeart className="text-xl" /> : <FaRegHeart className="text-xl" />}
                 </button>
-                <button onClick={handleAddToCart} className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#1a6ba0] px-5 py-3 text-sm font-semibold text-white">
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  disabled={!canPurchase}
+                  className="inline-flex min-w-[120px] flex-1 items-center justify-center gap-2 rounded-xl bg-[#1a6ba0] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
                   <FaShoppingCart />
-                  Add to Cart
+                  {canPurchase ? 'Add to Cart' : 'Out of Stock'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  disabled={!canPurchase}
+                  className="inline-flex min-w-[120px] flex-1 items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isPreorder ? 'Preorder' : 'Buy Now'}
                 </button>
               </div>
             </div>
@@ -392,6 +454,17 @@ const AmratDharaProductPage = () => {
             </div>
           )}
         </section>
+
+        <CheckoutModal
+          isOpen={showCheckout}
+          onClose={() => setShowCheckout(false)}
+          cartItems={cartItems}
+          totalAmount={calculateTotalAmount()}
+          blessingCharge={0}
+          userId={userId}
+          userPhone={user?.phone_number}
+          userName={user?.full_name}
+        />
       </div>
     </section>
   );

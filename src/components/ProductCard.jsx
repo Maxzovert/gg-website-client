@@ -5,6 +5,8 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useToast } from './Toaster';
 import { pricingFromProduct } from '../utils/productPricing';
+import { isProductPreorder } from '../utils/productPreorder';
+import { formatMeasuresSummary } from '../utils/productMeasures';
 
 const ProductCard = ({ 
   product, 
@@ -16,6 +18,7 @@ const ProductCard = ({
   onAddToCart
 }) => {
   const large = size === 'lg';
+  const isPreorder = isProductPreorder(product);
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const toast = useToast();
@@ -159,6 +162,12 @@ const ProductCard = ({
           {product.name}
         </h3>
 
+        {Array.isArray(product.measures) && product.measures.length > 0 ? (
+          <p className={`text-gray-700 font-medium line-clamp-2 mb-1 ${large ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-[11px]'}`} title={formatMeasuresSummary(product.measures)}>
+            {formatMeasuresSummary(product.measures)}
+          </p>
+        ) : null}
+
         {/* Short Description - Only on larger screens (lg and above) */}
         {/* {(product.short_description || product.shortDescription) ? (
           <p className={`hidden lg:block text-gray-500 mb-2 line-clamp-2 leading-snug ${large ? 'text-base' : 'text-sm'}`}
@@ -212,7 +221,15 @@ const ProductCard = ({
                   </span>
                 )}
               </div>
-              {product.stock > 0 ? (
+              {isPreorder ? (
+                <span className={`inline-flex items-center font-semibold text-amber-800 ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}
+                >
+                  <span className={`bg-amber-500 rounded-full ${large ? 'w-1.5 h-1.5 mr-1 sm:mr-1.5' : 'w-1 h-1 lg:w-1.5 lg:h-1.5 mr-0.5 sm:mr-1 lg:mr-1.5'}`}
+                  />
+                  <span className="hidden sm:inline">Pre-order</span>
+                  <span className="sm:hidden">Pre</span>
+                </span>
+              ) : product.stock > 0 ? (
                 <span className={`inline-flex items-center font-semibold text-primary ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}
                 >
                   <span className={`bg-primary rounded-full ${large ? 'w-1.5 h-1.5 mr-1 sm:mr-1.5' : 'w-1 h-1 lg:w-1.5 lg:h-1.5 mr-0.5 sm:mr-1 lg:mr-1.5'}`}
