@@ -26,12 +26,14 @@ import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useAuth } from "../../context/AuthContext";
 import CheckoutModal from "../../components/CheckoutModal";
+import PreorderEmailModal from "../../components/PreorderEmailModal";
 import ProductCard from "../../components/ProductCard";
 import { apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
 import rdcImage from "../../assets/ProductPage/rdc.webp";
 import { pricingFromProduct } from "../../utils/productPricing";
 import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from "../../utils/productPreorder";
+import { submitPreorderRequest } from "../../utils/preorderRequest";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -54,6 +56,9 @@ const ProductPage = () => {
   const [imagePreviewOpen, setImagePreviewOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showPreorderModal, setShowPreorderModal] = useState(false);
+  const [preorderEmail, setPreorderEmail] = useState("");
+  const [preorderSubmitting, setPreorderSubmitting] = useState(false);
   const [elementImages, setElementImages] = useState([]);
   const [benefitImages, setBenefitImages] = useState([]);
   const [staticImagesLoading, setStaticImagesLoading] = useState(false);
@@ -172,6 +177,12 @@ const ProductPage = () => {
       setReviewName(user.full_name);
     }
   }, [user?.full_name]);
+
+  useEffect(() => {
+    if (user?.email) {
+      setPreorderEmail(user.email);
+    }
+  }, [user?.email]);
 
   // Fetch reviews for this product
   useEffect(() => {
@@ -306,6 +317,10 @@ const ProductPage = () => {
 
   const handleBuyNow = () => {
     if (!product) return;
+    if (isProductPreorder(product)) {
+      setShowPreorderModal(true);
+      return;
+    }
     if (authLoading) {
       toast.info('Please wait, checking authentication...');
       return;
@@ -321,6 +336,21 @@ const ProductPage = () => {
     }
     // Open checkout modal
     setShowCheckout(true);
+  };
+
+  const handlePreorderSubmit = async (email) => {
+    if (!product) return;
+    setPreorderSubmitting(true);
+    try {
+      await submitPreorderRequest({ product, quantity, email });
+      setPreorderEmail(email);
+      setShowPreorderModal(false);
+      toast.success('Preorder request saved. We will notify you by email.');
+    } catch (error) {
+      toast.error(error?.message || 'Failed to save preorder request');
+    } finally {
+      setPreorderSubmitting(false);
+    }
   };
   
   const calculateTotalAmount = () => {
@@ -1523,6 +1553,15 @@ const ProductPage = () => {
         userId={userId}
         userPhone={user?.phone_number}
         userName={user?.full_name}
+      />
+
+      <PreorderEmailModal
+        isOpen={showPreorderModal}
+        onClose={() => setShowPreorderModal(false)}
+        onSubmit={handlePreorderSubmit}
+        loading={preorderSubmitting}
+        defaultEmail={preorderEmail}
+        productName={product?.name}
       />
 
       {/* Full-screen image preview */}

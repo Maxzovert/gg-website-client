@@ -20,7 +20,7 @@ const Footer = () => {
     { name: 'Rashi', href: '/rashi' },
     { name: 'Contact Us', href: '/contact' },
     { name: 'About Us', href: '/about' },
-    { name: 'Blog', href: '/blog' },
+    { name: 'Blog', href: '/blogs' },
     { name: 'Terms of Service', href: '/terms-of-service' },
   ]
 
@@ -65,7 +65,7 @@ const Footer = () => {
             <div className="mt-4 space-y-1.5 text-white/95 text-xs sm:text-sm text-left max-w-xs mx-auto lg:mx-0 lg:max-w-none break-words hidden sm:block">
               <p>Gawri Ganga</p>
               <p className="text-white font-medium">GST: 09AAFCE9670A1ZL</p>
-              <p>Head Office — A27, GROUND FLOOR, SECTOR 27, Noida, Gautambuddha Nagar, Uttar Pradesh, 201301</p>
+              <p>Head Office — SECTOR 27, Noida, Uttar Pradesh, 201301</p>
               <p>Mon–Sat, 10 AM–6 PM</p>
             </div>
           </div>

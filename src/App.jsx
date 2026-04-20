@@ -32,6 +32,7 @@ const OrderSuccess = lazy(() => import('./Pages/Order/OrderSuccess'))
 const OrderFailed = lazy(() => import('./Pages/Order/OrderFailed'))
 const About = lazy(() => import('./Pages/About/About'))
 const Blog = lazy(() => import('./Pages/Blog/Blog'))
+const BlogPostPage = lazy(() => import('./Pages/Blog/BlogPostPage'))
 const Contact = lazy(() => import('./Pages/Contact/Contact'))
 const TermsOfService = lazy(() => import('./Pages/Policies/TermsOfService'))
 const RefundCancellation = lazy(() => import('./Pages/Policies/RefundCancellation'))
@@ -63,7 +64,8 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/sprays" element={<Spray />} />
-                  <Route path="/sprays/amrat-dhara" element={<AmratDharaProductPage />} />
+                  <Route path="/sprays/amrat-bindu" element={<AmratDharaProductPage />} />
+                  <Route path="/sprays/amrat-dhara" element={<Navigate to="/sprays/amrat-bindu" replace />} />
                   <Route path="/sprays/maitri" element={<MaitriProductPage />} />
                   <Route path="/sprays/chakra-balance" element={<ChakraBalanceProductPage />} />
                   <Route path="/sprays/shuddhi" element={<ShuddhiProductPage />} />
@@ -80,7 +82,8 @@ const App = () => {
                   <Route path="/order-success" element={<OrderSuccess />} />
                   <Route path="/order-failed" element={<OrderFailed />} />
                   <Route path="/about" element={<About />} />
-                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blogs" element={<Blog />} />
+                  <Route path="/blogs/:slug" element={<BlogPostPage />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/refund-cancellation" element={<RefundCancellation />} />

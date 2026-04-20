@@ -10,13 +10,13 @@ const sprays = [
   {
     bg: AmratDhara,
     tag: "Aura Spray",
-    title: "Amrat Dhara",
+    title: "Amrat Bindu",
     accent: "#2283c7",
     heading: "#1a6ba0",
     btn: "#1a6ba0",
     btnHover: "#155a8a",
     description:
-      "Amrat Dhara Lavender Aura Spray surrounds your space with a soft, calming floral fragrance that eases stress and restores balance. Perfect for relaxation, meditation, or winding down after a long day, it refreshes the air and creates a peaceful, soothing atmosphere instantly.",
+      "Amrat Bindu Lavender Aura Spray surrounds your space with a soft, calming floral fragrance that eases stress and restores balance. Perfect for relaxation, meditation, or winding down after a long day, it refreshes the air and creates a peaceful, soothing atmosphere instantly.",
     align: "right",
   },
   {

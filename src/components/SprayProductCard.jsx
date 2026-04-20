@@ -67,7 +67,7 @@ const SPRAY_THEMES = {
 
 const resolveSprayTheme = (product = {}) => {
   const label = `${product.name || ''} ${product.subcategory || ''}`.toLowerCase();
-  if (label.includes('amrat dhara')) return SPRAY_THEMES.amratDhara;
+  if (label.includes('amrat bindu') || label.includes('amrat dhara')) return SPRAY_THEMES.amratDhara;
   if (label.includes('chakra balance')) return SPRAY_THEMES.chakraBalance;
   if (label.includes('maitri')) return SPRAY_THEMES.maitri;
   if (label.includes('shuddhi')) return SPRAY_THEMES.shuddhi;
@@ -96,12 +96,13 @@ const SprayProductCard = ({
       product.shortDescription ||
       ''
   ).trim();
-  const isAmratDhara = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('amrat dhara');
+  const sprayLabel = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase();
+  const isAmratDhara = sprayLabel.includes('amrat bindu') || sprayLabel.includes('amrat dhara') || String(product?.slug || '').toLowerCase() === 'amrat-bindu-aura-spray';
   const isMaitri = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('maitri');
   const isChakraBalance = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('chakra balance');
   const isShuddhi = `${product?.name || ''} ${product?.subcategory || ''}`.toLowerCase().includes('shuddhi');
   const productLink = isAmratDhara
-    ? '/sprays/amrat-dhara'
+    ? '/sprays/amrat-bindu'
     : isMaitri
       ? '/sprays/maitri'
       : isChakraBalance
