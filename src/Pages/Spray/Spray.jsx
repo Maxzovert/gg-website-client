@@ -50,6 +50,7 @@ const Spray = () => {
     // Mapping of subcategories to essences
     const essenceMap = {
       'Chakra Balance': 'Gurhal',
+      'Amrat Bindu': 'Lavandur',
       'Amrat Dhara': 'Lavandur',
       'Maitri': 'Levandur',
       'Shuddhi': 'Kewda/Mogra'

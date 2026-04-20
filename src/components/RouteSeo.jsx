@@ -21,9 +21,9 @@ const ROUTE_META = [
   },
   { path: '/sprays', title: 'Spiritual Sprays | Gawri Ganga', description: DEFAULT_DESC },
   {
-    path: '/sprays/amrat-dhara',
-    title: 'Amrat Dhara Aura Spray | Gawri Ganga',
-    description: 'Discover Amrat Dhara Lavender Aura Spray for calmness, relaxation, and a peaceful spiritual atmosphere.',
+    path: '/sprays/amrat-bindu',
+    title: 'Amrat Bindu Aura Spray | Gawri Ganga',
+    description: 'Discover Amrat Bindu Lavender Aura Spray for calmness, relaxation, and a peaceful spiritual atmosphere.',
   },
   {
     path: '/sprays/maitri',
@@ -56,6 +56,12 @@ const ROUTE_META = [
     title: 'Blog | Gawri Ganga — Rudraksha & Spiritual Wellness',
     description:
       'Articles and guides from Gawri Ganga on Rudraksha, spirituality, and wellness. Tips for care, intention, and practice.',
+  },
+  {
+    path: '/blog/:slug',
+    title: 'Blog Article | Gawri Ganga',
+    description:
+      'Read spiritual wellness and Rudraksha guides from Gawri Ganga.',
   },
   { path: '/contact', title: 'Contact | Gawri Ganga', description: 'Get in touch with Gawri Ganga support.' },
   { path: '/privacy-policy', title: 'Privacy Policy | Gawri Ganga', description: 'How we handle your data.' },

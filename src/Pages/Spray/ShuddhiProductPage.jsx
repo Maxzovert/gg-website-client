@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaPlus, FaMinus, FaTruck, FaShieldAlt, FaLeaf } from 'react-icons/fa';
 import { apiFetch } from '../../config/api';
 import { pricingFromProduct } from '../../utils/productPricing';
@@ -9,7 +9,8 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
-import CheckoutModal from '../../components/CheckoutModal';
+import PreorderEmailModal from '../../components/PreorderEmailModal';
+import { submitPreorderRequest } from '../../utils/preorderRequest';
 import shuddhiBg from '../../assets/Sprayelem/shuddhi/shuddhibg.png';
 import bigLeave from '../../assets/Sprayelem/shuddhi/bigleave.png';
 import smallLeave from '../../assets/Sprayelem/shuddhi/smallleave.png';
@@ -18,10 +19,9 @@ import soil from '../../assets/Sprayelem/shuddhi/soil.png';
 import soilStroke from '../../assets/Sprayelem/shuddhi/soilstroke.png';
 
 const ShuddhiProductPage = () => {
-  const navigate = useNavigate();
-  const { addToCart, cartItems } = useCart();
+  const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const toast = useToast();
 
   const [product, setProduct] = useState(null);
@@ -36,7 +36,9 @@ const ShuddhiProductPage = () => {
   const [reviewName, setReviewName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showPreorderModal, setShowPreorderModal] = useState(false);
+  const [preorderEmail, setPreorderEmail] = useState('');
+  const [preorderSubmitting, setPreorderSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -90,11 +92,43 @@ const ShuddhiProductPage = () => {
     if (product?.id) fetchReviews(product.id);
   }, [product?.id]);
 
-  const handleAddToCart = () => {
+  useEffect(() => {
+    if (user?.email) {
+      setPreorderEmail(user.email);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
     if (!product) return;
+    const max = getMaxOrderQuantity(product);
+    setQuantity((q) => Math.min(Math.max(1, q), max));
+  }, [product?.id, product?.stock, product?.sale_type]);
+
+  const handleAddToCart = () => {
+    if (!product || !productCanBePurchased(product)) return;
+    if (isProductPreorder(product)) {
+      setShowPreorderModal(true);
+      return;
+    }
     addToCart(product, quantity);
     toast.success(`${quantity} ${quantity > 1 ? 'items' : 'item'} of ${product.name} added to cart!`);
   };
+
+  const handlePreorderSubmit = async (email) => {
+    if (!product) return;
+    setPreorderSubmitting(true);
+    try {
+      await submitPreorderRequest({ product, quantity, email });
+      setPreorderEmail(email);
+      setShowPreorderModal(false);
+      toast.success('Preorder request saved. We will notify you by email.');
+    } catch (error) {
+      toast.error(error?.message || 'Failed to save preorder request');
+    } finally {
+      setPreorderSubmitting(false);
+    }
+  };
+
   const handleWishlist = () => {
     if (!product) return;
     const added = toggleWishlist(product);
@@ -203,9 +237,7 @@ const ShuddhiProductPage = () => {
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
                 {isPreorder ? (
-                  <p className="text-sm font-semibold text-amber-800">
-                    {Number(product.stock) > 0 ? `Pre-order — ${product.stock} available` : 'Pre-order — ships when ready'}
-                  </p>
+                  <p className="text-sm font-semibold text-amber-800">Pre-order available</p>
                 ) : product.stock > 0 ? (
                   <p className="text-sm font-semibold text-[#486323]">In Stock</p>
                 ) : (
@@ -238,15 +270,7 @@ const ShuddhiProductPage = () => {
                   className="inline-flex min-w-[120px] flex-1 items-center justify-center gap-2 rounded-xl bg-[#597B2C] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FaShoppingCart />
-                  {canPurchase ? 'Add to Cart' : 'Out of Stock'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  disabled={!canPurchase}
-                  className="inline-flex min-w-[120px] flex-1 items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isPreorder ? 'Preorder' : 'Buy Now'}
+                  {isPreorder ? 'Preorder' : canPurchase ? 'Add to Cart' : 'Out of Stock'}
                 </button>
               </div>
             </div>
@@ -348,15 +372,13 @@ const ShuddhiProductPage = () => {
           )}
         </section>
 
-        <CheckoutModal
-          isOpen={showCheckout}
-          onClose={() => setShowCheckout(false)}
-          cartItems={cartItems}
-          totalAmount={calculateTotalAmount()}
-          blessingCharge={0}
-          userId={userId}
-          userPhone={user?.phone_number}
-          userName={user?.full_name}
+        <PreorderEmailModal
+          isOpen={showPreorderModal}
+          onClose={() => setShowPreorderModal(false)}
+          onSubmit={handlePreorderSubmit}
+          loading={preorderSubmitting}
+          defaultEmail={preorderEmail}
+          productName={product?.name}
         />
       </div>
     </section>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaPlus, FaMinus, FaTruck, FaShieldAlt, FaLeaf } from 'react-icons/fa';
 import { apiFetch } from '../../config/api';
 import { pricingFromProduct } from '../../utils/productPricing';
@@ -9,17 +9,17 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
-import CheckoutModal from '../../components/CheckoutModal';
+import PreorderEmailModal from '../../components/PreorderEmailModal';
+import { submitPreorderRequest } from '../../utils/preorderRequest';
 import amratDharaBg from '../../assets/Sprayelem/Amratdhara/amratdharabg.png';
 import bigWave from '../../assets/Sprayelem/Amratdhara/bigwave.png';
 import smallWave from '../../assets/Sprayelem/Amratdhara/small wave.png';
 import smallWave2 from '../../assets/Sprayelem/Amratdhara/smallwave2.png';
 
 const AmratDharaProductPage = () => {
-  const navigate = useNavigate();
-  const { addToCart, cartItems } = useCart();
+  const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const toast = useToast();
 
   const [product, setProduct] = useState(null);
@@ -35,36 +35,43 @@ const AmratDharaProductPage = () => {
   const [reviewName, setReviewName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showPreorderModal, setShowPreorderModal] = useState(false);
+  const [preorderEmail, setPreorderEmail] = useState('');
+  const [preorderSubmitting, setPreorderSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchAmratDhara = async () => {
+    const fetchAmratBindu = async () => {
       try {
         setLoading(true);
         setError('');
-        const response = await apiFetch('/api/products?category=Sprays&search=Amrat%20Dhara');
-        if (!response.ok) throw new Error('Failed to load Amrat Dhara');
+        const response = await apiFetch('/api/products?category=Sprays&search=Amrat%20Bindu');
+        if (!response.ok) throw new Error('Failed to load Amrat Bindu');
         const result = await response.json();
         const list = Array.isArray(result?.data) ? result.data : [];
-        const matched = list.find((item) => `${item?.name || ''}`.toLowerCase().includes('amrat dhara')) || list[0] || null;
+        const matched =
+          list.find((item) => {
+            const name = `${item?.name || ''}`.toLowerCase();
+            const slug = String(item?.slug || '').toLowerCase();
+            return name.includes('amrat bindu') || name.includes('amrat dhara') || slug === 'amrat-bindu-aura-spray';
+          }) || list[0] || null;
         if (!matched) {
-          setError('Amrat Dhara product not found');
+          setError('Amrat Bindu product not found');
           return;
         }
         setProduct(matched);
         setSelectedImageIndex(0);
       } catch (err) {
-        setError('Unable to load Amrat Dhara right now');
+        setError('Unable to load Amrat Bindu right now');
       } finally {
         setLoading(false);
       }
     };
-    fetchAmratDhara();
+    fetchAmratBindu();
   }, []);
 
   const pricing = useMemo(() => (product ? pricingFromProduct(product) : null), [product]);
   const inWishlist = product ? isInWishlist(product.id) : false;
-  const productImages = product?.images?.length ? product.images : ['https://via.placeholder.com/1200x900?text=Amrat+Dhara'];
+  const productImages = product?.images?.length ? product.images : ['https://via.placeholder.com/1200x900?text=Amrat+Bindu'];
 
   const sortedReviews = useMemo(() => {
     const list = [...reviews];
@@ -97,35 +104,40 @@ const AmratDharaProductPage = () => {
   }, [product?.id]);
 
   useEffect(() => {
+    if (user?.email) {
+      setPreorderEmail(user.email);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
     if (!product) return;
     const max = getMaxOrderQuantity(product);
     setQuantity((q) => Math.min(Math.max(1, q), max));
   }, [product?.id, product?.stock, product?.sale_type]);
 
-  const calculateTotalAmount = () =>
-    cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-
   const handleAddToCart = () => {
     if (!product || !productCanBePurchased(product)) return;
+    if (isProductPreorder(product)) {
+      setShowPreorderModal(true);
+      return;
+    }
     addToCart(product, quantity);
     toast.success(`${quantity} ${quantity > 1 ? 'items' : 'item'} of ${product.name} added to cart!`);
   };
 
-  const handleBuyNow = () => {
-    if (!product || !productCanBePurchased(product)) return;
-    if (authLoading) {
-      toast.info('Please wait, checking authentication...');
-      return;
+  const handlePreorderSubmit = async (email) => {
+    if (!product) return;
+    setPreorderSubmitting(true);
+    try {
+      await submitPreorderRequest({ product, quantity, email });
+      setPreorderEmail(email);
+      setShowPreorderModal(false);
+      toast.success('Preorder request saved. We will notify you by email.');
+    } catch (error) {
+      toast.error(error?.message || 'Failed to save preorder request');
+    } finally {
+      setPreorderSubmitting(false);
     }
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: '/sprays/amrat-dhara' } } });
-      return;
-    }
-    const existingItem = cartItems.find((item) => item.id === product.id);
-    if (!existingItem) {
-      addToCart(product, quantity);
-    }
-    setShowCheckout(true);
   };
 
   const handleWishlist = () => {
@@ -186,7 +198,7 @@ const AmratDharaProductPage = () => {
   if (error || !product || !pricing) {
     return (
       <section className="mx-auto max-w-[1920px] px-4 py-16 text-center sm:px-6 lg:px-10 xl:px-14">
-        <h1 className="text-2xl font-bold text-[#1a6ba0]">Amrat Dhara</h1>
+        <h1 className="text-2xl font-bold text-[#1a6ba0]">Amrat Bindu</h1>
         <p className="mt-3 text-gray-600">{error || 'Product not available'}</p>
         <Link to="/sprays" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#1a6ba0] px-5 py-2.5 text-sm font-semibold text-white">
           <FaArrowLeft />
@@ -260,9 +272,7 @@ const AmratDharaProductPage = () => {
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
                 {isPreorder ? (
-                  <p className="text-sm font-semibold text-amber-800">
-                    {Number(product.stock) > 0 ? `Pre-order — ${product.stock} available` : 'Pre-order — ships when ready'}
-                  </p>
+                  <p className="text-sm font-semibold text-amber-800">Pre-order available</p>
                 ) : product.stock > 0 ? (
                   <p className="text-sm font-semibold text-[#1a6ba0]">In Stock</p>
                 ) : (
@@ -297,15 +307,7 @@ const AmratDharaProductPage = () => {
                   className="inline-flex min-w-[120px] flex-1 items-center justify-center gap-2 rounded-xl bg-[#1a6ba0] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FaShoppingCart />
-                  {canPurchase ? 'Add to Cart' : 'Out of Stock'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  disabled={!canPurchase}
-                  className="inline-flex min-w-[120px] flex-1 items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isPreorder ? 'Preorder' : 'Buy Now'}
+                  {isPreorder ? 'Preorder' : canPurchase ? 'Add to Cart' : 'Out of Stock'}
                 </button>
               </div>
             </div>
@@ -386,7 +388,7 @@ const AmratDharaProductPage = () => {
             </ol>
 
             <div className="mt-5 rounded-xl bg-[#f8fdff] p-4">
-              <h4 className="text-lg font-bold text-[#1a6ba0]">Why Amrat Dhara</h4>
+              <h4 className="text-lg font-bold text-[#1a6ba0]">Why Amrat Bindu</h4>
               <p className="mt-2 wrap-break-word text-base leading-relaxed text-[#3d687f]">
                 The lavender profile helps calm the mind while uplifting the space, making it ideal for rituals and daily mindfulness.
               </p>
@@ -423,7 +425,7 @@ const AmratDharaProductPage = () => {
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
               rows={4}
-              placeholder="Share your experience with Amrat Dhara..."
+              placeholder="Share your experience with Amrat Bindu..."
               className="mt-3 w-full rounded-lg border border-[#1a6ba0]/20 bg-white px-3 py-2 text-sm outline-none"
             />
             <button type="submit" disabled={reviewSubmitting} className="mt-3 rounded-lg bg-[#1a6ba0] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
@@ -455,15 +457,13 @@ const AmratDharaProductPage = () => {
           )}
         </section>
 
-        <CheckoutModal
-          isOpen={showCheckout}
-          onClose={() => setShowCheckout(false)}
-          cartItems={cartItems}
-          totalAmount={calculateTotalAmount()}
-          blessingCharge={0}
-          userId={userId}
-          userPhone={user?.phone_number}
-          userName={user?.full_name}
+        <PreorderEmailModal
+          isOpen={showPreorderModal}
+          onClose={() => setShowPreorderModal(false)}
+          onSubmit={handlePreorderSubmit}
+          loading={preorderSubmitting}
+          defaultEmail={preorderEmail}
+          productName={product?.name}
         />
       </div>
     </section>

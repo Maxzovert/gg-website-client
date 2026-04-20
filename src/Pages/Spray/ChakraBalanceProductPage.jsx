@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaPlus, FaMinus, FaTruck, FaShieldAlt, FaLeaf } from 'react-icons/fa';
 import { apiFetch } from '../../config/api';
 import { pricingFromProduct } from '../../utils/productPricing';
@@ -9,7 +9,8 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
-import CheckoutModal from '../../components/CheckoutModal';
+import PreorderEmailModal from '../../components/PreorderEmailModal';
+import { submitPreorderRequest } from '../../utils/preorderRequest';
 import chakraBg from '../../assets/Sprayelem/chakrabalance/cbbg.png';
 import chakraIcon from '../../assets/Sprayelem/chakrabalance/chakra.png';
 import petalsBig from '../../assets/Sprayelem/chakrabalance/petalsbig.png';
@@ -17,10 +18,9 @@ import petals1 from '../../assets/Sprayelem/chakrabalance/4patel1.png';
 import petals2 from '../../assets/Sprayelem/chakrabalance/4patel2.png';
 
 const ChakraBalanceProductPage = () => {
-  const navigate = useNavigate();
-  const { addToCart, cartItems } = useCart();
+  const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated, userId, user, loading: authLoading } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const toast = useToast();
 
   const [product, setProduct] = useState(null);
@@ -36,7 +36,9 @@ const ChakraBalanceProductPage = () => {
   const [reviewName, setReviewName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showPreorderModal, setShowPreorderModal] = useState(false);
+  const [preorderEmail, setPreorderEmail] = useState('');
+  const [preorderSubmitting, setPreorderSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -92,35 +94,40 @@ const ChakraBalanceProductPage = () => {
   }, [product?.id]);
 
   useEffect(() => {
+    if (user?.email) {
+      setPreorderEmail(user.email);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
     if (!product) return;
     const max = getMaxOrderQuantity(product);
     setQuantity((q) => Math.min(Math.max(1, q), max));
   }, [product?.id, product?.stock, product?.sale_type]);
 
-  const calculateTotalAmount = () =>
-    cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-
   const handleAddToCart = () => {
     if (!product || !productCanBePurchased(product)) return;
+    if (isProductPreorder(product)) {
+      setShowPreorderModal(true);
+      return;
+    }
     addToCart(product, quantity);
     toast.success(`${quantity} ${quantity > 1 ? 'items' : 'item'} of ${product.name} added to cart!`);
   };
 
-  const handleBuyNow = () => {
-    if (!product || !productCanBePurchased(product)) return;
-    if (authLoading) {
-      toast.info('Please wait, checking authentication...');
-      return;
+  const handlePreorderSubmit = async (email) => {
+    if (!product) return;
+    setPreorderSubmitting(true);
+    try {
+      await submitPreorderRequest({ product, quantity, email });
+      setPreorderEmail(email);
+      setShowPreorderModal(false);
+      toast.success('Preorder request saved. We will notify you by email.');
+    } catch (error) {
+      toast.error(error?.message || 'Failed to save preorder request');
+    } finally {
+      setPreorderSubmitting(false);
     }
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: '/sprays/chakra-balance' } } });
-      return;
-    }
-    const existingItem = cartItems.find((item) => item.id === product.id);
-    if (!existingItem) {
-      addToCart(product, quantity);
-    }
-    setShowCheckout(true);
   };
 
   const handleWishlist = () => {
@@ -234,9 +241,7 @@ const ChakraBalanceProductPage = () => {
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
                 {isPreorder ? (
-                  <p className="text-sm font-semibold text-amber-800">
-                    {Number(product.stock) > 0 ? `Pre-order — ${product.stock} available` : 'Pre-order — ships when ready'}
-                  </p>
+                  <p className="text-sm font-semibold text-amber-800">Pre-order available</p>
                 ) : product.stock > 0 ? (
                   <p className="text-sm font-semibold text-[#582683]">In Stock</p>
                 ) : (
@@ -271,15 +276,7 @@ const ChakraBalanceProductPage = () => {
                   className="inline-flex min-w-[120px] flex-1 items-center justify-center gap-2 rounded-xl bg-[#582683] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FaShoppingCart />
-                  {canPurchase ? 'Add to Cart' : 'Out of Stock'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  disabled={!canPurchase}
-                  className="inline-flex min-w-[120px] flex-1 items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isPreorder ? 'Preorder' : 'Buy Now'}
+                  {isPreorder ? 'Preorder' : canPurchase ? 'Add to Cart' : 'Out of Stock'}
                 </button>
               </div>
             </div>
@@ -381,15 +378,13 @@ const ChakraBalanceProductPage = () => {
           )}
         </section>
 
-        <CheckoutModal
-          isOpen={showCheckout}
-          onClose={() => setShowCheckout(false)}
-          cartItems={cartItems}
-          totalAmount={calculateTotalAmount()}
-          blessingCharge={0}
-          userId={userId}
-          userPhone={user?.phone_number}
-          userName={user?.full_name}
+        <PreorderEmailModal
+          isOpen={showPreorderModal}
+          onClose={() => setShowPreorderModal(false)}
+          onSubmit={handlePreorderSubmit}
+          loading={preorderSubmitting}
+          defaultEmail={preorderEmail}
+          productName={product?.name}
         />
       </div>
     </section>
