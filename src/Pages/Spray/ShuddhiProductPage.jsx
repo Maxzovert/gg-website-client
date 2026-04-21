@@ -194,8 +194,8 @@ const ShuddhiProductPage = () => {
       <div className="pointer-events-none absolute inset-0 bg-white/42" />
       <div className="pointer-events-none absolute inset-0 z-0">
         <img src={bigLeave} alt="" className="absolute left-0 top-10 hidden w-[280px] opacity-50 lg:block" />
-        <img src={smallLeave} alt="" className="absolute right-4 top-20 hidden w-[170px] opacity-50 lg:block" />
-        <img src={halfLeaf} alt="" className="absolute left-6 top-[46%] hidden w-[120px] opacity-45 lg:block" />
+        <img src={smallLeave} alt="" className="absolute right-0 top-20 hidden w-[170px] opacity-50 lg:block" />
+        <img src={halfLeaf} alt="" className="absolute left-0 top-[46%] hidden w-[120px] opacity-45 lg:block" />
         <img src={soilStroke} alt="" className="absolute right-10 bottom-16 hidden w-[180px] opacity-40 lg:block" />
       </div>
 
@@ -317,7 +317,6 @@ const ShuddhiProductPage = () => {
         </div>
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#cfe1b8] bg-white/97 p-6">
-          <img src={bigLeave} alt="" className="pointer-events-none absolute -right-10 -top-8 hidden w-52 opacity-[0.14] lg:block" />
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold text-[#486323]">Customer Reviews</h3>

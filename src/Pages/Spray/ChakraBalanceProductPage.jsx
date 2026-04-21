@@ -194,7 +194,7 @@ const ChakraBalanceProductPage = () => {
       <img src={chakraBg} alt="" className="pointer-events-none absolute inset-0 h-full w-full object-cover" />
       <div className="pointer-events-none absolute inset-0 bg-white/42" />
       <div className="pointer-events-none absolute inset-0 z-0">
-        <img src={petalsBig} alt="" className="absolute left-0 top-12 hidden w-[280px] opacity-55 lg:block" />
+        <img src={petalsBig} alt="" className="absolute left-15 top-12 hidden w-[280px] opacity-55 lg:block" />
         <img src={chakraIcon} alt="" className="absolute right-4 top-8 hidden w-[180px] opacity-45 lg:block" />
         <img src={petals1} alt="" className="absolute left-6 top-[48%] hidden w-[120px] opacity-55 lg:block" />
         <img src={petals2} alt="" className="absolute right-10 bottom-20 hidden w-[140px] opacity-45 lg:block" />
@@ -323,8 +323,7 @@ const ChakraBalanceProductPage = () => {
         </div>
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#c9b0e2] bg-white/97 p-6">
-          <img src={chakraIcon} alt="" className="pointer-events-none absolute -right-14 -top-10 hidden w-52 opacity-[0.12] lg:block" />
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold text-[#582683]">Customer Reviews</h3>
               <p className="text-sm text-[#5a4670]">{averageRating} average rating from {sortedReviews.length} review{sortedReviews.length === 1 ? '' : 's'}</p>

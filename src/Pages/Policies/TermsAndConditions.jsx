@@ -66,8 +66,8 @@ const TermsAndConditions = () => {
             </h2>
             <p>
               For any queries regarding these Terms and Conditions, contact us at{' '}
-              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
-                gawrigangaofficial@gmail.com
+              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
+                support@gawriganga.com
               </a>{' '}
               or through our <Link to="/contact" className="text-primary hover:underline">Contact</Link> page.
             </p>

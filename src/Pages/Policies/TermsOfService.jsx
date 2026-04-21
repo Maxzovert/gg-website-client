@@ -58,8 +58,8 @@ const TermsOfService = () => {
             </h2>
             <p>
               For questions about these Terms of Service, please contact us at{' '}
-              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
-                gawrigangaofficial@gmail.com
+              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
+                support@gawriganga.com
               </a>{' '}
               or visit our <Link to="/contact" className="text-primary hover:underline">Contact</Link> page.
             </p>

@@ -26,8 +26,8 @@ const RefundCancellation = () => {
             </h2>
             <p>
               You may cancel your order free of charge before it has been shipped. Once the order has been dispatched, we cannot guarantee cancellation. To cancel, please contact us as soon as possible at{' '}
-              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
-                gawrigangaofficial@gmail.com
+              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
+                support@gawriganga.com
               </a>.
             </p>
           </section>
@@ -61,8 +61,8 @@ const RefundCancellation = () => {
             </h2>
             <p>
               For refund or cancellation requests, email us at{' '}
-              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
-                gawrigangaofficial@gmail.com
+              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
+                support@gawriganga.com
               </a>{' '}
               or use our <Link to="/contact" className="text-primary hover:underline">Contact</Link> page.
             </p>

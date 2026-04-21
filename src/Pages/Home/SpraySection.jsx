@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Heading from "../../assets/Sprayelem/Header.webp";
 import AmratDhara from "../../assets/Sprayelem/AmratDhara.webp";
@@ -18,6 +19,7 @@ const sprays = [
     description:
       "Amrat Bindu Lavender Aura Spray surrounds your space with a soft, calming floral fragrance that eases stress and restores balance. Perfect for relaxation, meditation, or winding down after a long day, it refreshes the air and creates a peaceful, soothing atmosphere instantly.",
     align: "right",
+    path: "/sprays/amrat-bindu",
   },
   {
     bg: ChakraBalance,
@@ -30,6 +32,7 @@ const sprays = [
     description:
       "ChakraBalance Gurhal Aura Spray carries the vibrant, uplifting essence of hibiscus to energize your surroundings. Its refreshing floral notes inspire positivity, emotional harmony, and inner strength, making it ideal for yoga, spiritual rituals, and mindful living.",
     align: "left",
+    path: "/sprays/chakra-balance",
   },
   {
     bg: Maitri,
@@ -42,6 +45,7 @@ const sprays = [
     description:
       "Maitri Lavender Aura Spray spreads gentle warmth and serenity with its comforting floral aroma. Crafted to promote calmness and emotional connection, it refreshes your environment while creating a welcoming, tranquil vibe for your home or workspace.",
     align: "right",
+    path: "/sprays/maitri",
   },
   {
     bg: Shuddhi,
@@ -54,11 +58,13 @@ const sprays = [
     description:
       "Shuddhi Aura Spray blends the rich sweetness of mogra with the fresh elegance of kewda to purify and elevate your space. Its divine fragrance refreshes the air, enhances spiritual focus, and leaves a lasting sense of clarity and positivity.",
     align: "left",
+    path: "/sprays/shuddhi",
   },
 ];
 
 const SpraySection = () => {
   const [openCard, setOpenCard] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <section className="relative w-full">
@@ -83,7 +89,10 @@ const SpraySection = () => {
                 key={item.title}
                 className="group relative w-full shrink-0 overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5 md:cursor-pointer"
                 onClick={() => {
-                  if (typeof window !== "undefined" && window.innerWidth >= 768) return;
+                  if (typeof window !== "undefined" && window.innerWidth >= 768) {
+                    navigate(item.path);
+                    return;
+                  }
                   setOpenCard((v) => (v === i ? null : i));
                 }}
               >
@@ -160,6 +169,10 @@ const SpraySection = () => {
                         type="button"
                         className="rounded-full px-6 py-2.5 text-[10px] font-medium uppercase tracking-[0.15em] text-white shadow-md transition-colors duration-300 sm:px-10 sm:py-4 sm:text-sm sm:tracking-[0.2em] md:px-12 md:text-base"
                         style={{ backgroundColor: item.btn }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(item.path);
+                        }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = item.btnHover;
                         }}
