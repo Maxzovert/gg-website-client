@@ -66,8 +66,8 @@ const PrivacyPolicy = () => {
             </h2>
             <p>
               You have the right to access, correct, or delete your personal data where applicable. You may opt out of marketing emails at any time. For requests or questions about your data, contact us at{' '}
-              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
-                gawrigangaofficial@gmail.com
+              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
+                support@gawriganga.com
               </a>.
             </p>
           </section>
@@ -77,8 +77,8 @@ const PrivacyPolicy = () => {
             </h2>
             <p>
               For privacy-related queries, email{' '}
-              <a href="mailto:gawrigangaofficial@gmail.com" className="text-primary hover:underline">
-                gawrigangaofficial@gmail.com
+              <a href="mailto:support@gawriganga.com" className="text-primary hover:underline">
+                support@gawriganga.com
               </a>{' '}
               or use our <Link to="/contact" className="text-primary hover:underline">Contact</Link> page.
             </p>

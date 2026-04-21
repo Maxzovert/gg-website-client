@@ -126,6 +126,12 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
 const Accessories = () => {
   const [searchParams] = useSearchParams();
   const prevSearchQsRef = useRef(null);
+  const fetchSeqRef = useRef(0);
+  const subcategoryFromQuery = (() => {
+    const subParam = searchParams.get('subcategory');
+    if (!subParam || !String(subParam).trim()) return 'all';
+    return decodeURIComponent(String(subParam).trim());
+  })();
   const [products, setProducts] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
     subcategories: [],
@@ -134,7 +140,7 @@ const Accessories = () => {
     rarities: []
   });
   const [filters, setFilters] = useState({
-    subcategory: 'all',
+    subcategory: subcategoryFromQuery,
     deity: 'all',
     planet: 'all',
     rarity: 'all',
@@ -152,20 +158,16 @@ const Accessories = () => {
 
   useEffect(() => {
     const qs = searchParams.toString();
-    const prevQs = prevSearchQsRef.current;
     prevSearchQsRef.current = qs;
-    if (prevQs && prevQs.length > 0 && qs.length === 0) {
-      setFilters((prev) => ({ ...prev, subcategory: 'all' }));
-      return;
-    }
     const subParam = searchParams.get('subcategory');
-    if (subParam && String(subParam).trim()) {
-      const decoded = decodeURIComponent(String(subParam).trim());
-      setFilters((prev) => ({
-        ...prev,
-        subcategory: decoded,
-      }));
-    }
+    const decoded = subParam && String(subParam).trim()
+      ? decodeURIComponent(String(subParam).trim())
+      : 'all';
+    setFilters((prev) => (
+      prev.subcategory === decoded
+        ? prev
+        : { ...prev, subcategory: decoded }
+    ));
   }, [searchParams]);
 
   useEffect(() => {
@@ -194,6 +196,7 @@ const Accessories = () => {
   };
 
   const fetchProducts = async () => {
+    const requestId = ++fetchSeqRef.current;
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -208,6 +211,7 @@ const Accessories = () => {
       const response = await apiFetch(`/api/products?${params}`);
       if (!response.ok) throw new Error('Failed to fetch products');
       const result = await response.json();
+      if (requestId !== fetchSeqRef.current) return;
       if (result.success) {
         setAllProducts(result.data);
         const filtered = result.data.filter(product => {
@@ -220,10 +224,13 @@ const Accessories = () => {
         setProducts([]);
       }
     } catch (error) {
+      if (requestId !== fetchSeqRef.current) return;
       setAllProducts([]);
       setProducts([]);
     } finally {
-      setLoading(false);
+      if (requestId === fetchSeqRef.current) {
+        setLoading(false);
+      }
     }
   };
 

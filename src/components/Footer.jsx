@@ -56,10 +56,10 @@ const Footer = () => {
               Discover authentic rudraksha, aura sprays and spiritual accessories at Gawri Ganga.
             </p>
             <a
-              href="mailto:gawrigangaofficial@gmail.com"
+              href="mailto:support@gawriganga.com"
               className="mt-3 text-white font-semibold hover:underline text-sm break-all"
             >
-              gawrigangaofficial@gmail.com
+              support@gawriganga.com
             </a>
             {/* Full address block – hidden on mobile, visible from sm */}
             <div className="mt-4 space-y-1.5 text-white/95 text-xs sm:text-sm text-left max-w-xs mx-auto lg:mx-0 lg:max-w-none break-words hidden sm:block">
@@ -69,7 +69,7 @@ const Footer = () => {
               <p>Mon–Sat, 10 AM–6 PM</p>
             </div>
           </div>
-
+ 
           {/* Mobile: Quick Links + Policies in one row, 2 columns */}
           <div className="grid grid-cols-2 gap-6 sm:gap-0 sm:contents">
             <div className="text-left sm:text-left">
@@ -157,7 +157,7 @@ const Footer = () => {
                 <FaYoutube className="text-sm" />
               </a>
               <a
-                href="mailto:gawrigangaofficial@gmail.com"
+                href="mailto:support@gawriganga.com"
                 aria-label="Email"
                 className="w-10 h-10 sm:w-9 sm:h-9 rounded-full border-2 border-white/60 text-white flex items-center justify-center hover:bg-white hover:text-primary transition-colors shrink-0"
               >
