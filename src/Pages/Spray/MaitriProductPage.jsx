@@ -249,9 +249,7 @@ const MaitriProductPage = () => {
                   <span className="text-3xl font-bold text-[#c9689a]">₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
-                {isPreorder ? (
-                  <p className="text-sm font-semibold text-amber-800">Pre-order available</p>
-                ) : product.stock > 0 ? (
+                {  product.stock > 0 ? (
                   <p className="text-sm font-semibold text-[#c9689a]">In Stock</p>
                 ) : (
                   <p className="text-sm font-semibold text-red-600">Out of Stock</p>
@@ -332,7 +330,6 @@ const MaitriProductPage = () => {
         </div>
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#e8bfd5] bg-white/97 p-6">
-          <img src={clipGroup} alt="" className="pointer-events-none absolute -right-14 -top-10 hidden w-64 opacity-[0.12] lg:block" />
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold text-[#c9689a]">Customer Reviews</h3>
