@@ -40,6 +40,7 @@ const TermsAndConditions = lazy(() => import('./Pages/Policies/TermsAndCondition
 const ShippingPolicy = lazy(() => import('./Pages/Policies/ShippingPolicy'))
 const PrivacyPolicy = lazy(() => import('./Pages/Policies/PrivacyPolicy'))
 const PurposeProducts = lazy(() => import('./Pages/PurposeProducts/PurposeProducts'))
+const Combos = lazy(() => import('./Pages/Combos/Combos'))
 
 const PageLoader = () => (
   <div className="min-h-[60vh] flex items-center justify-center">
@@ -74,6 +75,7 @@ const App = () => {
                   <Route path="/rashi" element={<Rashi />} />
                   <Route path="/accessories" element={<Accessories />} />
                   <Route path="/purpose-products" element={<PurposeProducts />} />
+                  <Route path="/combos" element={<Combos />} />
                   <Route path="/product/:slug" element={<ProductPage />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
