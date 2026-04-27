@@ -20,7 +20,7 @@ const Footer = () => {
     { name: 'Rashi', href: '/rashi' },
     { name: 'Contact Us', href: '/contact' },
     { name: 'About Us', href: '/about' },
-    { name: 'Blog', href: '/blogs' },
+    { name: 'Blog', href: '/blog' },
     { name: 'Terms of Service', href: '/terms-of-service' },
   ]
 

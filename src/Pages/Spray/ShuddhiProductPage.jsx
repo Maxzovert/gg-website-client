@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowLeft, FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaPlus, FaMinus, FaTruck, FaShieldAlt, FaLeaf } from 'react-icons/fa';
+import { FaArrowLeft, FaHeart, FaRegHeart, FaShoppingCart, FaStar, FaPlus, FaMinus, FaLeaf } from 'react-icons/fa';
 import { apiFetch } from '../../config/api';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getMaxOrderQuantity, isProductPreorder, productCanBePurchased } from '../../utils/productPreorder';
@@ -17,6 +17,10 @@ import smallLeave from '../../assets/Sprayelem/shuddhi/smallleave.png';
 import halfLeaf from '../../assets/Sprayelem/shuddhi/half.png';
 import soil from '../../assets/Sprayelem/shuddhi/soil.png';
 import soilStroke from '../../assets/Sprayelem/shuddhi/soilstroke.png';
+import usageCloths from '../../assets/Sprayelem/shuddhi/Usage/scloths.webp';
+import usageHankey from '../../assets/Sprayelem/shuddhi/Usage/shankey.webp';
+import usageMask from '../../assets/Sprayelem/shuddhi/Usage/smask.webp';
+import usageRoom from '../../assets/Sprayelem/shuddhi/Usage/sroom.webp';
 
 const ShuddhiProductPage = () => {
   const { addToCart } = useCart();
@@ -73,6 +77,20 @@ const ShuddhiProductPage = () => {
   const averageRating = sortedReviews.length
     ? (sortedReviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / sortedReviews.length).toFixed(1)
     : '0.0';
+  const formattedBenefits = useMemo(() => {
+    const fallback = [
+      'Calms and cleanses the aura after mentally heavy environments',
+      'Supports protection from negative energy and nazar concerns',
+      'Refreshes inner and outer energetic balance'
+    ];
+    const source = `${product?.benefits || ''}`.trim();
+    if (!source) return fallback;
+    const parts = source
+      .split(/[•\n]+/g)
+      .map((item) => item.trim().replace(/^[\-*]\s*/, ''))
+      .filter(Boolean);
+    return parts.length ? parts : fallback;
+  }, [product?.benefits]);
 
   const fetchReviews = async (productId) => {
     if (!productId) return;
@@ -236,13 +254,13 @@ const ShuddhiProductPage = () => {
                   <span className="text-3xl font-bold text-[#486323]">₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
-                {isPreorder ? (
-                  <p className="text-sm font-semibold text-amber-800">Pre-order available</p>
-                ) : product.stock > 0 ? (
-                  <p className="text-sm font-semibold text-[#486323]">In Stock</p>
-                ) : (
-                  <p className="text-sm font-semibold text-red-600">Out of Stock</p>
-                )}
+                {!isPreorder ? (
+                  product.stock > 0 ? (
+                    <p className="text-sm font-semibold text-[#486323]">In Stock</p>
+                  ) : (
+                    <p className="text-sm font-semibold text-red-600">Out of Stock</p>
+                  )
+                ) : null}
               </div>
               <div className="mt-4">
                 <p className="mb-2 text-sm font-semibold text-[#486323]">Quantity</p>
@@ -277,21 +295,57 @@ const ShuddhiProductPage = () => {
 
             <div className="mt-6 space-y-3">
               <div className="rounded-3xl border border-[#cfe1b8] bg-white/97 p-4 shadow-[0_12px_30px_rgba(72,99,35,0.16)]">
-                <div className="mb-2 flex items-center gap-2 text-[#486323]"><span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f0f8e7]"><FaLeaf /></span><h3 className="text-sm font-bold">Benefits</h3></div>
-                <p className="wrap-break-word text-sm leading-relaxed text-[#4b5e31]">{product.benefits || 'Supports purification, freshness, and positive spiritual flow.'}</p>
+                <div className="mb-2 flex items-center gap-2 text-[#486323]">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f0f8e7]">
+                    <FaLeaf />
+                  </span>
+                  <h3 className="text-sm font-bold">Ingredients</h3>
+                </div>
+                <ul className="list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#3d5628]">
+                  <li>Ancient Ayurvedic wellness base formula</li>
+                  <li>Lemongrass</li>
+                  <li>Rosemary</li>
+                  <li>Kewda</li>
+                  <li>Mogra</li>
+                </ul>
               </div>
               <div className="rounded-3xl border border-[#cfe1b8] bg-white/97 p-4 shadow-[0_12px_30px_rgba(72,99,35,0.16)]">
-                <div className="mb-2 flex items-center gap-2 text-[#486323]"><span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f0f8e7]"><FaTruck /></span><h3 className="text-sm font-bold">Delivery</h3></div>
-                <p className="wrap-break-word text-sm leading-relaxed text-[#4b5e31]">Fast dispatch with secure packaging to preserve fragrance profile.</p>
-              </div>
-              <div className="rounded-3xl border border-[#cfe1b8] bg-white/97 p-4 shadow-[0_12px_30px_rgba(72,99,35,0.16)]">
-                <div className="mb-2 flex items-center gap-2 text-[#486323]"><span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f0f8e7]"><FaShieldAlt /></span><h3 className="text-sm font-bold">Quality Promise</h3></div>
-                <p className="wrap-break-word text-sm leading-relaxed text-[#4b5e31]">Consistent aroma profile for daily rituals and mindful routines.</p>
+                <div className="mb-2 flex items-center gap-2 text-[#486323]">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f0f8e7]">
+                    <FaLeaf />
+                  </span>
+                  <h3 className="text-sm font-bold">Essence</h3>
+                </div>
+                <p className="rounded-lg bg-[#f0f8e7] px-3 py-2 text-[15px] font-semibold text-[#486323]">
+                  Kewda &amp; Mogra
+                </p>
               </div>
             </div>
           </aside>
         </div>
 
+        <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#cfe1b8] bg-white/97 p-6 shadow-[0_10px_24px_rgba(72,99,35,0.12)]">
+          <div className="mb-4 border-b border-[#dfeccf] pb-3">
+            <h3 className="text-2xl font-bold text-[#486323]">Can Be Used As</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#70865a]">Usage Examples</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[
+              { title: 'On Cloth', detail: 'Spray gently on clothes', image: usageCloths },
+              { title: 'On Hankey', detail: 'Use on handkerchief when needed', image: usageHankey },
+              { title: 'In Room', detail: 'Freshen your room ambience', image: usageRoom },
+              { title: 'On Mask', detail: 'Apply lightly on mask', image: usageMask }
+            ].map((item) => (
+              <div key={item.title} className="rounded-xl border border-[#cfe1b8] bg-white p-2">
+                <img
+                  src={item.image}
+                  alt={`${item.title} usage`}
+                  className="h-82 w-full rounded-xl object-cover md:h-100"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
         <div className="mx-auto mt-6 grid max-w-[1500px] grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-3xl border border-[#cfe1b8] bg-white/95 p-6 shadow-[0_10px_24px_rgba(72,99,35,0.12)]">
             <div className="mb-4 border-b border-[#dfeccf] pb-3">
@@ -315,6 +369,53 @@ const ShuddhiProductPage = () => {
             </ol>
           </div>
         </div>
+
+        <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#cfe1b8] bg-white/97 p-6 shadow-[0_10px_24px_rgba(72,99,35,0.12)]">
+          <div className="mb-5 border-b border-[#dfeccf] pb-3">
+            <h3 className="text-2xl font-bold text-[#486323]">Shuddhi Wellness Guide</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#70865a]">Purification and Refresh Rituals</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <article className="rounded-xl bg-[#f6fcea] p-4">
+              <h4 className="text-base font-bold text-[#486323]">Purpose</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#3d5628]">
+                <li>Calm and cleanse the aura</li>
+                <li>Support protection from negativity</li>
+                <li>Traditionally used for nazar (evil eye) concerns</li>
+                <li>Refresh inner and outer energy</li>
+              </ul>
+            </article>
+
+            <article className="rounded-xl bg-[#f8fdef] p-4">
+              <h4 className="text-base font-bold text-[#486323]">Best Time to Use</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#3d5628]">
+                <li>After returning from a funeral</li>
+                <li>After a hectic meeting</li>
+                <li>To refresh after heavy workload</li>
+                <li>After visiting spaces that feel energetically heavy</li>
+              </ul>
+              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-3">
+                <h5 className="text-sm font-bold text-amber-900">Precautions</h5>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-amber-900/90">
+                  <li>Use carefully for children</li>
+                  <li>Apply carefully on body</li>
+                  <li>Do not consume directly</li>
+                </ul>
+              </div>
+            </article>
+
+            <article className="rounded-xl bg-[#f8fdef] p-4">
+              <h4 className="text-base font-bold text-[#486323]">Benefits</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#3d5628]">
+                {formattedBenefits.map((benefit, idx) => (
+                  <li key={`${benefit}-${idx}`}>{benefit}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+
+        </section>
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#cfe1b8] bg-white/97 p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
