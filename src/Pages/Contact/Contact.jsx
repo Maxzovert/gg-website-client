@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../../assets/gglogo.svg'
 import { FaEnvelope, FaMapMarkerAlt, FaClock, FaPaperPlane } from 'react-icons/fa'
+import { trackLead } from '../../utils/analytics.js'
 
 const GOLD_DIVIDER = 'border-amber-800/40'
 const GOLD_ACCENT = 'text-amber-800/90'
@@ -21,6 +22,10 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    trackLead({
+      content_name: 'Contact Form',
+      source: 'contact_page',
+    })
     // TODO: connect to backend when ready
     setSubmitted(true)
     setFormData({ name: '', email: '', subject: '', message: '' })

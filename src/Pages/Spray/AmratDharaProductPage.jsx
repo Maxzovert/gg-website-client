@@ -11,6 +11,7 @@ import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
 import PreorderEmailModal from '../../components/PreorderEmailModal';
 import { submitPreorderRequest } from '../../utils/preorderRequest';
+import { trackViewContent } from '../../utils/analytics.js';
 import amratDharaBg from '../../assets/Sprayelem/Amratdhara/amratdharabg.png';
 import bigWave from '../../assets/Sprayelem/Amratdhara/bigwave.png';
 import smallWave from '../../assets/Sprayelem/Amratdhara/small wave.png';
@@ -68,6 +69,11 @@ const AmratDharaProductPage = () => {
     };
     fetchAmratBindu();
   }, []);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    trackViewContent(product, quantity);
+  }, [product?.id]);
 
   const pricing = useMemo(() => (product ? pricingFromProduct(product) : null), [product]);
   const inWishlist = product ? isInWishlist(product.id) : false;

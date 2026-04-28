@@ -25,9 +25,7 @@ const CookieConsent = () => {
   }, []);
 
   useEffect(() => {
-    if (getStoredConsent() === 'analytics') {
-      trackPageView(location.pathname + location.search);
-    }
+    trackPageView(location.pathname + location.search);
   }, [location.pathname, location.search]);
 
   const accept = () => {
