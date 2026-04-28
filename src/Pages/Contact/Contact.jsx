@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import logo from '../../assets/gglogo.svg'
 import { FaEnvelope, FaMapMarkerAlt, FaClock, FaPaperPlane } from 'react-icons/fa'
 import { trackLead } from '../../utils/analytics.js'
+import { apiFetch } from '../../config/api'
+import { useToast } from '../../components/Toaster'
 
 const GOLD_DIVIDER = 'border-amber-800/40'
 const GOLD_ACCENT = 'text-amber-800/90'
@@ -15,20 +17,41 @@ const Contact = () => {
     message: '',
   })
   const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const toast = useToast()
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
     trackLead({
       content_name: 'Contact Form',
       source: 'contact_page',
     })
-    // TODO: connect to backend when ready
-    setSubmitted(true)
-    setFormData({ name: '', email: '', subject: '', message: '' })
+    try {
+      const response = await apiFetch('/api/contact', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+      })
+      const payload = await response.json()
+
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || 'Failed to send your message')
+      }
+
+      setSubmitted(true)
+      setFormData({ name: '', email: '', subject: '', message: '' })
+      toast.success('Message sent successfully')
+    } catch (error) {
+      toast.error(error?.message || 'Failed to send your message')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -79,8 +102,8 @@ const Contact = () => {
                   Visit us
                 </h3>
                 <p className="about-body text-stone-600 text-sm sm:text-base leading-relaxed">
-                  A27, GROUND FLOOR, SECTOR 27,
-                  Noida, Gautambuddha Nagar, Uttar Pradesh, 201301
+                  SECTOR 27, Noida, <br />
+                  Uttar Pradesh : 201301
                 </p>
               </div>
             </div>
@@ -218,10 +241,11 @@ const Contact = () => {
                 </div>
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg about-body font-medium hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   <FaPaperPlane className="text-sm" aria-hidden />
-                  Send message
+                  {isSubmitting ? 'Sending...' : 'Send message'}
                 </button>
               </form>
             )}

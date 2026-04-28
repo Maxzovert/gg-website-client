@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import { useAuth } from '../../context/AuthContext';
@@ -394,12 +394,6 @@ const Cart = () => {
                 Review your items and checkout securely.
               </p>
             </div>
-            <button
-              onClick={handleClearCart}
-              className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-semibold transition-colors border border-red-200 hover:border-red-300 px-3 py-2 rounded-lg bg-red-50/50"
-            >
-              Clear Cart
-            </button>
           </div>
           <p className="text-sm sm:text-base text-gray-600 mt-2">
             {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
@@ -409,20 +403,6 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-            <div className="bg-white rounded-2xl border border-black/5 p-3 sm:p-4 shadow-sm">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-gray-600">Free shipping unlocked above ₹1000</span>
-                <span className={`font-semibold ${totalPrice > 1000 ? 'text-emerald-600' : 'text-primary'}`}>
-                  {totalPrice > 1000 ? 'Unlocked' : `₹${Math.max(0, 1000 - totalPrice).toLocaleString('en-IN')} away`}
-                </span>
-              </div>
-              <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-linear-to-r from-primary to-orange-400 rounded-full transition-all"
-                  style={{ width: `${Math.min(100, (totalPrice / 1000) * 100)}%` }}
-                />
-              </div>
-            </div>
             {cartItems.map((item) => (
               <div
                 key={item.id}
@@ -782,8 +762,16 @@ const Cart = () => {
               >
                 Continue Shopping
               </Link>
+              <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-2">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600 text-white">
+                  <FaShieldAlt className="text-[11px]" />
+                </span>
+                <p className="text-[11px] sm:text-xs font-medium text-emerald-800">
+                  Payment secured by Easebuzz
+                </p>
+              </div>
               <p className="text-[11px] sm:text-xs text-gray-500 text-center mt-3">
-                Secure checkout • Trusted payment gateway • Easy returns
+                Secure checkout • Trusted payment gateway
               </p>
             </div>
           </div>
