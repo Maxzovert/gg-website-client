@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { trackAddToCart } from '../utils/analytics.js';
 
 const CartContext = createContext(null);
 
@@ -51,6 +52,7 @@ export const CartProvider = ({ children }) => {
   }, [includeBlessing, isInitialized]);
 
   const addToCart = useCallback((product, quantity = 1) => {
+    trackAddToCart(product, quantity);
     setCartItems(prev => {
       const existingItem = prev.find(item => item.id === product.id);
       

@@ -11,6 +11,7 @@ import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
 import PreorderEmailModal from '../../components/PreorderEmailModal';
 import { submitPreorderRequest } from '../../utils/preorderRequest';
+import { trackViewContent } from '../../utils/analytics.js';
 import shuddhiBg from '../../assets/Sprayelem/shuddhi/shuddhibg.png';
 import bigLeave from '../../assets/Sprayelem/shuddhi/bigleave.png';
 import smallLeave from '../../assets/Sprayelem/shuddhi/smallleave.png';
@@ -63,6 +64,11 @@ const ShuddhiProductPage = () => {
     };
     fetchProduct();
   }, []);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    trackViewContent(product, quantity);
+  }, [product?.id]);
 
   const pricing = useMemo(() => (product ? pricingFromProduct(product) : null), [product]);
   const inWishlist = product ? isInWishlist(product.id) : false;

@@ -10,6 +10,7 @@ import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPricing';
 import { getMaxOrderQuantity } from '../../utils/productPreorder';
+import { trackBeginCheckout } from '../../utils/analytics.js';
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -766,6 +767,7 @@ const Cart = () => {
                     navigate('/login', { state: { from: { pathname: '/cart' } } });
                     return;
                   }
+                  trackBeginCheckout(payableAfterWallet, cartItems);
                   setShowCheckout(true);
                 }}
                 disabled={cartItems.length === 0}
