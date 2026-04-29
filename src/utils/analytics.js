@@ -2,15 +2,6 @@ const CONSENT_KEY = 'gg_cookie_consent';
 
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-7P8LPXZ012';
 
-function hasFbq() {
-  return typeof window !== 'undefined' && typeof window.fbq === 'function';
-}
-
-function trackMetaEvent(eventName, payload = {}) {
-  if (!hasFbq()) return;
-  window.fbq('track', eventName, payload);
-}
-
 function normalizeItems(items = []) {
   return items.map((i) => ({
     item_id: String(i.product_id ?? i.id ?? ''),
@@ -76,9 +67,6 @@ export function hydrateAnalyticsIfConsented() {
 }
 
 export function trackPageView(path) {
-  if (hasFbq()) {
-    window.fbq('track', 'PageView');
-  }
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();
   window.gtag('config', GA_ID, {
@@ -88,18 +76,6 @@ export function trackPageView(path) {
 }
 
 export function trackPurchase({ transactionId, value, currency = 'INR', items = [] }) {
-  trackMetaEvent('Purchase', {
-    value: Number(value) || 0,
-    currency,
-    content_type: 'product',
-    contents: normalizeItems(items).map((i) => ({
-      id: i.item_id,
-      quantity: i.quantity,
-      item_price: i.price,
-    })),
-    num_items: normalizeItems(items).reduce((sum, i) => sum + i.quantity, 0),
-    order_id: String(transactionId),
-  });
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();
   window.gtag('event', 'purchase', {
@@ -116,14 +92,12 @@ export function trackPurchase({ transactionId, value, currency = 'INR', items = 
 }
 
 export function trackLogin(method = 'otp') {
-  trackMetaEvent('CompleteRegistration', { status: true, method });
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();
   window.gtag('event', 'login', { method });
 }
 
 export function trackSignUp(method = 'otp') {
-  trackMetaEvent('CompleteRegistration', { status: true, method });
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();
   window.gtag('event', 'sign_up', { method });
@@ -131,17 +105,6 @@ export function trackSignUp(method = 'otp') {
 
 export function trackBeginCheckout(value, items = []) {
   const normalizedItems = normalizeItems(items);
-  trackMetaEvent('InitiateCheckout', {
-    value: Number(value) || 0,
-    currency: 'INR',
-    content_type: 'product',
-    contents: normalizedItems.map((i) => ({
-      id: i.item_id,
-      quantity: i.quantity,
-      item_price: i.price,
-    })),
-    num_items: normalizedItems.reduce((sum, i) => sum + i.quantity, 0),
-  });
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();
   window.gtag('event', 'begin_checkout', {
@@ -152,39 +115,15 @@ export function trackBeginCheckout(value, items = []) {
 }
 
 export function trackViewContent(product, quantity = 1) {
-  if (!product) return;
-  const price = Number(product.price) || 0;
-  trackMetaEvent('ViewContent', {
-    content_ids: [String(product.id ?? product.slug ?? product.name ?? '')],
-    content_name: product.name || '',
-    content_category: product.category || '',
-    content_type: 'product',
-    value: price * (Number(quantity) || 1),
-    currency: 'INR',
-  });
+  void product;
+  void quantity;
 }
 
 export function trackAddToCart(product, quantity = 1) {
-  if (!product) return;
-  const qty = Number(quantity) || 1;
-  const price = Number(product.price) || 0;
-  trackMetaEvent('AddToCart', {
-    content_ids: [String(product.id ?? product.slug ?? product.name ?? '')],
-    content_name: product.name || '',
-    content_category: product.category || '',
-    content_type: 'product',
-    value: price * qty,
-    currency: 'INR',
-    contents: [
-      {
-        id: String(product.id ?? product.slug ?? product.name ?? ''),
-        quantity: qty,
-        item_price: price,
-      },
-    ],
-  });
+  void product;
+  void quantity;
 }
 
 export function trackLead(payload = {}) {
-  trackMetaEvent('Lead', payload);
+  void payload;
 }
