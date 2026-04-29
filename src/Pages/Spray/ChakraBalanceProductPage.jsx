@@ -44,6 +44,7 @@ const ChakraBalanceProductPage = () => {
   const [showPreorderModal, setShowPreorderModal] = useState(false);
   const [preorderEmail, setPreorderEmail] = useState('');
   const [preorderSubmitting, setPreorderSubmitting] = useState(false);
+  const [isProductInfoExpanded, setIsProductInfoExpanded] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -212,6 +213,10 @@ const ChakraBalanceProductPage = () => {
   const isPreorder = isProductPreorder(product);
   const canPurchase = productCanBePurchased(product);
   const maxOrderQty = getMaxOrderQuantity(product);
+  const productDescription = product.description || product.short_description || 'A balancing aura spray designed for centered energy and spiritual focus.';
+  const mobileProductDescription = isProductInfoExpanded || productDescription.length <= 140
+    ? productDescription
+    : `${productDescription.slice(0, 140).trim()}...`;
 
   return (
     <section className="relative overflow-hidden">
@@ -335,7 +340,7 @@ const ChakraBalanceProductPage = () => {
           </aside>
         </div>
 
-        <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#c9b0e2] bg-white/97 p-6 shadow-[0_10px_24px_rgba(88,38,131,0.12)]">
+        <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#c9b0e2] bg-white/97 p-4 shadow-[0_10px_24px_rgba(88,38,131,0.12)] sm:p-6">
           <div className="mb-4 border-b border-[#e5d9f3] pb-3">
             <h3 className="text-2xl font-bold text-[#582683]">Can Be Used As</h3>
             <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#7e6a95]">Usage Examples</p>
@@ -347,11 +352,11 @@ const ChakraBalanceProductPage = () => {
               { title: 'In Room', image: usageRoom },
               { title: 'On Mask', image: usageMask }
             ].map((item) => (
-              <div key={item.title} className="rounded-xl border border-[#c9b0e2] bg-white p-2">
+              <div key={item.title} className="rounded-xl border border-[#c9b0e2] bg-white p-2 sm:p-2.5">
                 <img
                   src={item.image}
                   alt={`${item.title} usage`}
-                  className="h-82 w-full rounded-xl object-cover md:h-100"
+                  className="aspect-square w-full rounded-xl object-contain"
                 />
               </div>
             ))}
@@ -365,7 +370,17 @@ const ChakraBalanceProductPage = () => {
             </div>
             <div className="rounded-xl bg-[#f8f3fe] p-4">
               <p className="mb-1 text-sm font-semibold uppercase tracking-[0.12em] text-[#7e6a95]">Description</p>
-              <p className="wrap-break-word text-base leading-relaxed text-[#5a4670]">{product.description || product.short_description || 'A balancing aura spray designed for centered energy and spiritual focus.'}</p>
+              <p className="hidden wrap-break-word text-base leading-relaxed text-[#5a4670] md:block">{productDescription}</p>
+              <p className="wrap-break-word text-base leading-relaxed text-[#5a4670] md:hidden">{mobileProductDescription}</p>
+              {productDescription.length > 140 ? (
+                <button
+                  type="button"
+                  onClick={() => setIsProductInfoExpanded((value) => !value)}
+                  className="mt-3 block w-full text-center text-xs font-medium tracking-wide text-[#582683] md:hidden"
+                >
+                  Read more
+                </button>
+              ) : null}
             </div>
           </div>
           <div className="rounded-3xl border border-[#c9b0e2] bg-white/95 p-6 shadow-[0_10px_24px_rgba(88,38,131,0.12)]">

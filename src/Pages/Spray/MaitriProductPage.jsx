@@ -43,6 +43,7 @@ const MaitriProductPage = () => {
   const [showPreorderModal, setShowPreorderModal] = useState(false);
   const [preorderEmail, setPreorderEmail] = useState('');
   const [preorderSubmitting, setPreorderSubmitting] = useState(false);
+  const [isProductInfoExpanded, setIsProductInfoExpanded] = useState(false);
 
   useEffect(() => {
     const fetchMaitri = async () => {
@@ -221,6 +222,10 @@ const MaitriProductPage = () => {
   const isPreorder = isProductPreorder(product);
   const canPurchase = productCanBePurchased(product);
   const maxOrderQty = getMaxOrderQuantity(product);
+  const productDescription = product.description || product.short_description || 'A comforting aura spray designed for emotional connection and serene ambience.';
+  const mobileProductDescription = isProductInfoExpanded || productDescription.length <= 140
+    ? productDescription
+    : `${productDescription.slice(0, 140).trim()}...`;
 
   return (
     <section className="relative overflow-hidden">
@@ -340,7 +345,7 @@ const MaitriProductPage = () => {
             </div>
           </aside>
         </div>
-        <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#e8bfd5] bg-white/97 p-6 shadow-[0_10px_24px_rgba(201,104,154,0.12)]">
+        <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#e8bfd5] bg-white/97 p-4 shadow-[0_10px_24px_rgba(201,104,154,0.12)] sm:p-6">
           <div className="mb-4 border-b border-[#f2ddeb] pb-3">
             <h3 className="text-2xl font-bold text-[#c9689a]">Can Be Used As</h3>
             <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#9a6c84]">Usage Examples</p>
@@ -352,11 +357,11 @@ const MaitriProductPage = () => {
               { title: 'In Room', image: usageRoom },
               { title: 'On Mask', image: usageMask }
             ].map((item) => (
-              <div key={item.title} className="rounded-xl border border-[#e8bfd5] bg-white p-2">
+              <div key={item.title} className="rounded-xl border border-[#e8bfd5] bg-white p-2 sm:p-2.5">
                 <img
                   src={item.image}
                   alt={`${item.title} usage`}
-                  className="h-82 w-full rounded-xl object-cover md:h-100"
+                  className="aspect-square w-full rounded-xl object-contain"
                 />
               </div>
             ))}
@@ -371,7 +376,17 @@ const MaitriProductPage = () => {
             </div>
             <div className="rounded-xl bg-[#fff5fa] p-4">
               <p className="mb-1 text-sm font-semibold uppercase tracking-[0.12em] text-[#9a6c84]">Description</p>
-              <p className="wrap-break-word text-base leading-relaxed text-[#704d61]">{product.description || product.short_description || 'A comforting aura spray designed for emotional connection and serene ambience.'}</p>
+              <p className="hidden wrap-break-word text-base leading-relaxed text-[#704d61] md:block">{productDescription}</p>
+              <p className="wrap-break-word text-base leading-relaxed text-[#704d61] md:hidden">{mobileProductDescription}</p>
+              {productDescription.length > 140 ? (
+                <button
+                  type="button"
+                  onClick={() => setIsProductInfoExpanded((value) => !value)}
+                  className="mt-3 block w-full text-center text-xs font-medium tracking-wide text-[#c9689a] md:hidden"
+                >
+                  Read more
+                </button>
+              ) : null}
             </div>
           </div>
           <div className="rounded-3xl border border-[#e8bfd5] bg-white/95 p-6 shadow-[0_10px_24px_rgba(201,104,154,0.12)]">
