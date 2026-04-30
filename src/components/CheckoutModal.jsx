@@ -62,7 +62,7 @@ const CheckoutModal = ({
   const handleNext = () => {
     if (currentStep === 1 && selectedAddress) {
       if (payableAfterWallet <= 0) {
-        setPaymentMethod(useWallet && walletApplicableAmount > 0 ? 'wallet' : 'cod');
+        setPaymentMethod(useWallet && walletApplicableAmount > 0 ? 'wallet' : 'upi');
         setCurrentStep(3);
       } else {
         setCurrentStep(2);
@@ -86,6 +86,7 @@ const CheckoutModal = ({
     setCurrentStep(1);
     setSelectedAddress(null);
     setOrderData(null);
+    setPaymentMethod('');
     onClose();
   };
 
@@ -103,7 +104,7 @@ const CheckoutModal = ({
     return false;
   };
 
-  const shippingCharges = Number(totalAmount || 0) > 1000 ? 0 : 50;
+  const shippingCharges = 70;
   const payableAmount =
     Math.max(0, Number(totalAmount || 0) - Number(couponDiscount || 0)) +
     Number(blessingCharge || 0) +

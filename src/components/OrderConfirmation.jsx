@@ -29,7 +29,7 @@ const OrderConfirmation = ({
   const { clearCart } = useCart();
 
   const discountAmount = Number(couponDiscount || 0);
-  const shippingCharges = totalAmount > 1000 ? 0 : 50;
+  const shippingCharges = 70;
   const grossFinalAmount = Math.max(0, totalAmount - discountAmount) + shippingCharges + (Number(blessingCharge) || 0);
   const isOnlinePayment = ONLINE_PAYMENT_IDS.includes((paymentMethod || '').toLowerCase());
   const walletDeduction = useWallet
@@ -89,7 +89,6 @@ const OrderConfirmation = ({
         });
         const initData = await initRes.json().catch(() => ({}));
         if (initData.success && initData.payment_url) {
-          clearCart();
           window.location.href = initData.payment_url;
           return;
         }
@@ -98,7 +97,7 @@ const OrderConfirmation = ({
         return;
       }
 
-      const orderPaymentMethod = paymentMethod || 'cod';
+      const orderPaymentMethod = paymentMethod || 'upi';
       const response = await apiFetch('/api/orders', {
         method: 'POST',
         body: JSON.stringify({
@@ -258,13 +257,7 @@ const OrderConfirmation = ({
           </div>
           <div className="flex justify-between text-gray-700">
             <span>Shipping:</span>
-            <span>
-              {shippingCharges === 0 ? (
-                <span className="text-green-600">Free</span>
-              ) : (
-                `₹${shippingCharges.toLocaleString('en-IN')}`
-              )}
-            </span>
+            <span>{`₹${shippingCharges.toLocaleString('en-IN')}`}</span>
           </div>
           {Number(blessingCharge) > 0 && (
             <div className="flex justify-between text-gray-700">

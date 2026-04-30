@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaCreditCard, FaWallet, FaUniversity, FaMobileAlt } from 'react-icons/fa';
+import { FaCreditCard, FaUniversity, FaMobileAlt } from 'react-icons/fa';
 
 const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
   const [selectedMethod, setSelectedMethod] = useState('');
@@ -22,12 +22,6 @@ const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
       name: 'Net Banking',
       icon: FaUniversity,
       description: 'Pay using your bank account'
-    },
-    {
-      id: 'cod',
-      name: 'Cash on Delivery',
-      icon: FaWallet,
-      description: 'Pay when you receive the order'
     }
   ];
 
