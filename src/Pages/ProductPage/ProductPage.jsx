@@ -1049,7 +1049,7 @@ const ProductPage = () => {
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
                   <p className="font-semibold text-[11px] sm:text-sm truncate">Secure Payment</p>
-                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">100% secure</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Trusted payment gateway</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-gray-700 min-w-0 overflow-hidden">
@@ -1066,8 +1066,8 @@ const ProductPage = () => {
                   <FaCertificate className="text-xs sm:text-lg" />
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
-                  <p className="font-semibold text-[11px] sm:text-sm truncate">Certified</p>
-                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Authentic</p>
+                  <p className="font-semibold text-[11px] sm:text-sm truncate">Quality Checked</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Carefully sourced</p>
                 </div>
               </div>
             </div>
@@ -1080,24 +1080,23 @@ const ProductPage = () => {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-primary">
-                    Authenticity Assurance
+                    Quality Assurance
                   </p>
                   <h3 className="text-sm sm:text-lg font-bold text-gray-900 leading-snug mt-0.5">
-                    Every spiritual product is quality checked and authenticity-verified.
+                    Every spiritual product is selected with care and clear product details.
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-700 mt-1.5 leading-relaxed">
-                    We source with care and follow a strict validation process through trusted
-                    testing standards so you can buy with confidence.
+                    Our catalog is curated for daily spiritual use with mindful sourcing and transparent information.
                   </p>
 
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-gray-700">
                     <div className="inline-flex items-center gap-2">
                       <FaCheckCircle className="text-primary shrink-0" />
-                      <span>Sourced from verified channels</span>
+                      <span>Quality-focused sourcing</span>
                     </div>
                     <div className="inline-flex items-center gap-2">
                       <FaCheckCircle className="text-primary shrink-0" />
-                      <span>Authenticity-first quality checks</span>
+                      <span>Clear product descriptions</span>
                     </div>
                   </div>
                 </div>
@@ -1115,10 +1114,10 @@ const ProductPage = () => {
                 </div>
                 <div className="flex-1 min-w-0 overflow-hidden">
                   <h3 className="font-bold text-gray-900 text-sm sm:text-lg mb-0.5 break-words">
-                    Find your Rashi & choose the right Rudraksha
+                    Find your Rashi and explore suggested Rudraksha
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-600 hidden sm:block break-words">
-                    Not sure which Rudraksha suits you? Check your Rashi (zodiac sign) and get personalized recommendations to buy the best Rudraksha for you.
+                    Check your Rashi (zodiac sign) and view traditionally suggested Rudraksha options.
                   </p>
                 </div>
               </div>

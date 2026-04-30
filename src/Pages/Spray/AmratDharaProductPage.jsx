@@ -91,8 +91,8 @@ const AmratDharaProductPage = () => {
     : '0.0';
   const formattedBenefits = useMemo(() => {
     const fallback = [
-      'Promotes calmness and mental clarity',
-      'Supports a harmonious and uplifting atmosphere'
+      'Traditionally used to freshen prayer and meditation spaces',
+      'May help create a calm and uplifting ambience'
     ];
     const source = `${product?.benefits || ''}`.trim();
     if (!source) return fallback;
@@ -282,7 +282,7 @@ const AmratDharaProductPage = () => {
               </div>
 
               <p className="mt-4 wrap-break-word text-sm leading-relaxed text-[#3d687f]">
-                {product.short_description || product.shortDescription || 'Lavender aura spray for calm, emotional balance, and elevated space energy.'}
+                {product.short_description || product.shortDescription || 'Lavender aura spray for daily spiritual use and a calming atmosphere.'}
               </p>
 
               <div className="mt-4 border-t border-[#d7edf7] pt-4">
@@ -393,7 +393,7 @@ const AmratDharaProductPage = () => {
             <div className="rounded-xl bg-[#f3fbfe] p-4">
               <p className="mb-1 text-sm font-semibold uppercase tracking-[0.12em] text-[#5e889f]">Description</p>
               <p className="wrap-break-word text-base leading-relaxed text-[#3d687f]">
-                {product.description || product.short_description || 'A soothing lavender aura spray designed to create emotional ease and cleaner space energy.'}
+                {product.description || product.short_description || 'A soothing lavender aura spray designed for daily rituals, meditation, and room freshness.'}
               </p>
             </div>
           </div>
@@ -413,7 +413,7 @@ const AmratDharaProductPage = () => {
             <div className="mt-5 rounded-xl bg-[#f8fdff] p-4">
               <h4 className="text-lg font-bold text-[#1a6ba0]">Why Amrat Bindu</h4>
               <p className="mt-2 wrap-break-word text-base leading-relaxed text-[#3d687f]">
-                The lavender profile helps calm the mind while uplifting the space, making it ideal for rituals and daily mindfulness.
+                The lavender profile is traditionally preferred for calm routines, mindful breaks, and peaceful room ambience.
               </p>
             </div>
           </div>
@@ -421,8 +421,8 @@ const AmratDharaProductPage = () => {
 
         <section className="relative mt-6 rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-6 shadow-[0_10px_24px_rgba(26,107,160,0.1)]">
           <div className="mb-5 border-b border-[#d8edf7] pb-3">
-            <h3 className="text-2xl font-bold text-[#1a6ba0]">Amrat Bindu Wellness Guide</h3>
-            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#5e889f]">Traditional Everyday Support</p>
+            <h3 className="text-2xl font-bold text-[#1a6ba0]">Amrat Bindu Ritual Guide</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#5e889f]">Daily Use and Care</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -436,9 +436,9 @@ const AmratDharaProductPage = () => {
             <article className="rounded-xl bg-[#f3fbfe] p-4">
               <h4 className="text-base font-bold text-[#1a6ba0]">Purpose</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
-                <li>General wellness and daily freshness support</li>
-                <li>Supportive use during seasonal viral discomfort</li>
-                <li>Helpful for cold and mild fever-time care routines</li>
+                <li>Daily room and aura freshness support</li>
+                <li>Traditionally used before meditation and prayer</li>
+                <li>Suitable for mindful evening wind-down routines</li>
               </ul>
             </article>
 
@@ -446,7 +446,7 @@ const AmratDharaProductPage = () => {
               <h4 className="text-base font-bold text-[#1a6ba0]">Can Be Used As</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
                 <li>Spray on clothes</li>
-                <li>Spray on handkerchief during cold discomfort</li>
+                <li>Spray on handkerchief for personal fragrance</li>
                 <li>Spray in room for a fresh environment</li>
                 <li>Spray on mask</li>
                 <li>Mix half a spoon with massage oil and apply on body</li>
@@ -456,8 +456,8 @@ const AmratDharaProductPage = () => {
             <article className="rounded-xl bg-[#f8fdff] p-4">
               <h4 className="text-base font-bold text-[#1a6ba0]">Best Time to Use</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
-                <li>As part of general daily use</li>
-                <li>During cold and fever related discomfort phases</li>
+                <li>As part of daily spiritual routine</li>
+                <li>Before yoga, meditation, or journaling</li>
               </ul>
             </article>
           </div>

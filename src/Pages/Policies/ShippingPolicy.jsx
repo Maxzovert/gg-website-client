@@ -49,7 +49,7 @@ const ShippingPolicy = () => {
               4. Shipping Charges
             </h2>
             <p>
-              Shipping charges are calculated at checkout based on your delivery address and order value. Free shipping may apply for orders above a certain amount as per ongoing offers. Cash on delivery (COD) may carry an additional charge.
+              Shipping charges are displayed at checkout before payment confirmation. Current shipping terms and any updates are shown on the checkout page at the time of order.
             </p>
           </section>
           <section>

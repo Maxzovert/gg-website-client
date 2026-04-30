@@ -89,9 +89,9 @@ const MaitriProductPage = () => {
     : '0.0';
   const formattedBenefits = useMemo(() => {
     const fallback = [
-      'Supports harmony between loving partners and close friendships',
-      'Encourages calmer communication during conflicts',
-      'Helps maintain a positive tone before personal and business meetings'
+      'Traditionally used to set a warm and welcoming ambience',
+      'May support calm communication in daily interactions',
+      'Suitable before personal or work conversations'
     ];
     const source = `${product?.benefits || ''}`.trim();
     if (!source) return fallback;
@@ -270,7 +270,7 @@ const MaitriProductPage = () => {
               </div>
 
               <p className="mt-4 wrap-break-word text-sm leading-relaxed text-[#704d61]">
-                {product.short_description || product.shortDescription || 'Maitri aura spray for emotional warmth and balanced surroundings.'}
+                {product.short_description || product.shortDescription || 'Maitri aura spray for a warm, calm, and welcoming atmosphere.'}
               </p>
 
               <div className="mt-4 border-t border-[#f2ddeb] pt-4">
@@ -404,28 +404,28 @@ const MaitriProductPage = () => {
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#e8bfd5] bg-white/97 p-6 shadow-[0_10px_24px_rgba(201,104,154,0.12)]">
           <div className="mb-5 border-b border-[#f2ddeb] pb-3">
-            <h3 className="text-2xl font-bold text-[#c9689a]">Maitri Wellness Guide</h3>
-            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#9a6c84]">Relationship Harmony and Emotional Warmth</p>
+            <h3 className="text-2xl font-bold text-[#c9689a]">Maitri Ritual Guide</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#9a6c84]">Daily Use and Gentle Fragrance Care</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <article className="rounded-xl bg-[#fff5fa] p-4">
               <h4 className="text-base font-bold text-[#c9689a]">Purpose</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#6b3f56]">
-                <li>Supports loving relationships between partners</li>
-                <li>Helps maintain warmth in friendships</li>
-                <li>Suitable for husband-wife harmony rituals</li>
-                <li>Supports smoother relationships between business partners</li>
+                <li>Traditionally used for peaceful and welcoming spaces</li>
+                <li>Suitable before prayer, reflection, or conversations</li>
+                <li>May help create a calm setting at home or work</li>
+                <li>Useful in daily mindful routines</li>
               </ul>
             </article>
 
             <article className="rounded-xl bg-[#fff7fb] p-4">
               <h4 className="text-base font-bold text-[#c9689a]">Best Time to Use</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#6b3f56]">
-                <li>Before meeting your loving partner</li>
-                <li>When you and your friend/partner are in conflict</li>
-                <li>Before a business meeting</li>
-                <li>After returning from a negative environment to avoid carrying that energy home</li>
+                <li>Before personal meetings</li>
+                <li>Before work conversations</li>
+                <li>During evening wind-down</li>
+                <li>After a long day to refresh room ambience</li>
               </ul>
             </article>
 

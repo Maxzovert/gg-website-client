@@ -24,7 +24,7 @@ const PurposeProducts = () => {
     CATEGORY_OPTIONS.find((opt) => opt.value === selectedCategory) || CATEGORY_OPTIONS[0];
 
   const pageTitle = useMemo(
-    () => (purpose ? `${purpose} Products` : 'Products By Purpose'),
+    () => (purpose ? `${purpose} Collection` : 'Spiritual Products Online'),
     [purpose],
   );
 
@@ -80,7 +80,7 @@ const PurposeProducts = () => {
             {pageTitle}
           </h1>
           <p className="mt-1 text-sm text-stone-600">
-            Showing products for purpose: <span className="font-semibold">{purpose || 'N/A'}</span>
+            Showing products for: <span className="font-semibold">{purpose || 'Daily spiritual use'}</span>
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
