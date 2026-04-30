@@ -17,7 +17,7 @@ const sprays = [
     btn: "#1a6ba0",
     btnHover: "#155a8a",
     description:
-      "Amrat Bindu Lavender Aura Spray surrounds your space with a soft, calming floral fragrance that eases stress and restores balance. Perfect for relaxation, meditation, or winding down after a long day, it refreshes the air and creates a peaceful, soothing atmosphere instantly.",
+      "Amrat Bindu Lavender Aura Spray offers a soft floral aroma for prayer corners, meditation, and evening wind-down rituals. Traditionally used in spiritual routines, it may help create a calm and refreshing atmosphere.",
     align: "right",
     path: "/sprays/amrat-bindu",
   },
@@ -30,7 +30,7 @@ const sprays = [
     btn: "#582683",
     btnHover: "#47206b",
     description:
-      "ChakraBalance Gurhal Aura Spray carries the vibrant, uplifting essence of hibiscus to energize your surroundings. Its refreshing floral notes inspire positivity, emotional harmony, and inner strength, making it ideal for yoga, spiritual rituals, and mindful living.",
+      "Chakra Balance Gurhal Aura Spray features a fresh hibiscus-inspired profile suited for yoga, mindful pauses, and daily rituals. It is traditionally used to support a balanced, focused ambience.",
     align: "left",
     path: "/sprays/chakra-balance",
   },
@@ -43,7 +43,7 @@ const sprays = [
     btn: "#E27BB1",
     btnHover: "#c9689a",
     description:
-      "Maitri Lavender Aura Spray spreads gentle warmth and serenity with its comforting floral aroma. Crafted to promote calmness and emotional connection, it refreshes your environment while creating a welcoming, tranquil vibe for your home or workspace.",
+      "Maitri Lavender Aura Spray brings a gentle floral note to home or workspace routines. Traditionally used before meditation or prayer, it may help create a welcoming and peaceful environment.",
     align: "right",
     path: "/sprays/maitri",
   },
@@ -56,7 +56,7 @@ const sprays = [
     btn: "#597B2C",
     btnHover: "#486323",
     description:
-      "Shuddhi Aura Spray blends the rich sweetness of mogra with the fresh elegance of kewda to purify and elevate your space. Its divine fragrance refreshes the air, enhances spiritual focus, and leaves a lasting sense of clarity and positivity.",
+      "Shuddhi Aura Spray blends mogra and kewda notes for daily spiritual use. Commonly used in prayer spaces and personal rituals, it helps keep the environment fresh and pleasant.",
     align: "left",
     path: "/sprays/shuddhi",
   },
@@ -73,10 +73,10 @@ const SpraySection = () => {
       <div className="w-full px-4 py-6 xs:px-5 sm:px-6 md:px-8 md:py-10 lg:px-10">
         <header className="mx-auto mb-6 max-w-7xl text-center sm:mb-8 md:mb-10">
           <p className="text-base font-semibold uppercase tracking-[0.3em] text-neutral-500 sm:text-lg md:text-xl">
-            Launching soon
+            New launch
           </p>
           <h2 className="spray-hero mt-2 text-2xl text-neutral-900 sm:mt-3 sm:text-3xl md:text-4xl lg:text-5xl">
-            Pre-order now
+            Explore Aura Sprays
           </h2>
         </header>
         {/* Mobile & small tablet: single-column list; md+: 2×2 grid */}
@@ -111,7 +111,7 @@ const SpraySection = () => {
                     isOpen ? "opacity-0" : "opacity-100"
                   }`}
                 >
-                  Tap to read more
+                  Tap to view details
                 </p>
 
                 {/* Text panel — hover on md+, tap on small screens */}
@@ -180,7 +180,7 @@ const SpraySection = () => {
                           e.currentTarget.style.backgroundColor = item.btn;
                         }}
                       >
-                        Preorder Now
+                        Explore Product
                       </button>
                     </div>
                   </div>

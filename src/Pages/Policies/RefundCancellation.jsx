@@ -44,7 +44,7 @@ const RefundCancellation = () => {
               3. Refund Process
             </h2>
             <p>
-              Once your return or refund request is approved, we will process the refund to your original payment method within 7–10 business days. The exact time may vary depending on your bank or payment provider. For cash on delivery (COD) orders, refunds will be issued via bank transfer or another method we communicate to you.
+              Once your return or refund request is approved, we will process the refund to your original payment method within 7–10 business days. The exact time may vary depending on your bank or payment provider.
             </p>
           </section>
           <section>

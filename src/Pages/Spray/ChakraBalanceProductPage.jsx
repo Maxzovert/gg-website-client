@@ -87,9 +87,9 @@ const ChakraBalanceProductPage = () => {
     : '0.0';
   const formattedBenefits = useMemo(() => {
     const fallback = [
-      'Supports overall energy balance across daily routines',
-      'Helpful during tiredness, fatigue, and mental overload',
-      'Encourages emotional steadiness and clarity'
+      'Traditionally used in meditation and mindful routines',
+      'May help create a centered and calm atmosphere',
+      'Supports focus during prayer, yoga, and journaling'
     ];
     const source = `${product?.benefits || ''}`.trim();
     if (!source) return fallback;
@@ -261,7 +261,7 @@ const ChakraBalanceProductPage = () => {
               </div>
 
               <p className="mt-4 wrap-break-word text-sm leading-relaxed text-[#5a4670]">
-                {product.short_description || product.shortDescription || 'Chakra Balance spray for energy alignment and emotional harmony.'}
+                {product.short_description || product.shortDescription || 'Chakra Balance spray for mindful routines and a balanced ambience.'}
               </p>
 
               <div className="mt-4 border-t border-[#e5d9f3] pt-4">
@@ -398,30 +398,27 @@ const ChakraBalanceProductPage = () => {
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#c9b0e2] bg-white/97 p-6 shadow-[0_10px_24px_rgba(88,38,131,0.12)]">
           <div className="mb-5 border-b border-[#e5d9f3] pb-3">
-            <h3 className="text-2xl font-bold text-[#582683]">Chakra Balance Wellness Guide</h3>
-            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#7e6a95]">Energy Alignment and Emotional Support</p>
+            <h3 className="text-2xl font-bold text-[#582683]">Chakra Balance Ritual Guide</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#7e6a95]">Daily Use and Mindful Practice</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <article className="rounded-xl bg-[#f8f3fe] p-4">
               <h4 className="text-base font-bold text-[#582683]">Purpose</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#4f3b68]">
-                <li>General daily support</li>
-                <li>Helps balance all 7 chakras</li>
-                <li>Supportive during low mood and depressive phases</li>
-                <li>Helps with ego balance and self-awareness</li>
-                <li>Supports energy during laziness and inactivity</li>
-                <li>Helpful during mental breakdown phases</li>
-                <li>Supportive during tiredness and fatigue</li>
+                <li>Traditionally used during daily spiritual routines</li>
+                <li>Suitable for meditation and mindful breathing sessions</li>
+                <li>May help create a centered and peaceful environment</li>
+                <li>Useful before yoga, prayer, or journaling</li>
               </ul>
             </article>
 
             <article className="rounded-xl bg-[#fbf8ff] p-4">
               <h4 className="text-base font-bold text-[#582683]">Best Time to Use</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#4f3b68]">
-                <li>When you feel depressed</li>
-                <li>When you feel tired and lazy</li>
-                <li>To support recovery from mental breakdown periods</li>
+                <li>Before meditation practice</li>
+                <li>Before yoga or breathwork</li>
+                <li>During evening wind-down routines</li>
               </ul>
             </article>
 

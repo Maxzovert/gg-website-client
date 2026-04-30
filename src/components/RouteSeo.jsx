@@ -3,48 +3,48 @@ import { matchPath, useLocation } from 'react-router-dom';
 
 const SITE = (import.meta.env.VITE_SITE_URL || 'https://www.gawriganga.com').replace(/\/$/, '');
 const DEFAULT_DESC =
-  'Shop authentic Rudraksha, malas, sprays, and spiritual accessories at Gawri Ganga. Blessed products, secure checkout, delivery across India.';
+  'Shop spiritual products online at Gawri Ganga. Buy rudraksha, spiritual bracelets India, and pooja items online with clear details and trusted service.';
 
 /** Rich copy for the home page (SEO + social). ~155–165 characters for description snippet. */
 const HOME_DESCRIPTION =
-  'Gawri Ganga: authentic Rudraksha beads, malas, aura sprays & spiritual products online in India. Trusted quality, ethical sourcing, and guides—shop Rudraksha and explore our story.';
+  'Spiritual products online from Gawri Ganga. Buy rudraksha, spiritual bracelets India, aura sprays, and pooja items online for mindful daily practice.';
 
 const HOME_KEYWORDS =
-  'Gawri Ganga, Gawri Ganga Rudraksha, authentic Rudraksha India, Rudraksha mala online, spiritual products India, aura spray, Rudraksha shop, spiritual wellness';
+  'spiritual products online, buy rudraksha, spiritual bracelets India, pooja items online, rudraksha mala online, Gawri Ganga';
 
 const ROUTE_META = [
   {
     path: '/',
-    title: 'Gawri Ganga | Authentic Rudraksha & Spiritual Wellness Online India',
+    title: 'Spiritual Products Online India | Gawri Ganga',
     description: HOME_DESCRIPTION,
     keywords: HOME_KEYWORDS,
   },
-  { path: '/sprays', title: 'Spiritual Sprays | Gawri Ganga', description: DEFAULT_DESC },
+  { path: '/sprays', title: 'Aura Sprays for Spiritual Use | Gawri Ganga', description: DEFAULT_DESC },
   {
     path: '/sprays/amrat-bindu',
     title: 'Amrat Bindu Aura Spray | Gawri Ganga',
-    description: 'Discover Amrat Bindu Lavender Aura Spray for calmness, relaxation, and a peaceful spiritual atmosphere.',
+    description: 'Explore Amrat Bindu Lavender Aura Spray for meditation spaces and daily spiritual routines.',
   },
   {
     path: '/sprays/maitri',
     title: 'Maitri Aura Spray | Gawri Ganga',
-    description: 'Explore Maitri Aura Spray for emotional warmth, balance, and a soothing spiritual ambience.',
+    description: 'Explore Maitri Aura Spray for a warm, calm atmosphere in daily spiritual and mindful routines.',
   },
   {
     path: '/sprays/chakra-balance',
     title: 'Chakra Balance Aura Spray | Gawri Ganga',
-    description: 'Explore Chakra Balance Aura Spray for energy alignment, positivity, and spiritual harmony.',
+    description: 'Explore Chakra Balance Aura Spray for meditation and mindful daily spiritual practice.',
   },
   {
     path: '/sprays/shuddhi',
     title: 'Shuddhi Aura Spray | Gawri Ganga',
-    description: 'Explore Shuddhi Aura Spray for purification, freshness, and spiritual clarity.',
+    description: 'Explore Shuddhi Aura Spray for daily spiritual use and room freshness during rituals.',
   },
   { path: '/rudraksha', title: 'Rudraksha Collection | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/tulsimala', title: 'Tulsi Mala | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/rashi', title: 'Shop by Rashi | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/accessories', title: 'Accessories | Gawri Ganga', description: DEFAULT_DESC },
-  { path: '/purpose-products', title: 'Shop by Purpose | Gawri Ganga', description: DEFAULT_DESC },
+  { path: '/purpose-products', title: 'Spiritual Products Online | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/product/:slug', title: 'Product | Gawri Ganga', description: DEFAULT_DESC },
   { path: '/cart', title: 'Shopping Cart | Gawri Ganga', description: 'Review your cart and proceed to checkout.' },
   { path: '/wishlist', title: 'Wishlist | Gawri Ganga', description: 'Your saved products.' },

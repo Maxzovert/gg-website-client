@@ -19,7 +19,12 @@ function formatDate(value) {
 }
 
 function stripHtml(input) {
-  return String(input || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return String(input || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 const Blog = () => {

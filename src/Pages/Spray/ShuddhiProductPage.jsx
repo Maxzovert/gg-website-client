@@ -86,9 +86,9 @@ const ShuddhiProductPage = () => {
     : '0.0';
   const formattedBenefits = useMemo(() => {
     const fallback = [
-      'Calms and cleanses the aura after mentally heavy environments',
-      'Supports protection from negative energy and nazar concerns',
-      'Refreshes inner and outer energetic balance'
+      'Traditionally used to refresh prayer and meditation spaces',
+      'May help create a calm and clean atmosphere',
+      'Suitable for daily mindful rituals'
     ];
     const source = `${product?.benefits || ''}`.trim();
     if (!source) return fallback;
@@ -258,7 +258,7 @@ const ShuddhiProductPage = () => {
                 <span className="ml-1 text-sm text-gray-500">{averageRating} ({sortedReviews.length})</span>
               </div>
               <p className="mt-4 wrap-break-word text-sm leading-relaxed text-[#4b5e31]">
-                {product.short_description || product.shortDescription || 'Shuddhi aura spray for purification, freshness, and clear spiritual ambience.'}
+                {product.short_description || product.shortDescription || 'Shuddhi aura spray for daily spiritual use, freshness, and mindful ambience.'}
               </p>
               <div className="mt-4 border-t border-[#dfeccf] pt-4">
                 <div className="flex items-baseline gap-2">
@@ -393,28 +393,28 @@ const ShuddhiProductPage = () => {
 
         <section className="relative mx-auto mt-6 max-w-[1500px] rounded-3xl border border-[#cfe1b8] bg-white/97 p-6 shadow-[0_10px_24px_rgba(72,99,35,0.12)]">
           <div className="mb-5 border-b border-[#dfeccf] pb-3">
-            <h3 className="text-2xl font-bold text-[#486323]">Shuddhi Wellness Guide</h3>
-            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#70865a]">Purification and Refresh Rituals</p>
+            <h3 className="text-2xl font-bold text-[#486323]">Shuddhi Ritual Guide</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#70865a]">Daily Use and Care</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <article className="rounded-xl bg-[#f6fcea] p-4">
               <h4 className="text-base font-bold text-[#486323]">Purpose</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#3d5628]">
-                <li>Calm and cleanse the aura</li>
-                <li>Support protection from negativity</li>
-                <li>Traditionally used for nazar (evil eye) concerns</li>
-                <li>Refresh inner and outer energy</li>
+                <li>Traditionally used in daily prayer routines</li>
+                <li>Helps refresh room and personal space ambience</li>
+                <li>May support a calm and mindful environment</li>
+                <li>Useful before meditation, journaling, or rest</li>
               </ul>
             </article>
 
             <article className="rounded-xl bg-[#f8fdef] p-4">
               <h4 className="text-base font-bold text-[#486323]">Best Time to Use</h4>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#3d5628]">
-                <li>After returning from a funeral</li>
-                <li>After a hectic meeting</li>
-                <li>To refresh after heavy workload</li>
-                <li>After visiting spaces that feel energetically heavy</li>
+                <li>Before prayer or meditation</li>
+                <li>After a long workday</li>
+                <li>When you want to refresh your room ambience</li>
+                <li>Before mindful breathing or journaling</li>
               </ul>
               <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-3">
                 <h5 className="text-sm font-bold text-amber-900">Precautions</h5>

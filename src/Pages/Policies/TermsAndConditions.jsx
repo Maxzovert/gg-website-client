@@ -41,7 +41,7 @@ const TermsAndConditions = () => {
               3. Payment and Security
             </h2>
             <p>
-              Payment can be made via the methods offered at checkout (e.g. card, UPI, net banking, cash on delivery where available). You are responsible for ensuring that your payment details are correct. We use secure payment gateways; we do not store your full card details on our servers.
+              Payment can be made via the methods offered at checkout (for example, card, UPI, and net banking). You are responsible for ensuring that your payment details are correct. We use trusted payment gateways and do not store your full card details on our servers.
             </p>
           </section>
           <section>

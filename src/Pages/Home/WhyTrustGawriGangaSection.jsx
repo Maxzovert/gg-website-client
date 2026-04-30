@@ -6,9 +6,9 @@ const ON_IMAGE_TEXT =
   'text-[#2a1810] [text-shadow:0_1px_0_rgba(255,255,255,0.95),0_0_18px_rgba(255,250,235,0.98),0_2px_14px_rgba(62,47,28,0.18)]';
 
 const POINTS = [
-  'Quality tested & spiritually sanctified',
-  'Trusted by Shiv devotees nationwide',
-  'Energized for positivity & protection',
+  'Carefully selected products with quality-focused checks',
+  'Traditional choices for prayer and mindful daily routines',
+  'Clear details, thoughtful packaging, and trusted support',
 ];
 
 /** Simple vertical rule between two columns — straight stroke, not an L (desktop) */
@@ -40,7 +40,7 @@ const WhyTrustGawriGangaSection = () => {
             id="why-trust-gawri-ganga-heading"
             className={`font-heading max-w-4xl text-center text-[clamp(1.5rem,4.2vw,2.85rem)] font-bold uppercase leading-tight tracking-[0.07em] sm:tracking-[0.09em] ${ON_IMAGE_TEXT}`}
           >
-            Why trust Gawri Ganga?
+            Why choose Gawri Ganga?
           </h2>
 
           <ul className="mt-14 flex w-full max-w-6xl flex-col space-y-5 sm:mt-20 sm:grid sm:min-h-0 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-stretch sm:gap-x-0 sm:space-y-0 md:mt-24 lg:mt-28 lg:max-w-7xl">

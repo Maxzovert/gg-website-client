@@ -208,8 +208,8 @@ const Rashi = () => {
     '3 Mukhi': {
       deity: 'Agni (Fire God)',
       planet: 'Mars',
-      benefits: 'Removes past sins, eliminates guilt, enhances confidence, improves focus, and provides mental clarity. Helps in overcoming obstacles and negative thoughts.',
-      description: 'The Three Mukhi Rudraksha is associated with Agni, the fire god. It purifies the mind and body, removes negative karma, and helps in spiritual purification.',
+      benefits: 'Traditionally associated with discipline, confidence, and focused daily practice.',
+      description: 'The Three Mukhi Rudraksha is associated with Agni in traditional belief systems and is commonly used in spiritual routines.',
       chakra: 'Solar Plexus Chakra (Manipura)',
       mantra: 'Om Namah Shivaya'
     },
@@ -224,8 +224,8 @@ const Rashi = () => {
     '5 Mukhi': {
       deity: 'Kalagni Rudra',
       planet: 'Jupiter',
-      benefits: 'Provides overall health benefits, reduces stress, improves concentration, enhances meditation, and brings peace of mind. Most commonly used Rudraksha.',
-      description: 'The Five Mukhi Rudraksha is the most common and versatile bead. It represents Kalagni Rudra and provides overall protection, health benefits, and spiritual growth.',
+      benefits: 'Traditionally used in japa and meditation for steady focus and a calm routine.',
+      description: 'The Five Mukhi Rudraksha is a widely used bead in daily spiritual practice and mantra meditation.',
       chakra: 'Heart Chakra (Anahata)',
       mantra: 'Om Namah Shivaya'
     },
@@ -240,64 +240,64 @@ const Rashi = () => {
     '7 Mukhi': {
       deity: 'Saptarishi (Seven Sages)',
       planet: 'Saturn',
-      benefits: 'Brings wealth and prosperity, removes financial obstacles, enhances business success, provides protection from negative energies, and improves luck.',
-      description: 'The Seven Mukhi Rudraksha represents the seven sages. It is known for bringing wealth, prosperity, and removing financial obstacles. It also provides protection from negative energies.',
+      benefits: 'Traditionally associated with grounded practice, patience, and consistency in spiritual routines.',
+      description: 'The Seven Mukhi Rudraksha represents the seven sages in traditional texts and is worn for mindful daily practice.',
       chakra: 'Root Chakra (Muladhara)',
       mantra: 'Om Namah Shivaya'
     },
     '8 Mukhi': {
       deity: 'Ganesha',
       planet: 'Rahu',
-      benefits: 'Removes obstacles, provides success in endeavors, enhances intelligence, brings good fortune, and protects from negative influences. Ideal for new beginnings.',
-      description: 'The Eight Mukhi Rudraksha represents Lord Ganesha, the remover of obstacles. It helps in overcoming challenges, achieving success, and brings good fortune.',
+      benefits: 'Traditionally used during new beginnings and prayer routines for clarity and focus.',
+      description: 'The Eight Mukhi Rudraksha is associated with Lord Ganesha in spiritual traditions.',
       chakra: 'Solar Plexus Chakra (Manipura)',
       mantra: 'Om Namah Shivaya'
     },
     '9 Mukhi': {
       deity: 'Durga (Navadurga)',
       planet: 'Ketu',
-      benefits: 'Provides protection, removes fear, enhances courage, brings confidence, and protects from accidents and negative energies. Great for those facing challenges.',
-      description: 'The Nine Mukhi Rudraksha represents the nine forms of Goddess Durga. It provides strong protection, removes fear, and enhances courage and confidence.',
+      benefits: 'Traditionally associated with courage, steadiness, and devotional discipline.',
+      description: 'The Nine Mukhi Rudraksha is associated with the nine forms of Goddess Durga in traditional belief.',
       chakra: 'Root Chakra (Muladhara)',
       mantra: 'Om Namah Shivaya'
     },
     '10 Mukhi': {
       deity: 'Lord Vishnu',
       planet: 'Jupiter',
-      benefits: 'Provides protection from all directions, removes negative karma, enhances spiritual growth, brings peace, and protects from black magic and evil eye.',
-      description: 'The Ten Mukhi Rudraksha represents Lord Vishnu. It provides protection from all directions, removes negative karma, and enhances spiritual protection.',
+      benefits: 'Traditionally used in spiritual practice for centered attention and calm routine.',
+      description: 'The Ten Mukhi Rudraksha represents Lord Vishnu in traditional understanding and is worn for devotional practice.',
       chakra: 'Crown Chakra (Sahasrara)',
       mantra: 'Om Namah Shivaya'
     },
     '11 Mukhi': {
       deity: 'Ekadasha Rudra (Eleven Forms of Shiva)',
       planet: 'Mars',
-      benefits: 'Enhances leadership qualities, provides courage, removes obstacles, brings success in competitions, and protects from enemies. Ideal for leaders and warriors.',
-      description: 'The Eleven Mukhi Rudraksha represents the eleven forms of Lord Shiva. It enhances leadership qualities, provides courage, and helps in overcoming challenges.',
+      benefits: 'Traditionally associated with confidence, determination, and steady spiritual discipline.',
+      description: 'The Eleven Mukhi Rudraksha represents the eleven forms of Lord Shiva in traditional texts.',
       chakra: 'Solar Plexus Chakra (Manipura)',
       mantra: 'Om Namah Shivaya'
     },
     '12 Mukhi': {
       deity: 'Surya (Sun God)',
       planet: 'Sun',
-      benefits: 'Enhances leadership, improves confidence, brings recognition, provides success in career, and enhances charisma. Perfect for those in leadership positions.',
-      description: 'The Twelve Mukhi Rudraksha represents Lord Surya, the sun god. It enhances leadership qualities, brings recognition, and provides success in career and life.',
+      benefits: 'Traditionally used for personal discipline, confidence, and focused routine.',
+      description: 'The Twelve Mukhi Rudraksha is associated with Lord Surya in traditional spiritual practice.',
       chakra: 'Solar Plexus Chakra (Manipura)',
       mantra: 'Om Namah Shivaya'
     },
     '13 Mukhi': {
       deity: 'Kamadeva (God of Love)',
       planet: 'Venus',
-      benefits: 'Enhances attractiveness, improves relationships, brings love and harmony, increases charm, and helps in finding a life partner. Ideal for relationship issues.',
-      description: 'The Thirteen Mukhi Rudraksha represents Kamadeva, the god of love. It enhances attractiveness, improves relationships, and brings love and harmony in life.',
+      benefits: 'Traditionally associated with emotional balance and mindful relationship intentions.',
+      description: 'The Thirteen Mukhi Rudraksha represents Kamadeva in traditional references.',
       chakra: 'Heart Chakra (Anahata)',
       mantra: 'Om Namah Shivaya'
     },
     '14 Mukhi': {
       deity: 'Lord Shiva (Mahadev)',
       planet: 'Saturn',
-      benefits: 'Provides ultimate protection, enhances spiritual growth, brings enlightenment, removes all obstacles, and connects with divine consciousness. Most powerful Rudraksha.',
-      description: 'The Fourteen Mukhi Rudraksha represents Lord Shiva in his most powerful form. It is extremely rare and provides ultimate protection, spiritual growth, and enlightenment.',
+      benefits: 'Traditionally associated with deep meditation, spiritual reflection, and disciplined practice.',
+      description: 'The Fourteen Mukhi Rudraksha represents Lord Shiva in traditional belief and is valued for advanced spiritual routines.',
       chakra: 'Crown Chakra (Sahasrara)',
       mantra: 'Om Namah Shivaya'
     }
@@ -419,10 +419,10 @@ const Rashi = () => {
           {/* Header */}
           <div className="mb-6 sm:mb-8 text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-2">
-              Find Your Rashi Rudraksha
+              Rashi-based Rudraksha Suggestions
             </h1>
             <p className="text-sm sm:text-base text-gray-600">
-              Discover the perfect Rudraksha beads for your zodiac sign
+              Explore traditionally recommended Rudraksha options for your zodiac sign.
             </p>
           </div>
 
@@ -727,7 +727,7 @@ const Rashi = () => {
                 Available Rudraksha Products
               </h2>
               <p className="text-sm text-gray-600">
-                Purchase the recommended Rudraksha beads for your rashi
+                Explore available Rudraksha for your selected rashi
               </p>
             </div>
 

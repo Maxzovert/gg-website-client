@@ -10,22 +10,22 @@ const AuthenticCertifiedSection = () => {
         <div className="grid grid-cols-1 items-center gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-14">
           <div className="text-center lg:text-left">
             <p className="mb-3 text-xs font-medium uppercase tracking-[0.28em] text-primary/90 sm:mb-4 sm:text-sm md:tracking-[0.32em]">
-              Trust · Authenticity · Certification
+              Quality · Clarity · Trust
             </p>
             <h2 className="mb-4 font-heading text-3xl font-bold leading-tight tracking-tight text-stone-800 sm:mb-5 sm:text-4xl md:text-5xl lg:text-[2.75rem] lg:leading-[1.1] xl:text-6xl">
-              Authentic &amp; certified
+              Spiritual products with clear details
             </h2>
             <p className="mb-3 font-heading text-base leading-relaxed text-stone-600 sm:mb-4 sm:text-lg md:text-xl lg:text-2xl">
-              Every item we offer is sourced with care and backed by proper checks, so you receive genuine spiritual goods, not imitations.
+              Each item is selected with care and presented with transparent product information to help you make informed choices.
             </p>
             <p className="mb-8 text-sm text-stone-500 sm:mb-9 sm:text-base md:text-lg">
-              Lab-verified where applicable · Ethical sourcing · Transparent quality
+              Quality-focused sourcing · Clear product descriptions · Mindful selection
             </p>
             <Link
               to="/rudraksha"
               className="inline-flex items-center gap-2.5 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-white shadow-lg transition-all duration-200 hover:bg-primary/90 hover:shadow-xl group sm:gap-3 sm:px-9 sm:py-4 sm:text-base md:tracking-[0.2em]"
             >
-              <span>Explore the collection</span>
+              <span>Explore collection</span>
               <FaArrowRight className="text-lg shrink-0 group-hover:translate-x-0.5 transition-transform" aria-hidden />
             </Link>
           </div>
