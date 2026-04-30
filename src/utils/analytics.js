@@ -2,6 +2,15 @@ const CONSENT_KEY = 'gg_cookie_consent';
 
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-7P8LPXZ012';
 
+function normalizeItems(items = []) {
+  return items.map((i) => ({
+    item_id: String(i.product_id ?? i.id ?? ''),
+    item_name: i.product_name || i.name || '',
+    price: Number(i.product_price ?? i.price) || 0,
+    quantity: Number(i.quantity) || 1,
+  }));
+}
+
 export function getStoredConsent() {
   try {
     return localStorage.getItem(CONSENT_KEY);
@@ -95,16 +104,26 @@ export function trackSignUp(method = 'otp') {
 }
 
 export function trackBeginCheckout(value, items = []) {
+  const normalizedItems = normalizeItems(items);
   if (getStoredConsent() !== 'analytics') return;
   ensureGtagStub();
   window.gtag('event', 'begin_checkout', {
     value: Number(value) || 0,
     currency: 'INR',
-    items: items.map((i) => ({
-      item_id: String(i.product_id ?? i.id ?? ''),
-      item_name: i.product_name || i.name || '',
-      price: Number(i.product_price ?? i.price) || 0,
-      quantity: Number(i.quantity) || 1,
-    })),
+    items: normalizedItems,
   });
+}
+
+export function trackViewContent(product, quantity = 1) {
+  void product;
+  void quantity;
+}
+
+export function trackAddToCart(product, quantity = 1) {
+  void product;
+  void quantity;
+}
+
+export function trackLead(payload = {}) {
+  void payload;
 }

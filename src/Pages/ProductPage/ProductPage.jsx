@@ -34,6 +34,7 @@ import rdcImage from "../../assets/ProductPage/rdc.webp";
 import { pricingFromProduct } from "../../utils/productPricing";
 import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from "../../utils/productPreorder";
 import { submitPreorderRequest } from "../../utils/preorderRequest";
+import { trackBeginCheckout, trackViewContent } from "../../utils/analytics.js";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -329,12 +330,26 @@ const ProductPage = () => {
       navigate('/login', { state: { from: { pathname: `/product/${slug}` } } });
       return;
     }
-    // Add to cart first if not already in cart
     const existingItem = cartItems.find(item => item.id === product.id);
+    const checkoutItems = existingItem
+      ? cartItems
+      : [
+          ...cartItems,
+          {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity,
+          },
+        ];
+    const checkoutValue = checkoutItems.reduce(
+      (sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
+      0
+    );
+    trackBeginCheckout(checkoutValue, checkoutItems);
     if (!existingItem) {
       addToCart(product, quantity);
     }
-    // Open checkout modal
     setShowCheckout(true);
   };
 
@@ -537,6 +552,11 @@ const ProductPage = () => {
     const max = getMaxOrderQuantity(product);
     setQuantity((q) => Math.min(Math.max(1, q), max));
   }, [product?.id, product?.stock, product?.sale_type]);
+
+  useEffect(() => {
+    if (!product?.id) return;
+    trackViewContent(product, quantity);
+  }, [product?.id]);
 
   const nextImage = () => {
     if (product?.images && product.images.length > 0) {

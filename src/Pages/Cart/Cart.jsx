@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,7 @@ import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPricing';
 import { getMaxOrderQuantity } from '../../utils/productPreorder';
+import { trackBeginCheckout } from '../../utils/analytics.js';
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -393,12 +394,6 @@ const Cart = () => {
                 Review your items and checkout securely.
               </p>
             </div>
-            <button
-              onClick={handleClearCart}
-              className="text-xs sm:text-sm text-red-600 hover:text-red-700 font-semibold transition-colors border border-red-200 hover:border-red-300 px-3 py-2 rounded-lg bg-red-50/50"
-            >
-              Clear Cart
-            </button>
           </div>
           <p className="text-sm sm:text-base text-gray-600 mt-2">
             {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
@@ -748,6 +743,7 @@ const Cart = () => {
                     navigate('/login', { state: { from: { pathname: '/cart' } } });
                     return;
                   }
+                  trackBeginCheckout(payableAfterWallet, cartItems);
                   setShowCheckout(true);
                 }}
                 disabled={cartItems.length === 0}
@@ -762,8 +758,16 @@ const Cart = () => {
               >
                 Continue Shopping
               </Link>
+              <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-2">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600 text-white">
+                  <FaShieldAlt className="text-[11px]" />
+                </span>
+                <p className="text-[11px] sm:text-xs font-medium text-emerald-800">
+                  Payment secured by Easebuzz
+                </p>
+              </div>
               <p className="text-[11px] sm:text-xs text-gray-500 text-center mt-3">
-                Secure checkout • Trusted payment gateway • Easy returns
+                Secure checkout • Trusted payment gateway
               </p>
             </div>
           </div>

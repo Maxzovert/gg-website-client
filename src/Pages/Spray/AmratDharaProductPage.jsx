@@ -11,6 +11,7 @@ import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
 import PreorderEmailModal from '../../components/PreorderEmailModal';
 import { submitPreorderRequest } from '../../utils/preorderRequest';
+import { trackViewContent } from '../../utils/analytics.js';
 import amratDharaBg from '../../assets/Sprayelem/Amratdhara/amratdharabg.png';
 import bigWave from '../../assets/Sprayelem/Amratdhara/bigwave.png';
 import smallWave from '../../assets/Sprayelem/Amratdhara/small wave.png';
@@ -69,6 +70,11 @@ const AmratDharaProductPage = () => {
     fetchAmratBindu();
   }, []);
 
+  useEffect(() => {
+    if (!product?.id) return;
+    trackViewContent(product, quantity);
+  }, [product?.id]);
+
   const pricing = useMemo(() => (product ? pricingFromProduct(product) : null), [product]);
   const inWishlist = product ? isInWishlist(product.id) : false;
   const productImages = product?.images?.length ? product.images : ['https://via.placeholder.com/1200x900?text=Amrat+Bindu'];
@@ -83,6 +89,19 @@ const AmratDharaProductPage = () => {
   const averageRating = sortedReviews.length
     ? (sortedReviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / sortedReviews.length).toFixed(1)
     : '0.0';
+  const formattedBenefits = useMemo(() => {
+    const fallback = [
+      'Promotes calmness and mental clarity',
+      'Supports a harmonious and uplifting atmosphere'
+    ];
+    const source = `${product?.benefits || ''}`.trim();
+    if (!source) return fallback;
+    const parts = source
+      .split(/[•\n]+/g)
+      .map((item) => item.trim().replace(/^[\-*]\s*/, ''))
+      .filter(Boolean);
+    return parts.length ? parts : fallback;
+  }, [product?.benefits]);
 
   const fetchReviews = async (productId) => {
     if (!productId) return;
@@ -271,13 +290,13 @@ const AmratDharaProductPage = () => {
                   <span className="text-3xl font-bold text-[#1a6ba0]">₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   {pricing.discount > 0 ? <span className="text-sm text-gray-400 line-through">₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span> : null}
                 </div>
-                {isPreorder ? (
-                  <p className="text-sm font-semibold text-amber-800">Pre-order available</p>
-                ) : product.stock > 0 ? (
-                  <p className="text-sm font-semibold text-[#1a6ba0]">In Stock</p>
-                ) : (
-                  <p className="text-sm font-semibold text-red-600">Out of Stock</p>
-                )}
+                {!isPreorder ? (
+                  product.stock > 0 ? (
+                    <p className="text-sm font-semibold text-[#1a6ba0]">In Stock</p>
+                  ) : (
+                    <p className="text-sm font-semibold text-red-600">Out of Stock</p>
+                  )
+                ) : null}
               </div>
 
               <div className="mt-4">
@@ -318,13 +337,27 @@ const AmratDharaProductPage = () => {
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e8f6fd]">
                     <FaLeaf />
                   </span>
-                  <h3 className="text-sm font-bold">Benefits</h3>
+                  <h3 className="text-sm font-bold">Ingredients</h3>
                 </div>
-                <p className="wrap-break-word text-sm leading-relaxed text-[#3d687f]">
-                  {product.benefits || 'Promotes calmness, clarity, and a harmonious environment for rituals.'}
-                </p>
+                <ul className="list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
+                  <li>Ancient Ayurvedic wellness base formula</li>
+                  <li>Camphor</li>
+                  <li>Sat Giloi / Sat Ajwain blend</li>
+                  <li>Peppermint</li>
+                </ul>
               </div>
               <div className="rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-4 shadow-[0_12px_30px_rgba(26,107,160,0.14)]">
+                <div className="mb-2 flex items-center gap-2 text-[#1a6ba0]">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e8f6fd]">
+                    <FaLeaf />
+                  </span>
+                  <h3 className="text-sm font-bold">Essence</h3>
+                </div>
+                <p className="rounded-lg bg-[#e8f6fd] px-3 py-2 text-[15px] font-semibold text-[#1a6ba0]">
+                  Lavender
+                </p>
+              </div>
+              {/* <div className="rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-4 shadow-[0_12px_30px_rgba(26,107,160,0.14)]">
                 <div className="mb-2 flex items-center gap-2 text-[#1a6ba0]">
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e8f6fd]">
                     <FaTruck />
@@ -334,8 +367,8 @@ const AmratDharaProductPage = () => {
                 <p className="wrap-break-word text-sm leading-relaxed text-[#3d687f]">
                   Fast dispatch with secure packaging to maintain fragrance quality.
                 </p>
-              </div>
-              <div className="rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-4 shadow-[0_12px_30px_rgba(26,107,160,0.14)]">
+              </div> */}
+              {/* <div className="rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-4 shadow-[0_12px_30px_rgba(26,107,160,0.14)]">
                 <div className="mb-2 flex items-center gap-2 text-[#1a6ba0]">
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e8f6fd]">
                     <FaShieldAlt />
@@ -345,7 +378,7 @@ const AmratDharaProductPage = () => {
                 <p className="wrap-break-word text-sm leading-relaxed text-[#3d687f]">
                   Carefully curated aroma profile designed for daily mindful use.
                 </p>
-              </div>
+              </div> */}
             </div>
           </aside>
         </div>
@@ -362,16 +395,6 @@ const AmratDharaProductPage = () => {
               <p className="wrap-break-word text-base leading-relaxed text-[#3d687f]">
                 {product.description || product.short_description || 'A soothing lavender aura spray designed to create emotional ease and cleaner space energy.'}
               </p>
-            </div>
-
-            <div className="mt-4 rounded-xl bg-[#f8fdff] p-4">
-              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#5e889f]">Specifications</p>
-              <ul className="space-y-2 wrap-break-word text-base text-[#3d687f]">
-                {product.deity ? <li><span className="font-semibold text-[#1a6ba0]">Deity:</span> {product.deity}</li> : null}
-                {product.planet ? <li><span className="font-semibold text-[#1a6ba0]">Planet:</span> {product.planet}</li> : null}
-                {product.rarity ? <li><span className="font-semibold text-[#1a6ba0]">Rarity:</span> {product.rarity}</li> : null}
-                {product.stock !== undefined ? <li><span className="font-semibold text-[#1a6ba0]">Available Stock:</span> {product.stock}</li> : null}
-              </ul>
             </div>
           </div>
 
@@ -395,6 +418,69 @@ const AmratDharaProductPage = () => {
             </div>
           </div>
         </div>
+
+        <section className="relative mt-6 rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-6 shadow-[0_10px_24px_rgba(26,107,160,0.1)]">
+          <div className="mb-5 border-b border-[#d8edf7] pb-3">
+            <h3 className="text-2xl font-bold text-[#1a6ba0]">Amrat Bindu Wellness Guide</h3>
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-[#5e889f]">Traditional Everyday Support</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <article className="rounded-xl bg-[#f3fbfe] p-4">
+              <h4 className="text-base font-bold text-[#1a6ba0]">Essence</h4>
+              <p className="mt-2 text-[15px] leading-relaxed text-[#245472]">
+                Lavender essence with a refreshing and balancing aroma profile.
+              </p>
+            </article>
+
+            <article className="rounded-xl bg-[#f3fbfe] p-4">
+              <h4 className="text-base font-bold text-[#1a6ba0]">Purpose</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
+                <li>General wellness and daily freshness support</li>
+                <li>Supportive use during seasonal viral discomfort</li>
+                <li>Helpful for cold and mild fever-time care routines</li>
+              </ul>
+            </article>
+
+            <article className="rounded-xl bg-[#f8fdff] p-4">
+              <h4 className="text-base font-bold text-[#1a6ba0]">Can Be Used As</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
+                <li>Spray on clothes</li>
+                <li>Spray on handkerchief during cold discomfort</li>
+                <li>Spray in room for a fresh environment</li>
+                <li>Spray on mask</li>
+                <li>Mix half a spoon with massage oil and apply on body</li>
+              </ul>
+            </article>
+
+            <article className="rounded-xl bg-[#f8fdff] p-4">
+              <h4 className="text-base font-bold text-[#1a6ba0]">Best Time to Use</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
+                <li>As part of general daily use</li>
+                <li>During cold and fever related discomfort phases</li>
+              </ul>
+            </article>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <article className="rounded-xl bg-[#f8fdff] p-4">
+              <h4 className="text-base font-bold text-[#1a6ba0]">Benefits</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-[15px] leading-relaxed text-[#245472]">
+                {formattedBenefits.map((benefit, idx) => (
+                  <li key={`${benefit}-${idx}`}>{benefit}</li>
+                ))}
+              </ul>
+            </article>
+
+            <article className="rounded-xl border border-amber-200 bg-amber-50/70 p-4">
+              <h4 className="text-base font-bold text-amber-900">Precautions</h4>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-amber-900/90">
+                <li>Use carefully for children and in small quantity</li>
+                <li>When applying on body, dilute properly with massage oil</li>
+              </ul>
+            </article>
+          </div>
+        </section>
 
         <section className="relative mt-6 rounded-3xl border border-[#1a6ba0]/20 bg-white/97 p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">

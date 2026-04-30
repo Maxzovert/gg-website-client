@@ -4,6 +4,8 @@ import { FaArrowLeft } from 'react-icons/fa';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api';
 
+const DEFAULT_HERO_IMAGE = 'https://via.placeholder.com/1200x630?text=Gawri+Ganga+Blog';
+
 function formatDate(value) {
   if (!value) return '';
   try {
@@ -17,11 +19,42 @@ function formatDate(value) {
   }
 }
 
+function sanitizeBlogHtml(input) {
+  const raw = String(input || '').trim();
+  if (!raw) return '';
+  if (typeof window === 'undefined' || typeof DOMParser === 'undefined') {
+    return raw;
+  }
+
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(raw, 'text/html');
+
+    // Remove tags that can alter app-wide behavior or styling.
+    doc.querySelectorAll('script, style, link, meta, base, iframe, object, embed').forEach((node) => {
+      node.remove();
+    });
+
+    // Remove inline styles and event handlers from pasted rich HTML.
+    doc.querySelectorAll('*').forEach((el) => {
+      el.removeAttribute('style');
+      [...el.attributes].forEach((attr) => {
+        if (/^on/i.test(attr.name)) el.removeAttribute(attr.name);
+      });
+    });
+
+    return doc.body?.innerHTML || raw;
+  } catch (_error) {
+    return raw;
+  }
+}
+
 const BlogPostPage = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [coverImage, setCoverImage] = useState(DEFAULT_HERO_IMAGE);
   const contentRef = useRef(null);
 
   useEffect(() => {
@@ -71,6 +104,11 @@ const BlogPostPage = () => {
     () => formatDate(post?.published_at || post?.created_at),
     [post?.published_at, post?.created_at],
   );
+  const renderedHtml = useMemo(() => sanitizeBlogHtml(post?.html_content), [post?.html_content]);
+
+  useEffect(() => {
+    setCoverImage(post?.header_image_url || post?.hero_image_url || DEFAULT_HERO_IMAGE);
+  }, [post?.header_image_url, post?.hero_image_url]);
 
   if (loading) {
     return (
@@ -93,24 +131,45 @@ const BlogPostPage = () => {
   }
 
   return (
-    <div className="bg-stone-50/95 py-10 sm:py-14">
-      <article className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
-        <img src={post.header_image_url || post.hero_image_url} alt={post.title} className="h-auto w-full object-cover" />
+    <div className="bg-[#FFFAEB]">
+      <article className="w-full bg-[#FFFAEB]">
+        <div className="border-b border-stone-200 bg-[#FFFAEB] py-6 sm:py-8">
+          <img
+            src={coverImage}
+            alt={post.title}
+            className="mx-auto h-56 w-4/5 rounded-2xl object-cover shadow-sm sm:h-72 lg:h-[420px]"
+            loading="eager"
+            onError={() => setCoverImage(DEFAULT_HERO_IMAGE)}
+          />
+        </div>
 
-        <div className="px-5 py-6 sm:px-8 sm:py-8">
+        <div className="mx-auto w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-10 lg:px-12">
           <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80">
             <FaArrowLeft aria-hidden />
             Back to blogs
           </Link>
 
-          <h1 className="mt-4 text-3xl font-bold text-stone-900 sm:text-4xl">{post.title}</h1>
-          {displayDate ? <p className="mt-2 text-sm text-stone-500">{displayDate}</p> : null}
-          {post.excerpt ? <p className="mt-4 text-base leading-relaxed text-stone-700">{post.excerpt}</p> : null}
+          <h1 className="mt-5 text-3xl font-bold leading-tight text-primary sm:text-4xl lg:text-5xl">{post.title}</h1>
+          {displayDate ? <p className="mt-3 text-sm font-medium text-stone-500">{displayDate}</p> : null}
+          {post.excerpt ? <p className="mt-5 rounded-xl bg-orange-50 px-4 py-3 text-base leading-relaxed text-stone-700">{post.excerpt}</p> : null}
 
           <div
             ref={contentRef}
-            className="prose prose-stone mt-8 max-w-none prose-a:text-primary hover:prose-a:text-primary/80"
-            dangerouslySetInnerHTML={{ __html: post.html_content || '' }}
+            className="mt-8 max-w-none text-[17px] leading-8 text-stone-700
+              [&_h2]:mt-10 [&_h2]:border-b [&_h2]:border-stone-200 [&_h2]:pb-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:text-primary
+              [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-primary
+              [&_h4]:mt-6 [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-primary
+              [&_p]:my-4 [&_p]:leading-8
+              [&_strong]:font-semibold [&_strong]:text-stone-900
+              [&_em]:text-stone-800
+              [&_a]:font-semibold [&_a]:text-primary [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 hover:[&_a]:underline
+              [&_ul]:my-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6
+              [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6
+              [&_li]:pl-1
+              [&_blockquote]:my-8 [&_blockquote]:rounded-r-xl [&_blockquote]:border-l-4 [&_blockquote]:border-primary/70 [&_blockquote]:bg-orange-50 [&_blockquote]:px-5 [&_blockquote]:py-4 [&_blockquote]:italic [&_blockquote]:text-stone-800
+              [&_img]:my-8 [&_img]:w-full [&_img]:rounded-2xl [&_img]:border [&_img]:border-stone-200
+              [&_hr]:my-10 [&_hr]:border-stone-200"
+            dangerouslySetInnerHTML={{ __html: renderedHtml }}
           />
 
           {post.primary_link_url ? (
