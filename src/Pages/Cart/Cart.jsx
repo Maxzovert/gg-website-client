@@ -153,7 +153,7 @@ const Cart = () => {
   const couponDiscount = Number(appliedCoupon?.discount_amount || 0);
   const subtotalAfterCoupon = Math.max(0, totalPrice - couponDiscount);
   const totalWithBlessing = subtotalAfterCoupon + (hasRudrakshaInCart ? blessingCharge : 0);
-  const shippingCharges = totalPrice > 1000 ? 0 : 50;
+  const shippingCharges = 70;
   const walletAppliedAmount = useWallet
     ? Math.min(walletToUse || walletBalance, walletBalance, totalWithBlessing + shippingCharges)
     : 0;
@@ -522,11 +522,7 @@ const Cart = () => {
                 <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
                   <span>Shipping</span>
                   <span>
-                    {shippingCharges === 0 ? (
-                      <span className="text-green-600 font-semibold">Free</span>
-                    ) : (
-                      `₹${shippingCharges.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-                    )}
+                    {`₹${shippingCharges.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
                   </span>
                 </div>
                 {availableCoupons.length > 0 && (
