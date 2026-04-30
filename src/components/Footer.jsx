@@ -25,6 +25,7 @@ const Footer = () => {
   ]
 
   const policies = [
+    { name: 'Return Policy', href: '/return-policy' },
     { name: 'Refund & Cancellation', href: '/refund-cancellation' },
     { name: 'Terms & Conditions', href: '/terms-and-conditions' },
     { name: 'Shipping Policy', href: '/shipping-policy' },
