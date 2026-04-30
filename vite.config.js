@@ -50,6 +50,12 @@ const PUBLIC_ROUTES = [
   '/privacy-policy',
 ];
 
+const BLOG_SLUGS = [
+  '7-mukhi-rudraksha-blog',
+  'amrat-bindu-blog',
+  'gawri-ganga-blog',
+];
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -64,6 +70,7 @@ export default defineConfig(({ mode }) => {
         hostname: siteUrl,
         dynamicRoutes: [
           ...PUBLIC_ROUTES,
+          ...BLOG_SLUGS.map((slug) => `/blog/${slug}`),
           ...PRODUCT_SLUGS.map((slug) => `/product/${slug}`),
         ],
         exclude: [
