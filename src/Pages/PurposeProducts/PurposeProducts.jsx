@@ -4,6 +4,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 const CATEGORY_OPTIONS = [
   { label: 'All', value: 'all', apiValue: null },
@@ -70,8 +71,6 @@ const PurposeProducts = () => {
     setSearchParams(next);
   };
 
-  const getReviewCount = (productId) => 5 + (productId % 3);
-
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
@@ -120,7 +119,7 @@ const PurposeProducts = () => {
                 product={product}
                 variant="rudraksh"
                 calculatePricing={pricingFromProduct}
-                getReviewCount={getReviewCount}
+                getReviewCount={getCardReviewCount}
               />
             ))}
           </div>

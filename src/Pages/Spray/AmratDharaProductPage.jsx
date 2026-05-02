@@ -86,9 +86,15 @@ const AmratDharaProductPage = () => {
     return list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   }, [reviews, reviewSort]);
 
-  const averageRating = sortedReviews.length
-    ? (sortedReviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / sortedReviews.length).toFixed(1)
-    : '0.0';
+  const averageRating = (() => {
+    if (!sortedReviews.length) return '0.0';
+    const sum = sortedReviews.reduce((acc, r) => {
+      const x = Number(r.rating);
+      return acc + (Number.isFinite(x) ? x : 0);
+    }, 0);
+    const avg = sum / sortedReviews.length;
+    return Number.isFinite(avg) ? avg.toFixed(1) : '0.0';
+  })();
   const formattedBenefits = useMemo(() => {
     const fallback = [
       'Traditionally used to freshen prayer and meditation spaces',
@@ -195,7 +201,9 @@ const AmratDharaProductPage = () => {
         setReviewRating(0);
         setReviewHover(0);
         await fetchReviews(product.id);
-        toast.success('Thank you! Your review has been submitted.');
+        toast.success(
+          json.message || 'Thank you! Your review has been submitted. It will appear publicly after approval.',
+        );
       } else {
         toast.error(json.message || 'Failed to submit review.');
       }
@@ -527,9 +535,14 @@ const AmratDharaProductPage = () => {
             <div className="space-y-3">
               {sortedReviews.map((r) => (
                 <article key={r.id} className="rounded-xl border border-[#1a6ba0]/12 bg-white p-4">
-                  <div className="mb-1 flex items-center justify-between">
-                    <p className="text-sm font-semibold text-[#1a6ba0]">{r.reviewer_name || 'Verified Buyer'}</p>
-                    <p className="text-xs text-gray-500">{r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : ''}</p>
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#1a6ba0]">{r.reviewer_name || 'Customer'}</p>
+                      {!r.verified ? (
+                        <p className="text-xs font-medium text-amber-800">Pending approval</p>
+                      ) : null}
+                    </div>
+                    <p className="text-xs text-gray-500 shrink-0">{r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : ''}</p>
                   </div>
                   <div className="mb-2 flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (

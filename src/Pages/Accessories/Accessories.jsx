@@ -7,6 +7,7 @@ import Loader from '../../components/Loader';
 import accessoriesBanner from '../../assets/Accessories/as1.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 const ACCESSORIES_SUBCATEGORIES = [
   { id: 1, name: 'Mala' },
@@ -65,8 +66,6 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
     fetchExploreProducts();
   }, [category, isMobileCarousel]);
 
-  const getReviewCount = (productId) => 5 + (productId % 3);
-
   if (loading) {
     return (
       <section className="py-10 md:py-14">
@@ -103,7 +102,7 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
                 variant="rudraksh"
                 size={isMobileCarousel ? 'default' : 'lg'}
                 calculatePricing={pricingFromProduct}
-                getReviewCount={getReviewCount}
+                getReviewCount={getCardReviewCount}
               />
             </div>
           ))}
@@ -257,11 +256,6 @@ const Accessories = () => {
   const maxPrice = allProducts.length > 0
     ? Math.max(...allProducts.map(p => p.price || 0), 100000)
     : 100000;
-
-  // Generate random review count (for demo purposes)
-  const getReviewCount = (productId) => {
-    return 5 + (productId % 3);
-  };
 
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
@@ -517,7 +511,7 @@ const Accessories = () => {
                   product={product}
                   variant="rudraksh"
                   calculatePricing={pricingFromProduct}
-                  getReviewCount={getReviewCount}
+                  getReviewCount={getCardReviewCount}
                 />
               ))}
               </div>

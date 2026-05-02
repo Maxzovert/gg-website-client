@@ -11,6 +11,7 @@ import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPricing';
 import { getMaxOrderQuantity } from '../../utils/productPreorder';
 import { trackBeginCheckout } from '../../utils/analytics.js';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -115,11 +116,7 @@ const Cart = () => {
   const [couponLoading, setCouponLoading] = useState(false);
   const [showCouponCelebration, setShowCouponCelebration] = useState(false);
 
-  const getReviewCount = useCallback((productId) => {
-    const n = Number(productId);
-    if (Number.isFinite(n)) return 5 + (n % 3);
-    return 5 + (String(productId).length % 3);
-  }, []);
+  const getReviewCount = useCallback((productId) => getCardReviewCount(productId), []);
 
   const handleRemoveItem = (productId, productName) => {
     removeFromCart(productId);

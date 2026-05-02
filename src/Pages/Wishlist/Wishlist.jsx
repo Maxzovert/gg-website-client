@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import ProductCard from '../../components/ProductCard';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
@@ -95,7 +96,7 @@ const Wishlist = () => {
               <ProductCard
                 product={item}
                 calculatePricing={pricingFromProduct}
-                getReviewCount={(productId) => 5 + (productId % 3)}
+                getReviewCount={getCardReviewCount}
                 onAddToCart={handleAddToCart}
               />
               {/* Remove from Wishlist Button */}
