@@ -5,6 +5,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 const MOBILE_FEATURED_COUNT = 6;
 const DESKTOP_FEATURED_COUNT = 5;
@@ -51,8 +52,6 @@ const RudrakhshaProd = () => {
     };
     fetchFeatured();
   }, [isMobileCarousel]);
-
-  const getReviewCount = (productId) => 5 + (productId % 3);
 
   if (loading) {
     return (
@@ -107,7 +106,7 @@ const RudrakhshaProd = () => {
                   variant="rudraksh"
                   size={isMobileCarousel ? 'default' : 'lg'}
                   calculatePricing={pricingFromProduct}
-                  getReviewCount={getReviewCount}
+                  getReviewCount={getCardReviewCount}
                 />
               </div>
             </div>
