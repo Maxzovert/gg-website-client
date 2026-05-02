@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api';
+import BlogExploreProductsSection from './BlogExploreProductsSection';
 
 const DEFAULT_HERO_IMAGE = 'https://via.placeholder.com/1200x630?text=Gawri+Ganga+Blog';
 
@@ -184,6 +185,8 @@ const BlogPostPage = () => {
               </a>
             </div>
           ) : null}
+
+          <BlogExploreProductsSection headingId="blog-post-explore-products-heading" />
         </div>
       </article>
     </div>
