@@ -55,11 +55,13 @@ const Home = () => {
       <SectionDivider />
       <InstagramFeedSection />
       <SectionDivider />
-      <YouTubePodcastSection />
-      <SectionDivider />
       <LatestPostsSection />
       <SectionDivider />
+      <GoogleReviewSection />
+      <SectionDivider />
       <AuthenticCertifiedSection />
+      <YouTubePodcastSection />
+      <SectionDivider />
       <section className="w-full bg-[#FFFAEB]">
         <img
           src={OriginImg}
