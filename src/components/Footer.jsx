@@ -25,7 +25,6 @@ const Footer = () => {
   ]
 
   const policies = [
-    { name: 'Return Policy', href: '/return-policy' },
     { name: 'Refund & Cancellation', href: '/refund-cancellation' },
     { name: 'Terms & Conditions', href: '/terms-and-conditions' },
     { name: 'Shipping Policy', href: '/shipping-policy' },
@@ -51,7 +50,7 @@ const Footer = () => {
               <img src={logo} alt="Gawri Ganga" className="w-14 h-14 sm:w-14 sm:h-14 md:w-16 md:h-16" />
             </Link>
             <p className="mt-3 font-heading font-semibold text-white text-sm">
-              Purity · Practice · Positivity
+              Purity · Power · Protection
             </p>
             <p className="mt-2 text-white/95 text-sm leading-relaxed max-w-[280px] sm:max-w-xs mx-auto lg:mx-0">
               Discover authentic rudraksha, aura sprays and spiritual accessories at Gawri Ganga.
@@ -63,7 +62,7 @@ const Footer = () => {
               support@gawriganga.com
             </a>
             {/* Full address block – hidden on mobile, visible from sm */}
-            <div className="mt-4 space-y-1.5 text-white/95 text-xs sm:text-sm text-left max-w-xs mx-auto lg:mx-0 lg:max-w-none wrap-break-word hidden sm:block">
+            <div className="mt-4 space-y-1.5 text-white/95 text-xs sm:text-sm text-left max-w-xs mx-auto lg:mx-0 lg:max-w-none break-words hidden sm:block">
               <p>Gawri Ganga</p>
               <p className="text-white font-medium">GST: 09AAFCE9670A1ZL</p>
               <p>Head Office — SECTOR 27, Noida, Uttar Pradesh, 201301</p>
