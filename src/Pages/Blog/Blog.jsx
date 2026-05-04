@@ -4,29 +4,8 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import ggLogo from '../../assets/gglogo.svg';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api';
+import { formatBlogListDate, stripHtmlForExcerpt } from '../../utils/blogListDisplay';
 import BlogExploreProductsSection from './BlogExploreProductsSection';
-
-function formatDate(value) {
-  if (!value) return '';
-  try {
-    return new Date(value).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch (_error) {
-    return '';
-  }
-}
-
-function stripHtml(input) {
-  return String(input || '')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
@@ -67,12 +46,12 @@ const Blog = () => {
   const cards = useMemo(
     () =>
       posts.map((post) => {
-        const rawExcerpt = post.excerpt || stripHtml(post.html_content);
+        const rawExcerpt = post.excerpt || stripHtmlForExcerpt(post.html_content);
         const excerpt = rawExcerpt.length > 180 ? `${rawExcerpt.slice(0, 180)}...` : rawExcerpt;
         return {
           ...post,
           excerpt,
-          displayDate: formatDate(post.published_at || post.created_at),
+          displayDate: formatBlogListDate(post.published_at || post.created_at),
         };
       }),
     [posts],

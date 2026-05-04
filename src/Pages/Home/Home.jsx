@@ -16,6 +16,9 @@ import ShopByPurposeSection from './ShopByPurposeSection'
 import GawriGangaIntroSection from './GawriGangaIntroSection'
 import WhyTrustGawriGangaSection from './WhyTrustGawriGangaSection'
 import OurCollection from './OurCollection'
+import InstagramFeedSection from './InstagramFeedSection'
+import YouTubePodcastSection from './YouTubePodcastSection'
+import LatestPostsSection from './LatestPostsSection'
 
 const SectionDivider = () => (
   <div className="mx-auto flex w-[92%] max-w-7xl items-center justify-center py-3 sm:py-4">
@@ -46,7 +49,14 @@ const Home = () => {
       <RashiSection />
       <SectionDivider />
       <WhyTrustGawriGangaSection />
+      <SectionDivider />
       <ShopByPurposeSection />
+      <SectionDivider />
+      <InstagramFeedSection />
+      <SectionDivider />
+      <YouTubePodcastSection />
+      <SectionDivider />
+      <LatestPostsSection />
       <SectionDivider />
       <AuthenticCertifiedSection />
       <section className="w-full bg-[#FFFAEB]">

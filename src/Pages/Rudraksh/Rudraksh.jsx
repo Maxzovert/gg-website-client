@@ -267,13 +267,49 @@ const Rudraksh = () => {
         {/* Header with Banner */}
         <div className="mb-6 sm:mb-8 text-center">
           <div className="w-full rounded-lg overflow-hidden shadow-md">
-            <img 
-              src={rudrakshBanner} 
-              alt="Explore variety of Rudraksha" 
+            <img
+              src={rudrakshBanner}
+              alt="Nepali Rudraksha mala and original beads — 1 to 8+ Mukhi collection at Gawri Ganga, India"
               className="w-full h-auto object-cover"
             />
           </div>
         </div>
+
+        <section
+          className="mb-8 sm:mb-10 mx-auto max-w-4xl px-1 text-center sm:text-left"
+          aria-labelledby="rudraksha-collection-heading"
+        >
+          <h1
+            id="rudraksha-collection-heading"
+            className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-stone-900"
+          >
+            Nepali Rudraksha &amp; Rudraksha mala online in India
+          </h1>
+          <p className="mt-3 text-pretty text-sm sm:text-base leading-relaxed text-stone-700">
+            Gawri Ganga is for seekers who want original Nepali Rudraksha, fair rudraksha prices, and clear quality—from rare{' '}
+            <span className="whitespace-nowrap">1 Mukhi</span> to everyday{' '}
+            <span className="whitespace-nowrap">5 Mukhi</span>, <span className="whitespace-nowrap">7 Mukhi</span>, and{' '}
+            <span className="whitespace-nowrap">8 Mukhi</span> beads, plus 108-bead Nepali rudraksha malas and Nepali rudraksha
+            bracelets. Product pages highlight Nepali Rudraksha benefits, transparent pricing for comparing Nepal rudraksha prices
+            online, and dependable delivery across India, including Nepali Rudraksha orders to Delhi and Noida.
+          </p>
+          <h2 className="mt-6 font-heading text-lg sm:text-xl font-bold text-stone-900">
+            Natural beads, japa &amp; meditation malas
+          </h2>
+          <p className="mt-2 text-pretty text-sm sm:text-base leading-relaxed text-stone-700">
+            Choose <strong className="font-semibold text-stone-800">natural rudraksha beads</strong> for naam jap, dhyan, and daily
+            wear—<strong className="font-semibold text-stone-800">rudraksha japa malas</strong>, wrist malas, and{' '}
+            <strong className="font-semibold text-stone-800">Lord Shiva rudraksha</strong> traditions. Many buyers compare{' '}
+            <strong className="font-semibold text-stone-800">Nepali vs Indonesian rudraksha</strong>; we focus on clear origins and
+            honest detail. Looking for <strong className="font-semibold text-stone-800">rudraksha by rashi</strong> or astrology-friendly
+            picks? See our{' '}
+            <Link to="/rashi" className="font-semibold text-primary underline-offset-2 hover:underline">
+              shop by Rashi
+            </Link>{' '}
+            guide. We also carry companion pieces such as <strong className="font-semibold text-stone-800">Gauri Shankar rudraksha</strong>{' '}
+            when listed—browse filters by Mukhi to match your practice.
+          </p>
+        </section>
 
         {/* Filter Toggle for Mobile */}
         <div className="mb-4 sm:mb-6 lg:hidden flex items-center gap-3">
