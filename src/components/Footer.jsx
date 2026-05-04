@@ -53,7 +53,8 @@ const Footer = () => {
               Purity · Power · Protection
             </p>
             <p className="mt-2 text-white/95 text-sm leading-relaxed max-w-[280px] sm:max-w-xs mx-auto lg:mx-0">
-              Discover authentic rudraksha, aura sprays and spiritual accessories at Gawri Ganga.
+              Nepali Rudraksha, japa &amp; Tulsi malas, aura sprays, and spiritual accessories natural beads, meditation essentials,
+              and India wide delivery from Noida.
             </p>
             <a
               href="mailto:support@gawriganga.com"
