@@ -11,25 +11,25 @@ import { FiActivity } from 'react-icons/fi';
 import { GiClover, GiMeditation, GiSwordman } from 'react-icons/gi';
 
 const PURPOSES = [
-  'Meditation',
-  'Daily Prayer',
-  'Mindful Living',
-  'Home Temple',
-  'Japa Practice',
-  'Gifting',
-  'Wellness Rituals',
-  'Focus',
+  'Wealth',
+  'Love',
+  'Health',
+  'Luck',
+  'Protection',
+  'Peace',
+  'Courage',
+  'Balance',
 ];
 
 const iconByPurpose = {
-  meditation: GiMeditation,
-  'daily prayer': FaSun,
-  'mindful living': FaBalanceScale,
-  'home temple': FaShieldAlt,
-  'japa practice': FaHandHoldingHeart,
-  gifting: GiClover,
-  'wellness rituals': FiActivity,
-  focus: FaWallet,
+  wealth: FaWallet,
+  love: FaHandHoldingHeart,
+  health: FiActivity,
+  luck: GiClover,
+  protection: FaShieldAlt,
+  peace: GiMeditation,
+  courage: GiSwordman,
+  balance: FaBalanceScale,
 };
 
 const ShopByPurposeSection = () => {
@@ -46,10 +46,10 @@ const ShopByPurposeSection = () => {
             id="shop-by-purpose-heading"
             className="font-heading text-xl font-bold text-stone-900 sm:text-2xl md:text-3xl lg:text-[2rem]"
           >
-            Shop By Collection
+            Shop By Purpose
           </h2>
           <p className="mt-1.5 text-xs text-stone-600 sm:mt-2 sm:text-sm md:text-base">
-            Explore spiritual products by ritual style and daily use.
+            Choose your intention and explore products crafted for it.
           </p>
         </div>
       </div>
