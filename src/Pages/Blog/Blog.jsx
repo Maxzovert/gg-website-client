@@ -4,6 +4,7 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import ggLogo from '../../assets/gglogo.svg';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api';
+import BlogExploreProductsSection from './BlogExploreProductsSection';
 
 function formatDate(value) {
   if (!value) return '';
@@ -134,6 +135,8 @@ const Blog = () => {
             ))}
           </section>
         )}
+
+        <BlogExploreProductsSection headingId="blog-explore-products-heading" />
       </div>
     </div>
   );

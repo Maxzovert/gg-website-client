@@ -6,6 +6,7 @@ import Loader from '../../components/Loader';
 import RashiSection from '../Home/RashiSection';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 // Zodiac dropdown images from local assets (Client/src/assets/Zodiac)
 // Filenames can be lowercase (e.g. aries.jpg) or capitalized (Aries.png); keys are normalized to match rashi values.
@@ -405,10 +406,6 @@ const Rashi = () => {
     }
   };
 
-  const getReviewCount = (productId) => {
-    return 5 + (productId % 3);
-  };
-
   return (
     <div className="min-h-screen bg-linear-to-br from-orange-50/30 to-white">
       <div className="w-full max-w-[1920px] mx-auto">
@@ -754,7 +751,7 @@ const Rashi = () => {
                       product={product}
                       variant="rashi"
                       calculatePricing={pricingFromProduct}
-                      getReviewCount={getReviewCount}
+                      getReviewCount={getCardReviewCount}
                     />
                   ))}
                 </div>

@@ -7,6 +7,7 @@ import Loader from '../../components/Loader';
 import rudrakshBanner from '../../assets/RudraksPageImg/rd1.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 
 const MUKHI_SUBCATEGORIES = Array.from({ length: 14 }, (_, i) => `${i + 1} Mukhi`);
 const DESKTOP_EXPLORE_COUNT = 5;
@@ -58,8 +59,6 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
     fetchExploreProducts();
   }, [category, isMobileCarousel]);
 
-  const getReviewCount = (productId) => 5 + (productId % 3);
-
   if (loading) {
     return (
       <section className="py-10 md:py-14">
@@ -96,7 +95,7 @@ const ExploreCollectionSection = ({ heading, category, linkTo, linkText }) => {
                 variant="rudraksh"
                 size={isMobileCarousel ? 'default' : 'lg'}
                 calculatePricing={pricingFromProduct}
-                getReviewCount={getReviewCount}
+                getReviewCount={getCardReviewCount}
               />
             </div>
           ))}
@@ -261,12 +260,6 @@ const Rudraksh = () => {
   const maxPrice = allProducts.length > 0 
     ? Math.max(...allProducts.map(p => p.price || 0), 100000)
     : 100000;
-
-  // Generate random review count (for demo purposes)
-  const getReviewCount = (productId) => {
-    // Use product ID to generate consistent review count
-    return 5 + (productId % 3); // Returns 5, 6, or 7
-  };
 
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
@@ -524,7 +517,7 @@ const Rudraksh = () => {
                   product={product}
                   variant="rudraksh"
                   calculatePricing={pricingFromProduct}
-                  getReviewCount={getReviewCount}
+                  getReviewCount={getCardReviewCount}
                 />
               ))}
               </div>

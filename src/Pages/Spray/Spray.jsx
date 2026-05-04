@@ -4,6 +4,7 @@ import Loader from '../../components/Loader';
 import sprayBanner from '../../assets/Spray/4sp.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
+import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 import Heading from "../../assets/Sprayelem/Header.webp";
 
 const Spray = () => {
@@ -35,12 +36,6 @@ const Spray = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Generate random review count (for demo purposes)
-  const getReviewCount = (productId) => {
-    // Use product ID to generate consistent review count
-    return 5 + (productId % 3); // Returns 5, 6, or 7
   };
 
   // Get essence from subcategory
@@ -110,7 +105,7 @@ const Spray = () => {
                   key={product.id}
                   product={product}
                   calculatePricing={pricingFromProduct}
-                  getReviewCount={getReviewCount}
+                  getReviewCount={getCardReviewCount}
                   getEssence={getEssence}
                 />
               ))}

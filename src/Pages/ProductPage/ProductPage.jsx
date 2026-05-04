@@ -19,6 +19,7 @@ import {
   FaCheckCircle,
   FaTrashAlt,
   FaTimes,
+  FaShareAlt,
 } from "react-icons/fa";
 import Loader from "../../components/Loader";
 import { useToast } from "../../components/Toaster";
@@ -35,6 +36,7 @@ import { pricingFromProduct } from "../../utils/productPricing";
 import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from "../../utils/productPreorder";
 import { submitPreorderRequest } from "../../utils/preorderRequest";
 import { trackBeginCheckout, trackViewContent } from "../../utils/analytics.js";
+import { getCardReviewCount } from "../../utils/reviewDisplayCount.js";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -94,6 +96,7 @@ const ProductPage = () => {
     created_at: r.created_at,
     text: r.comment || "",
     verified: !!r.verified,
+    pendingApproval: !r.verified,
     imageUrl: r.image_url || null,
     user_id: r.user_id || null,
   });
@@ -107,7 +110,14 @@ const ProductPage = () => {
   const totalReviews = allReviews.length;
   const maxCount = Math.max(1, ...ratingDistribution.map((d) => d.count));
   const avgRating = totalReviews
-    ? Math.round((allReviews.reduce((s, r) => s + r.rating, 0) / totalReviews) * 10) / 10
+    ? (() => {
+        const sum = allReviews.reduce((s, r) => {
+          const x = Number(r.rating);
+          return s + (Number.isFinite(x) ? x : 0);
+        }, 0);
+        const avg = sum / totalReviews;
+        return Number.isFinite(avg) ? Math.round(avg * 10) / 10 : 0;
+      })()
     : 0;
   const avgRatingFull = Math.floor(avgRating);
   const avgRatingHalf = avgRating % 1 >= 0.3 && avgRating % 1 < 0.8;
@@ -306,10 +316,6 @@ const ProductPage = () => {
     }
   };
 
-  const getReviewCount = (productId) => {
-    return 5 + (productId % 3);
-  };
-
   const handleAddToCart = () => {
     if (!product) return;
     addToCart(product, quantity);
@@ -379,6 +385,30 @@ const ProductPage = () => {
       toast.success(`${product.name} added to wishlist!`);
     } else {
       toast.info(`${product.name} removed from wishlist`);
+    }
+  };
+
+  const handleShareProduct = async () => {
+    if (!product || !slug) return;
+    const url = `${window.location.origin}/product/${encodeURIComponent(slug)}`;
+    const sharePayload = {
+      title: product.name,
+      text: `Check out ${product.name} on Gawri Ganga`,
+      url,
+    };
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        await navigator.share(sharePayload);
+        return;
+      }
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copied to clipboard");
+    } catch {
+      toast.error("Could not share or copy link");
     }
   };
 
@@ -496,7 +526,9 @@ const ProductPage = () => {
         setShowReviewForm(false);
         setReviewPage(1);
         await fetchReviewsForProduct();
-        toast.success("Thank you! Your review has been submitted.");
+        toast.success(
+          json.message || "Thank you! Your review has been submitted. It will appear publicly after approval.",
+        );
       } else {
         toast.error(json.message || "Failed to submit review.");
       }
@@ -613,7 +645,7 @@ const ProductPage = () => {
   }
 
   const pricing = pricingFromProduct(product);
-  const reviewCount = getReviewCount(product.id);
+  const reviewCount = totalReviews;
   const hasMultipleImages = product.images && product.images.length > 1;
   const isPreorder = isProductPreorder(product);
   const canPurchase = productCanBePurchased(product);
@@ -800,22 +832,37 @@ const ProductPage = () => {
 
           {/* Product Info */}
           <div className="space-y-4 sm:space-y-6 min-w-0">
-            {/* Product Name with Wishlist */}
+            {/* Product Name with Share & Like (wishlist) */}
             <div className="flex items-start justify-between gap-3 sm:gap-4 min-w-0">
               <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-gray-900 flex-1 min-w-0 break-words pr-1">
                 {product.name}
               </h1>
-              <button
-                onClick={handleWishlistToggle}
-                className="p-2 sm:p-3 transition-all hover:scale-110 shrink-0"
-                aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
-              >
-                {isInWishlist(product.id) ? (
-                  <FaHeart className="text-2xl sm:text-3xl text-primary fill-primary" />
-                ) : (
-                  <FaRegHeart className="text-2xl sm:text-3xl text-primary hover:text-primary/80" />
-                )}
-              </button>
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pt-0.5">
+                <button
+                  type="button"
+                  onClick={handleShareProduct}
+                  className="inline-flex flex-col items-center gap-0.5 rounded-xl border border-stone-200 bg-white px-2.5 py-2 sm:px-3 sm:py-2.5 text-stone-600 shadow-sm transition-colors hover:border-primary/30 hover:bg-stone-50 hover:text-primary touch-manipulation min-w-12"
+                  aria-label="Share product"
+                  title="Share"
+                >
+                  <FaShareAlt className="text-lg sm:text-xl" aria-hidden />
+                  <span className="text-[10px] sm:text-xs font-semibold leading-none">Share</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleWishlistToggle}
+                  className="inline-flex flex-col items-center gap-0.5 rounded-xl border border-stone-200 bg-white px-2.5 py-2 sm:px-3 sm:py-2.5 text-primary shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/5 touch-manipulation min-w-12"
+                  aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+                  title={isInWishlist(product.id) ? "Saved" : "Like / Save"}
+                >
+                  {isInWishlist(product.id) ? (
+                    <FaHeart className="text-lg sm:text-xl fill-primary" aria-hidden />
+                  ) : (
+                    <FaRegHeart className="text-lg sm:text-xl" aria-hidden />
+                  )}
+                  <span className="text-[10px] sm:text-xs font-semibold leading-none">Like</span>
+                </button>
+              </div>
             </div>
 
             {/* Star Rating and Reviews */}
@@ -1518,12 +1565,16 @@ const ProductPage = () => {
                       <p className="font-bold text-gray-900 text-sm sm:text-base mb-1 break-words">{review.name}</p>
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className="text-xs text-gray-500">🇮🇳</span>
-                        {review.verified && (
+                        {review.pendingApproval ? (
+                          <span className="inline-flex items-center gap-1 text-xs sm:text-sm text-amber-700 font-medium">
+                            Pending approval
+                          </span>
+                        ) : review.verified ? (
                           <span className="inline-flex items-center gap-1 text-xs sm:text-sm text-green-600 font-medium">
                             <FaCheckCircle className="shrink-0" />
                             Verified
                           </span>
-                        )}
+                        ) : null}
                       </div>
                       <p className="text-gray-700 text-xs sm:text-base leading-relaxed break-words">
                         {review.text}
@@ -1554,7 +1605,7 @@ const ProductPage = () => {
                     product={p}
                     variant="default"
                     calculatePricing={pricingFromProduct}
-                    getReviewCount={getReviewCount}
+                    getReviewCount={getCardReviewCount}
                   />
                 ))}
               </div>
