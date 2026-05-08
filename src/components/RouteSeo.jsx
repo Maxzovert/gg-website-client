@@ -2,6 +2,8 @@ import { Helmet } from 'react-helmet-async';
 import { matchPath, useLocation, useSearchParams } from 'react-router-dom';
 
 const SITE = (import.meta.env.VITE_SITE_URL || 'https://www.gawriganga.com').replace(/\/$/, '');
+const OG_LOCALE = 'en_IN';
+const OG_IMAGE_PATH = '/favicon.png';
 const DEFAULT_DESC =
   'Shop authentic Rudraksha, japa & meditation malas, aura sprays, Tulsi malas, and spiritual accessories at Gawri Ganga—secure checkout and delivery across India.';
 
@@ -178,7 +180,7 @@ function organizationJsonLd(siteUrl, description) {
     '@type': 'Organization',
     name: 'Gawri Ganga',
     url: siteUrl,
-    logo: `${siteUrl}/favicon.png`,
+    logo: `${siteUrl}${OG_IMAGE_PATH}`,
     description,
   };
 }
@@ -188,7 +190,7 @@ const RouteSeo = () => {
   const [searchParams] = useSearchParams();
   const meta = matchRouteMeta(pathname, searchParams);
   const url = `${SITE}${pathname}`;
-  const ogImage = `${SITE}/favicon.png`;
+  const ogImage = `${SITE}${OG_IMAGE_PATH}`;
   const isHome = pathname === '/';
   const orgLd = isHome ? organizationJsonLd(SITE, HOME_DESCRIPTION) : null;
 
@@ -204,9 +206,14 @@ const RouteSeo = () => {
       <meta property="og:description" content={meta.description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:site_name" content="Gawri Ganga" />
+      <meta property="og:locale" content={OG_LOCALE} />
+      <meta property="og:image:alt" content="Gawri Ganga logo" />
+      <meta property="og:image:type" content="image/png" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={meta.title} />
       <meta name="twitter:description" content={meta.description} />
+      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content="Gawri Ganga logo" />
       {orgLd ? (
         <script type="application/ld+json">{JSON.stringify(orgLd)}</script>
       ) : null}
