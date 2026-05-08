@@ -13,7 +13,7 @@ const HOME_DESCRIPTION =
 
 /** Long-tail + adjacent intent (meta keywords; align with on-page copy). */
 const HOME_KEYWORDS =
-  'Gawri Ganga, Gawri Ganga Rudraksha, authentic Rudraksha India, Rudraksha mala online, spiritual products India, aura spray, Rudraksha shop, spiritual wellness, Nepali Rudraksha, original Nepali Rudraksha in India, Rudraksha price, best website to buy rudraksha, Nepali Rudraksha Delhi, Nepali Rudraksha Noida, buy rudraksha online India, natural rudraksha beads, genuine rudraksha, rudraksha japa mala, meditation mala 108 beads, rudraksha for meditation, spiritual beads India, puja items online, rudraksha by rashi, Lord Shiva rudraksha';
+  'Gawri Ganga, authentic Rudraksha India, Nepali Rudraksha, Rudraksha mala online, spiritual products India, Tulsi mala online, aura spray India, buy rudraksha online India, rudraksha bracelet, japa mala';
 
 /** Dedicated /rudraksha collection — core long-tails + related searches (mukhi, japa, authenticity, astrology). */
 const RUDRAKSHA_PAGE_TITLE =
@@ -23,22 +23,102 @@ const RUDRAKSHA_PAGE_DESCRIPTION =
   'Original Nepali Rudraksha—1 Mukhi to 8+ Mukhi, 5 & 7 Mukhi, japa & wrist malas, 108 beads & bracelets. Natural beads, clear prices, India delivery (Delhi, Noida & nationwide).';
 
 const RUDRAKSHA_PAGE_KEYWORDS =
-  'Rudraksha mala, 1 Mukhi original Nepali, Rudraksha price, Nepali Rudraksha benefits, Rudraksha 5 Mukhi, Original Nepali Rudraksha price in India, best website to buy rudraksha, Nepal Rudraksha price list, rudraksha 7 mukhi, nepali rudraksha bracelet, nepali rudraksha mala 108 beads, nepali rudraksha 7 mukhi, Nepali Rudraksha Delhi, Nepali Rudraksha Noida, nepali rudraksha 8 mukhi, nepali rudraksha, nepali rudraksha mala, nepali rudraksha price, nepali rudraksha 5 mukhi, buy rudraksha online India, natural rudraksha beads, genuine rudraksha, original rudraksha beads, Lord Shiva rudraksha, ek mukhi rudraksha, panch mukhi rudraksha, rudraksha japa mala, rudraksha for meditation, wrist rudraksha mala, meditation mala rudraksha, rudraksha by rashi, rudraksha astrology, gauri shankar rudraksha, Nepali vs Indonesian rudraksha, sacred rudraksha beads, spiritual rudraksha shop, authentic rudraksha online, mukhi meaning rudraksha';
+  'rudraksha, rudraksha mala, original rudraksha mala, 1 mukhi rudraksha benefits, 2 mukhi rudraksha benefits, 3 mukhi rudraksha, 5 mukhi rudraksha price, 7 mukhi rudraksha price, 9 mukhi rudraksh, panchmukhi rudraksha, rudraksha chain, kumbh rashi rudraksha, rudraksha bracelet for men, rudraksha bracelet for women, rudraksha wearing rules for females, रुद्राक्ष का पेड़, rudraksh ka ped';
 
 const TULSI_KEYWORDS =
-  'Tulsi mala online India, Tulsi japa mala, holy basil mala, meditation mala, prayer beads, Vaishnav mala, spiritual mala, buy Tulsi mala online, 108 beads Tulsi mala';
+  'tulsi mala, tulsi mala online India, tulsi japa mala, japa mala, holy basil mala, tulsi kanthi mala, vaishnav mala, prayer beads';
 
 const RASHI_KEYWORDS =
-  'Rudraksha by rashi, rudraksha for zodiac, rashiya rudraksha, astrology rudraksha, planetary rudraksha, birth sign rudraksha, shop rudraksha by rashi India, zodiac spiritual beads';
+  'rudraksha by rashi, rudraksha for zodiac, astrology consultation, online astrologer consultation, online astrology consultation, 2026 horoscope, 2026 predictions, 2026 predictions astrology';
 
 const ACCESSORIES_KEYWORDS =
-  'spiritual accessories India, rudraksha bracelet, meditation accessories, pooja accessories online, spiritual jewelry India, japa mala accessories';
+  'spiritual accessories India, rudraksha bracelet, pyrite bracelet, tiger eye bracelet, carnelian bracelet, pyrite stone bracelet, raw pyrite bracelet, golden pyrite bracelet, pyrite bracelet for men, money bracelet, money attraction bracelet, money magnet bracelet, money magnet crystal bracelet, dhan yog bracelet, dhanyog bracelet, karungali bracelet, pyrite anklet, pyrite anklet for women, lava stone benefits';
 
 const PURPOSE_KEYWORDS =
-  'spiritual products by purpose, meditation essentials, mindfulness products India, puja items online, spiritual wellness products, intention-based rudraksha';
+  'spiritual products by purpose, meditation essentials, puja items online, spiritual wellness products, money magnet bracelet benefits, pyrite bracelet benefits, karungali mala benefits, karungali malai benefits, 5 mukhi rudraksha side effects';
 
 const SPRAYS_KEYWORDS =
   'aura spray India, spiritual room spray, meditation spray, chakra spray, energy cleansing spray, lavender spiritual spray, sacred space spray';
+
+const BLOG_KEYWORDS =
+  'shiv mantra, shiva mantra, shiv mantra in hindi, shiv mantra in sanskrit, shiv mantra in english, shiv mantra lyrics, shiv mantra list, shiva mantras list, lord shiva mantra, lord shiva mantras, lord shiva mantra in english, lord shiva powerful mantra, most powerful mantra of lord shiva, powerful mantra of lord shiva, powerful shiva mantra, mahadev mantra, mahadev mantra in hindi, mahadev mantra in sanskrit, shiv shlok, shiv shlok in hindi, shiv ji mantra, shiv ji ka mantra, shiv ji ke mantra, शिव मंत्र, शिव मंत्र लिस्ट, महादेव मंत्र, सर्व शक्तिशाली शिव मंत्र, who is ashwathama, aswathama god, aswathama mahabharata, divine meaning in hindi, ருத்ராட்சம் அணிந்து அசைவம் சாப்பிடலாமா';
+
+const PRODUCT_META_OVERRIDES = {
+  '1-mukhi-rudraksha': {
+    title: '1 Mukhi Rudraksha | Original Bead Online India | Gawri Ganga',
+    keywords: '1 mukhi rudraksha benefits, 1 mukhi rudraksha price, original rudraksha mala',
+  },
+  '2-mukhi-rudraksha': {
+    title: '2 Mukhi Rudraksha | Authentic Bead Online India | Gawri Ganga',
+    keywords: '2 mukhi rudraksha benefits, 2 mukhi rudraksha, rudraksha mala',
+  },
+  '3-mukhi-rudraksha': {
+    title: '3 Mukhi Rudraksha | Original Bead Online India | Gawri Ganga',
+    keywords: '3 mukhi rudraksha, original rudraksha mala, rudraksha',
+  },
+  '5-mukhi-rudraksha': {
+    title: '5 Mukhi Rudraksha | Price & Benefits | Gawri Ganga',
+    keywords: '5 mukhi rudraksha price, panchmukhi rudraksha, 5 mukhi rudraksha side effects',
+  },
+  '7-mukhi-rudraksha': {
+    title: '7 Mukhi Rudraksha | Price & Uses Online India | Gawri Ganga',
+    keywords: '7 mukhi rudraksha price, 7 mukhi rudraksha, rudraksha mala',
+  },
+  '9-mukhi-rudraksha': {
+    title: '9 Mukhi Rudraksha | Original Bead Online India | Gawri Ganga',
+    keywords: '9 mukhi rudraksh, 9 mukhi rudraksha, rudraksha',
+  },
+  'karungli-mala': {
+    title: 'Karungali Mala | Original Karungali Malai Online | Gawri Ganga',
+    keywords:
+      'karungali mala, karungali malai, karungali mala original, original karungali mala, karungali malai original, karungali mala original price, original karungali malai, original karungali malai price, karungali malai price, karungali mala silver, karungali mala benefits, karungali malai benefits, karingali mala, karikali mala, கருங்காலி மாலை, ebony wood mala, kalinga mala',
+  },
+  'rudraksha-mala': {
+    title: 'Rudraksha Mala | Original Japa Mala Online | Gawri Ganga',
+    keywords: 'rudraksha mala, original rudraksha mala, japa mala, rudraksha mala for men',
+  },
+  'sacred-rudraksha-japa-mala': {
+    title: 'Sacred Rudraksha Japa Mala | 108 Beads | Gawri Ganga',
+    keywords: 'japa mala, rudraksha mala, original rudraksha mala, rudraksha chain',
+  },
+  'shiva-bracelet': {
+    title: 'Shiva Bracelet | Rudraksha & Healing Bracelet | Gawri Ganga',
+    keywords:
+      'rudraksha bracelet, rudraksha bracelet for men, rudraksha bracelet for women, pyrite bracelet, pyrite bracelet for men, tiger eye bracelet, carnelian bracelet, money bracelet, money attraction bracelet, money magnet bracelet, money magnet crystal bracelet, money magnet bracelet benefits, dhan yog bracelet, dhanyog bracelet, pyrite stone bracelet, raw pyrite bracelet, golden pyrite bracelet, pyrite bracelet benefits',
+  },
+  'original-thick-tulsi-kanthi-mala': {
+    title: 'Original Thick Tulsi Kanthi Mala | Gawri Ganga',
+    keywords: 'tulsi mala, tulsi mala online India, tulsi japa mala, japa mala',
+  },
+  'original-tulsi-kanthi-mala': {
+    title: 'Original Tulsi Kanthi Mala | Gawri Ganga',
+    keywords: 'tulsi mala, tulsi mala online India, tulsi japa mala',
+  },
+  'sacred-radhe-engraved-tulsi-mala': {
+    title: 'Sacred Radhe Engraved Tulsi Mala | Gawri Ganga',
+    keywords: 'tulsi mala, tulsi japa mala, devotional tulsi mala',
+  },
+  'shri-radha-tulsi-mala-pendant': {
+    title: 'Shri Radha Tulsi Mala Pendant | Gawri Ganga',
+    keywords: 'tulsi mala pendant, tulsi mala, devotional necklace',
+  },
+  'sitaram-hanumanji-tulsi-necklace': {
+    title: 'Sitaram Hanumanji Tulsi Necklace | Gawri Ganga',
+    keywords: 'tulsi necklace, tulsi mala, spiritual necklace',
+  },
+  'tulsi-bead-mala': {
+    title: 'Tulsi Bead Mala | Japa Mala Online India | Gawri Ganga',
+    keywords: 'tulsi bead mala, tulsi mala, japa mala, tulsi japa mala',
+  },
+};
+
+function slugToReadableName(slug = '') {
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
 
 const ROUTE_META = [
   {
@@ -119,16 +199,14 @@ const ROUTE_META = [
     title: 'Blog | Rudraksha Care, Japa & Spiritual Wellness | Gawri Ganga',
     description:
       'Guides on Nepali Rudraksha, mukhi meanings, japa malas, meditation, and daily spiritual practice—from Gawri Ganga, India.',
-    keywords:
-      'rudraksha care guide, how to wear rudraksha, japa mala guide, meditation tips, spiritual wellness blog India, nepali rudraksha articles',
+    keywords: BLOG_KEYWORDS,
   },
   {
     path: '/blog/:slug',
     title: 'Blog Article | Gawri Ganga',
     description:
       'Spiritual wellness and Rudraksha guides—care, japa, and mindful practice from Gawri Ganga.',
-    keywords:
-      'rudraksha guide, spiritual article, japa meditation, Gawri Ganga blog',
+    keywords: BLOG_KEYWORDS,
   },
   { path: '/contact', title: 'Contact | Gawri Ganga', description: 'Get in touch with Gawri Ganga support.' },
   { path: '/privacy-policy', title: 'Privacy Policy | Gawri Ganga', description: 'How we handle your data.' },
@@ -156,6 +234,28 @@ function decodeSubcategoryParam(raw) {
 }
 
 function matchRouteMeta(pathname, searchParams) {
+  const productMatch = matchPath({ path: '/product/:slug', end: true }, pathname);
+  if (productMatch?.params?.slug) {
+    const slug = productMatch.params.slug;
+    const override = PRODUCT_META_OVERRIDES[slug];
+    if (override) {
+      return {
+        path: '/product/:slug',
+        title: override.title,
+        description: DEFAULT_DESC,
+        keywords: override.keywords,
+      };
+    }
+
+    const readableName = slugToReadableName(slug);
+    return {
+      path: '/product/:slug',
+      title: `${readableName} | Buy Online India | Gawri Ganga`,
+      description: DEFAULT_DESC,
+      keywords: `${readableName.toLowerCase()}, spiritual products India, Gawri Ganga`,
+    };
+  }
+
   if (matchPath({ path: '/rudraksha', end: true }, pathname)) {
     const subRaw = searchParams?.get('subcategory') ?? searchParams?.get('mukhi');
     const sub = decodeSubcategoryParam(subRaw);
