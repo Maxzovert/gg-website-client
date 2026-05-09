@@ -104,11 +104,16 @@ const CheckoutModal = ({
     return false;
   };
 
-  const shippingCharges = 70;
-  const payableAmount =
+  const PREPAID_SHIPPING_CHARGES = 70;
+  const COD_SHIPPING_CHARGES = 120;
+  const shippingCharges =
+    String(paymentMethod || '').toLowerCase() === 'cod'
+      ? COD_SHIPPING_CHARGES
+      : PREPAID_SHIPPING_CHARGES;
+  const baseAmount =
     Math.max(0, Number(totalAmount || 0) - Number(couponDiscount || 0)) +
-    Number(blessingCharge || 0) +
-    shippingCharges;
+    Number(blessingCharge || 0);
+  const payableAmount = baseAmount + shippingCharges;
   const walletApplicableAmount = useWallet
     ? Math.min(Number(walletAmountToUse) || 0, Number(walletBalance) || 0, payableAmount)
     : 0;
@@ -191,7 +196,7 @@ const CheckoutModal = ({
 
           {currentStep === 2 && (
             <PaymentOptions
-              totalAmount={payableAfterWallet}
+              baseAmount={baseAmount}
               onPaymentSelect={(method) => {
                 setPaymentMethod(method);
               }}
@@ -209,6 +214,7 @@ const CheckoutModal = ({
               walletBalance={walletBalance}
               useWallet={useWallet}
               walletAmountToUse={walletApplicableAmount}
+              shippingCharges={shippingCharges}
               userId={userId}
               userPhone={userPhone}
               userName={userName}

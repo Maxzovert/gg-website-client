@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import {
   FaChevronDown,
   FaChevronUp,
@@ -12,9 +13,32 @@ import {
   FaStar,
   FaGift,
   FaHeadset,
+  FaCheckCircle,
+  FaMoneyBillWave,
 } from 'react-icons/fa'
 
 const faqData = [
+  {
+    id: 11,
+    question: 'Is this original?',
+    answer:
+      'Yes. We focus on authenticity-first sourcing and quality checks for every product before dispatch.',
+    Icon: FaCheckCircle,
+  },
+  {
+    id: 12,
+    question: 'Is COD available?',
+    answer:
+      'Yes, Cash on Delivery is available for most serviceable pin codes in India.',
+    Icon: FaMoneyBillWave,
+  },
+  {
+    id: 13,
+    question: 'How to wear Rudraksha?',
+    answer:
+      'Wear it with clean intent, preferably after a simple prayer or mantra, and keep it dry and clean for long life.',
+    Icon: FaLayerGroup,
+  },
   {
     id: 16,
     question: 'How do I energize or cleanse my Rudraksha?',
@@ -51,6 +75,13 @@ const faqData = [
     Icon: FaStar,
   },
   {
+    id: 24,
+    question: 'What is your return policy?',
+    answer:
+      'If there is a verified issue with the delivered item, our support team helps you with return/replacement as per policy.',
+    Icon: FaGift,
+  },
+  {
     id: 25,
     question: 'What should I do if my Rudraksha bead cracks?',
     answer:
@@ -61,6 +92,18 @@ const faqData = [
 
 const FAQAccordion = () => {
   const [openId, setOpenId] = useState(null)
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqData.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  }
 
   const toggle = (id) => {
     setOpenId((prev) => (prev === id ? null : id))
@@ -68,6 +111,9 @@ const FAQAccordion = () => {
 
   return (
     <section id="faqs" className="bg-[#FFFAEB]">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+      </Helmet>
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-12 md:py-16">
         <h2 className="font-heading font-bold text-primary text-2xl md:text-3xl text-center mb-8 md:mb-10">
           FAQs

@@ -4,6 +4,7 @@ import ScrollToTop from './components/ScrollToTop'
 import CookieConsent from './components/CookieConsent'
 import RouteSeo from './components/RouteSeo'
 import Footer from './components/Footer'
+import WhatsAppFloatingButton from './components/WhatsAppFloatingButton'
 import Loader from './components/Loader'
 import { ToastProvider } from './components/Toaster'
 import { CartProvider } from './context/CartContext'
@@ -103,6 +104,7 @@ const App = () => {
                 </Routes>
                 </Suspense>
               </main>
+              <WhatsAppFloatingButton />
               <Footer />
             </div>
           </WishlistProvider>

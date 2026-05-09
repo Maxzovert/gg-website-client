@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { FaCreditCard, FaUniversity, FaMobileAlt } from 'react-icons/fa';
+import { FaCreditCard, FaUniversity, FaMobileAlt, FaMoneyBillWave } from 'react-icons/fa';
 
-const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
+const PaymentOptions = ({ baseAmount, onPaymentSelect }) => {
   const [selectedMethod, setSelectedMethod] = useState('');
+  const shippingFor = (methodId) => (methodId === 'cod' ? 120 : 70);
+  const totalFor = (methodId) => Number(baseAmount || 0) + shippingFor(methodId);
 
   const paymentMethods = [
     {
@@ -22,6 +24,12 @@ const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
       name: 'Net Banking',
       icon: FaUniversity,
       description: 'Pay using your bank account'
+    },
+    {
+      id: 'cod',
+      name: 'Cash on Delivery',
+      icon: FaMoneyBillWave,
+      description: 'Pay when your order is delivered (Shipping ₹120)'
     }
   ];
 
@@ -36,9 +44,9 @@ const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
       
       <div className="bg-primary/5 border-2 border-primary/20 rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">Total Amount:</span>
+          <span className="text-sm font-medium text-gray-700">Base Amount (without shipping):</span>
           <span className="text-2xl font-bold text-primary">
-            ₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+            ₹{Number(baseAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
           </span>
         </div>
       </div>
@@ -67,6 +75,9 @@ const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
                 <div className="flex-1">
                   <h4 className="font-semibold text-gray-900">{method.name}</h4>
                   <p className="text-sm text-gray-600">{method.description}</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Shipping: ₹{shippingFor(method.id)} | Total: ₹{totalFor(method.id).toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                  </p>
                 </div>
                 {isSelected && (
                   <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
@@ -79,13 +90,6 @@ const PaymentOptions = ({ totalAmount, onPaymentSelect }) => {
         })}
       </div>
 
-      {selectedMethod && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-800">
-            <strong>Selected:</strong> {paymentMethods.find(m => m.id === selectedMethod)?.name}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

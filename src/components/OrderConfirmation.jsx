@@ -6,6 +6,14 @@ import { trackBeginCheckout } from '../utils/analytics.js';
 import { paymentGatewayEmail } from '../utils/checkoutContact.js';
 
 const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
+const PAYMENT_METHOD_LABELS = {
+  card: 'Credit/Debit Card',
+  upi: 'UPI',
+  netbanking: 'Net Banking',
+  cod: 'Cash on Delivery',
+  wallet: 'Wallet',
+  easebuzz: 'Online Payment',
+};
 
 const OrderConfirmation = ({
   cartItems,
@@ -14,6 +22,7 @@ const OrderConfirmation = ({
   couponCode = null,
   couponDiscount = 0,
   blessingCharge = 0,
+  shippingCharges = 70,
   walletBalance = 0,
   useWallet = false,
   walletAmountToUse = 0,
@@ -29,7 +38,6 @@ const OrderConfirmation = ({
   const { clearCart } = useCart();
 
   const discountAmount = Number(couponDiscount || 0);
-  const shippingCharges = 70;
   const grossFinalAmount = Math.max(0, totalAmount - discountAmount) + shippingCharges + (Number(blessingCharge) || 0);
   const isOnlinePayment = ONLINE_PAYMENT_IDS.includes((paymentMethod || '').toLowerCase());
   const walletDeduction = useWallet
@@ -37,6 +45,8 @@ const OrderConfirmation = ({
     : 0;
   const isWalletApplied = walletDeduction > 0;
   const finalAmount = Math.max(0, grossFinalAmount - walletDeduction);
+  const selectedMethodLabel =
+    PAYMENT_METHOD_LABELS[String(paymentMethod || '').toLowerCase()] || 'UPI';
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
@@ -82,6 +92,7 @@ const OrderConfirmation = ({
             final_amount: finalAmount,
             use_wallet: isWalletApplied,
             wallet_amount_to_use: walletDeduction,
+            payment_method: paymentMethod,
             firstname,
             email,
             phone
@@ -251,6 +262,10 @@ const OrderConfirmation = ({
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4">Price Breakdown</h4>
         <div className="space-y-2">
+          <div className="flex justify-between text-gray-700">
+            <span>Payment Method:</span>
+            <span className="font-semibold">{selectedMethodLabel}</span>
+          </div>
           <div className="flex justify-between text-gray-700">
             <span>Subtotal:</span>
             <span>₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>

@@ -25,12 +25,10 @@ function isFormDataBody(body) {
 }
 
 function getAuthHeaders(body) {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('auth_token') : null;
   const headers = {};
   if (!isFormDataBody(body)) {
     headers['Content-Type'] = 'application/json';
   }
-  if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
 }
 

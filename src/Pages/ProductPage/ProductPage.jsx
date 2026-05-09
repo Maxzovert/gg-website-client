@@ -32,6 +32,7 @@ import ProductCard from "../../components/ProductCard";
 import { apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
 import rdcImage from "../../assets/ProductPage/rdc.webp";
+import payOptionsLogo from "../../assets/ProductPage/payop.png";
 import { pricingFromProduct } from "../../utils/productPricing";
 import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from "../../utils/productPreorder";
 import { submitPreorderRequest } from "../../utils/preorderRequest";
@@ -82,6 +83,7 @@ const ProductPage = () => {
   const [reviewImageFile, setReviewImageFile] = useState(null);
   const [reviewImagePreview, setReviewImagePreview] = useState("");
   const [reviewDeletingId, setReviewDeletingId] = useState(null);
+  const [showStickyMobileCta, setShowStickyMobileCta] = useState(false);
   const isRudrakshaProduct =
     product?.category === "Rudraksha" || product?.category === "Rudrakshas";
 
@@ -618,6 +620,25 @@ const ProductPage = () => {
     };
   }, [imagePreviewOpen]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const handleScroll = () => {
+      if (!mediaQuery.matches) {
+        setShowStickyMobileCta(false);
+        return;
+      }
+      setShowStickyMobileCta(window.scrollY > 420);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    mediaQuery.addEventListener("change", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      mediaQuery.removeEventListener("change", handleScroll);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -694,7 +715,7 @@ const ProductPage = () => {
   const recommendedRashis = getRashisForThisProduct();
 
   return (
-    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white overflow-x-hidden">
+    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white overflow-x-hidden pb-24 sm:pb-6 lg:pb-8">
       <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-4 md:px-6 lg:px-8 xl:px-12 min-w-0">
         {/* Back Button */}
         <button
@@ -1076,6 +1097,15 @@ const ProductPage = () => {
                 className="w-full sm:flex-1 px-6 py-4 min-h-[48px] sm:min-h-0 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl touch-manipulation"
               >
                 {isPreorder ? "Preorder" : "Buy Now"}
+                {!isPreorder && (
+                  <img
+                    src={payOptionsLogo}
+                    alt="UPI payment options"
+                    className="h-8 w-auto"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
               </button>
             </div>
 
@@ -1086,8 +1116,8 @@ const ProductPage = () => {
                   <FaTruck className="text-xs sm:text-lg" />
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
-                  <p className="font-semibold text-[11px] sm:text-sm truncate">Free Delivery</p>
-                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">On orders above ₹999</p>
+                  <p className="font-semibold text-[11px] sm:text-sm truncate">Fast Dispatch</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Quick order processing</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-gray-700 min-w-0 overflow-hidden">
@@ -1692,6 +1722,39 @@ const ProductPage = () => {
                   "https://via.placeholder.com/800x800?text=No+Image";
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {showStickyMobileCta && (
+        <div className="fixed inset-x-0 bottom-0 z-130 border-t border-primary/20 bg-white/95 px-3 py-2 shadow-[0_-6px_20px_rgba(0,0,0,0.08)] backdrop-blur-sm sm:hidden">
+          <p className="mb-2 text-center text-xs font-semibold text-emerald-700">
+            ✓ Cash on Delivery Available Across India
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleAddToCart}
+              disabled={!canPurchase}
+              className="rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={!canPurchase}
+              className="rounded-lg bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 flex items-center justify-center gap-1.5"
+            >
+              {isPreorder ? "Preorder" : "Buy Now"}
+              {!isPreorder && (
+                <img
+                  src={payOptionsLogo}
+                  alt="UPI payment options"
+                  className="h-6 w-auto"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+            </button>
           </div>
         </div>
       )}
