@@ -43,6 +43,9 @@ const SPRAYS_KEYWORDS =
 const BLOG_KEYWORDS =
   'shiv mantra, shiva mantra, shiv mantra in hindi, shiv mantra in sanskrit, shiv mantra in english, shiv mantra lyrics, shiv mantra list, shiva mantras list, lord shiva mantra, lord shiva mantras, lord shiva mantra in english, lord shiva powerful mantra, most powerful mantra of lord shiva, powerful mantra of lord shiva, powerful shiva mantra, mahadev mantra, mahadev mantra in hindi, mahadev mantra in sanskrit, shiv shlok, shiv shlok in hindi, shiv ji mantra, shiv ji ka mantra, shiv ji ke mantra, शिव मंत्र, शिव मंत्र लिस्ट, महादेव मंत्र, सर्व शक्तिशाली शिव मंत्र, who is ashwathama, aswathama god, aswathama mahabharata, divine meaning in hindi, ருத்ராட்சம் அணிந்து அசைவம் சாப்பிடலாமா';
 
+const CORPORATE_BULK_KEYWORDS =
+  'corporate bulk rudraksha, wholesale rudraksha India, bulk rudraksha mala, B2B spiritual products, temple rudraksha supply, corporate gifting rudraksha, bulk tulsi mala India, wellness studio wholesale, bulk order spiritual gifts, Gawri Ganga wholesale';
+
 const PRODUCT_META_OVERRIDES = {
   '1-mukhi-rudraksha': {
     title: '1 Mukhi Rudraksha | Original Bead Online India | Gawri Ganga',
@@ -209,6 +212,13 @@ const ROUTE_META = [
     keywords: BLOG_KEYWORDS,
   },
   { path: '/contact', title: 'Contact | Gawri Ganga', description: 'Get in touch with Gawri Ganga support.' },
+  {
+    path: '/corporate-bulk-orders',
+    title: 'Corporate & Bulk Orders | Wholesale Rudraksha & Malas | Gawri Ganga',
+    description:
+      'Request volume pricing for authentic Nepali Rudraksha, Tulsi malas, aura sprays, and spiritual accessories—corporate gifting, temples, retailers, and institutions across India.',
+    keywords: CORPORATE_BULK_KEYWORDS,
+  },
   { path: '/privacy-policy', title: 'Privacy Policy | Gawri Ganga', description: 'How we handle your data.' },
   { path: '/terms-of-service', title: 'Terms of Service | Gawri Ganga', description: 'Terms of using our website.' },
   { path: '/terms-and-conditions', title: 'Terms & Conditions | Gawri Ganga', description: 'Purchase and site terms.' },

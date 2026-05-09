@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Heading from "../../assets/Sprayelem/Header.webp";
-import AmratDhara from "../../assets/Sprayelem/AmratDhara.webp";
+import AmratBindu from "../../assets/Sprayelem/AmratBindu.webp";
 import ChakraBalance from "../../assets/Sprayelem/ChakraBalance.webp";
 import Maitri from "../../assets/Sprayelem/Maitri.webp";
 import Shuddhi from "../../assets/Sprayelem/Shuddhi.webp";
 
 const sprays = [
   {
-    bg: AmratDhara,
+    bg: AmratBindu,
     tag: "Aura Spray",
     title: "Amrat Bindu",
     accent: "#2283c7",
