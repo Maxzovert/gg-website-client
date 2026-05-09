@@ -4,7 +4,7 @@ import { FaCheckCircle, FaMoneyBillWave, FaShippingFast, FaLock } from 'react-ic
 const trustItems = [
   { label: 'Authentic Rudraksha', Icon: FaCheckCircle },
   { label: 'COD Available', Icon: FaMoneyBillWave },
-  { label: 'Free Shipping', Icon: FaShippingFast },
+  { label: 'Fast Dispatch', Icon: FaShippingFast },
   { label: 'Secure Payments', Icon: FaLock },
 ]
 

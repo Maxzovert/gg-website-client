@@ -32,6 +32,7 @@ import ProductCard from "../../components/ProductCard";
 import { apiFetch } from "../../config/api.js";
 import idrImage from "../../assets/ProductPage/idr.webp";
 import rdcImage from "../../assets/ProductPage/rdc.webp";
+import payOptionsLogo from "../../assets/ProductPage/payop.png";
 import { pricingFromProduct } from "../../utils/productPricing";
 import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from "../../utils/productPreorder";
 import { submitPreorderRequest } from "../../utils/preorderRequest";
@@ -1096,6 +1097,15 @@ const ProductPage = () => {
                 className="w-full sm:flex-1 px-6 py-4 min-h-[48px] sm:min-h-0 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all font-semibold text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl touch-manipulation"
               >
                 {isPreorder ? "Preorder" : "Buy Now"}
+                {!isPreorder && (
+                  <img
+                    src={payOptionsLogo}
+                    alt="UPI payment options"
+                    className="h-8 w-auto"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
               </button>
             </div>
 
@@ -1106,8 +1116,8 @@ const ProductPage = () => {
                   <FaTruck className="text-xs sm:text-lg" />
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
-                  <p className="font-semibold text-[11px] sm:text-sm truncate">Free Delivery</p>
-                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">On orders above ₹999</p>
+                  <p className="font-semibold text-[11px] sm:text-sm truncate">Fast Dispatch</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Quick order processing</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-gray-700 min-w-0 overflow-hidden">
@@ -1732,9 +1742,18 @@ const ProductPage = () => {
             <button
               onClick={handleBuyNow}
               disabled={!canPurchase}
-              className="rounded-lg bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
+              className="rounded-lg bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300 flex items-center justify-center gap-1.5"
             >
               {isPreorder ? "Preorder" : "Buy Now"}
+              {!isPreorder && (
+                <img
+                  src={payOptionsLogo}
+                  alt="UPI payment options"
+                  className="h-6 w-auto"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
             </button>
           </div>
         </div>

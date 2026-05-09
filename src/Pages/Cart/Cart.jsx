@@ -538,6 +538,7 @@ const Cart = () => {
                         const minAmount = Number(coupon.minimum_order_amount || 0);
                         const meetsMin = totalPrice >= minAmount;
                         const isLive = isCouponLive(coupon);
+                        const isSelectable = isLive && meetsMin;
                         return (
                           <div
                             key={coupon.id}
@@ -549,8 +550,9 @@ const Cart = () => {
                           >
                             <button
                               type="button"
-                              onClick={() => setSelectedCouponCode(coupon.code)}
-                              className="text-left w-full p-2"
+                              onClick={() => isSelectable && setSelectedCouponCode(coupon.code)}
+                              disabled={!isSelectable}
+                              className={`text-left w-full p-2 ${!isSelectable ? 'cursor-not-allowed opacity-60' : ''}`}
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div>
@@ -559,14 +561,12 @@ const Cart = () => {
                                 </div>
                                 <span
                                   className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-semibold ${
-                                    !isLive
-                                      ? 'bg-amber-100 text-amber-700'
-                                      : meetsMin
-                                        ? 'bg-emerald-100 text-emerald-700'
-                                        : 'bg-red-100 text-red-600'
+                                    isSelectable
+                                      ? 'bg-emerald-100 text-emerald-700'
+                                      : 'bg-gray-100 text-gray-500'
                                   }`}
                                 >
-                                  {!isLive ? 'Not live' : meetsMin ? 'Eligible' : `Min ${formatMoney(minAmount)}`}
+                                  {meetsMin ? 'Available' : `Min ${formatMoney(minAmount)}`}
                                 </span>
                               </div>
                             </button>

@@ -222,7 +222,7 @@ const Navbar = () => {
 
         {/* Mobile Top Banner - Simplified */}
         <div className="md:hidden flex items-center justify-center h-10 bg-primary text-white text-sm px-4">
-          <p className="text-center">Free Shipping on All Orders</p>
+          <p className="text-center">Fast Dispatch Across India</p>
         </div>
 
         {/* Main Navigation */}
