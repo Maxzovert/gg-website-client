@@ -82,6 +82,7 @@ const ProductPage = () => {
   const [reviewImageFile, setReviewImageFile] = useState(null);
   const [reviewImagePreview, setReviewImagePreview] = useState("");
   const [reviewDeletingId, setReviewDeletingId] = useState(null);
+  const [showStickyMobileCta, setShowStickyMobileCta] = useState(false);
   const isRudrakshaProduct =
     product?.category === "Rudraksha" || product?.category === "Rudrakshas";
 
@@ -618,6 +619,25 @@ const ProductPage = () => {
     };
   }, [imagePreviewOpen]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const handleScroll = () => {
+      if (!mediaQuery.matches) {
+        setShowStickyMobileCta(false);
+        return;
+      }
+      setShowStickyMobileCta(window.scrollY > 420);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    mediaQuery.addEventListener("change", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      mediaQuery.removeEventListener("change", handleScroll);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -694,7 +714,7 @@ const ProductPage = () => {
   const recommendedRashis = getRashisForThisProduct();
 
   return (
-    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white overflow-x-hidden">
+    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white overflow-x-hidden pb-24 sm:pb-6 lg:pb-8">
       <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-4 md:px-6 lg:px-8 xl:px-12 min-w-0">
         {/* Back Button */}
         <button
@@ -1692,6 +1712,30 @@ const ProductPage = () => {
                   "https://via.placeholder.com/800x800?text=No+Image";
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {showStickyMobileCta && (
+        <div className="fixed inset-x-0 bottom-0 z-130 border-t border-primary/20 bg-white/95 px-3 py-2 shadow-[0_-6px_20px_rgba(0,0,0,0.08)] backdrop-blur-sm sm:hidden">
+          <p className="mb-2 text-center text-xs font-semibold text-emerald-700">
+            ✓ Cash on Delivery Available Across India
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleAddToCart}
+              disabled={!canPurchase}
+              className="rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={!canPurchase}
+              className="rounded-lg bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              {isPreorder ? "Preorder" : "Buy Now"}
+            </button>
           </div>
         </div>
       )}

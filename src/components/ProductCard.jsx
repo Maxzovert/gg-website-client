@@ -157,7 +157,7 @@ const ProductCard = ({
         )}
 
         {/* Product Name */}
-        <h3 className={`font-bold text-gray-900 line-clamp-2 leading-tight ${large ? 'text-sm sm:text-base md:text-lg mb-2 sm:mb-2.5' : 'text-xs sm:text-sm lg:text-base mb-1 lg:mb-2'}`}
+        <h3 className={`font-bold text-gray-900 line-clamp-2 leading-tight ${large ? 'text-sm sm:text-base md:text-lg mb-2 sm:mb-2.5 min-h-12' : 'text-xs sm:text-sm lg:text-base mb-1 lg:mb-2 min-h-9'}`}
         >
           {product.name}
         </h3>
@@ -197,9 +197,13 @@ const ProductCard = ({
           </div>
           <span className={`text-gray-500 font-medium ${large ? 'text-xs sm:text-sm ml-1' : 'text-[9px] sm:text-[10px] lg:text-xs ml-0.5 lg:ml-1'}`}
           >
-            ({reviewCount})
+            4.9 ({reviewCount} reviews)
           </span>
         </div>
+
+        <p className={`text-emerald-700 font-semibold ${large ? 'text-[11px] sm:text-xs mb-2' : 'text-[9px] sm:text-[10px] mb-1.5'}`}>
+          Authentic | COD Available
+        </p>
 
         {/* Pricing Section */}
         <div className={`mt-auto border-t border-primary/20 ${large ? 'pt-2 sm:pt-3' : 'pt-1 sm:pt-1.5 lg:pt-2.5'}`}
@@ -221,6 +225,11 @@ const ProductCard = ({
                   </span>
                 )}
               </div>
+              {pricing.discount > 0 && (
+                <span className={`text-emerald-700 font-semibold ${large ? 'text-[10px] sm:text-xs' : 'text-[8px] sm:text-[10px]'}`}>
+                  Save ₹{(pricing.originalPrice - pricing.currentPrice).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                </span>
+              )}
               {isPreorder ? (
                 <span className={`inline-flex items-center font-semibold text-amber-800 ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}
                 >
@@ -254,7 +263,7 @@ const ProductCard = ({
               {/* Heart Button */}
               <button
                 onClick={handleWishlistClick}
-                className={`transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10 hover:scale-110 ${large ? 'w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14' : 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12'}`}
+                className={`transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10 hover:scale-110 ${large ? 'w-10 h-10 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14' : 'w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12'}`}
                 aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
               >
                 {inWishlist ? (
@@ -267,10 +276,13 @@ const ProductCard = ({
               {/* Cart Button */}
               <button
                 onClick={handleCartClick}
-                className={`border-2 border-primary text-primary bg-transparent rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10 ${large ? 'w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14' : 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12'}`}
+                className={`border-2 border-primary text-primary bg-transparent rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center gap-1 shrink-0 cursor-pointer z-10 ${large ? 'px-2 w-auto h-10 sm:h-10 md:h-12 lg:h-14' : 'px-2 w-auto h-9 sm:h-9 md:h-10 lg:h-12'}`}
                 aria-label="Add to cart"
               >
                 <FaShoppingCart className={large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'} />
+                <span className={`font-semibold ${large ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'} hidden sm:inline`}>
+                  Add
+                </span>
               </button>
             </div>
           </div>
