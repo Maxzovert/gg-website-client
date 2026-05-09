@@ -21,7 +21,7 @@ import YouTubePodcastSection from './YouTubePodcastSection'
 import LatestPostsSection from './LatestPostsSection'
 import GoogleReviewSection from './GoogleReviewSection'
 import TrustStrip from './TrustStrip'
-import FounderStorySection from './FounderStorySection'
+
 
 const SectionDivider = () => (
   <div className="mx-auto flex w-[92%] max-w-7xl items-center justify-center py-3 sm:py-4">
@@ -58,14 +58,13 @@ const Home = () => {
       <SectionDivider />
       <InstagramFeedSection />
       <SectionDivider />
+      <YouTubePodcastSection />
+      <SectionDivider />
       <LatestPostsSection />
       <SectionDivider />
       <GoogleReviewSection />
       <SectionDivider />
       <AuthenticCertifiedSection />
-      <FounderStorySection />
-      <YouTubePodcastSection />
-      <SectionDivider />
       <section className="w-full bg-[#FFFAEB]">
         <img
           src={OriginImg}
@@ -74,8 +73,6 @@ const Home = () => {
           loading="lazy"
         />
       </section>
-      <GoogleReviewSection />
-      <SectionDivider />
       <FAQAccordion />
       <section className="w-full bg-[#FFFAEB]">
         <img
