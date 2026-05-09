@@ -14,8 +14,7 @@ export const AuthProvider = ({ children }) => {
 
     const initializeAuth = async () => {
       try {
-        const token = window.localStorage.getItem('auth_token');
-        if (!token || !API_URL?.length) {
+        if (!API_URL?.length) {
           if (mounted) setLoading(false);
           return;
         }
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }) => {
         const res = await apiFetch('/api/auth/me');
 
         if (!res.ok) {
-          window.localStorage.removeItem('auth_token');
           if (mounted) {
             setUser(null);
             setLoading(false);
@@ -55,7 +53,6 @@ export const AuthProvider = ({ children }) => {
       if (API_URL) {
         await apiFetch('/api/auth/logout', { method: 'POST' });
       }
-      window.localStorage.removeItem('auth_token');
       setUser(null);
       navigate('/');
       return { error: null };
@@ -106,9 +103,6 @@ export const AuthProvider = ({ children }) => {
         throw new Error(data.message || 'Failed to verify OTP');
       }
 
-      if (data.token) {
-        window.localStorage.setItem('auth_token', data.token);
-      }
       setUser(data.user || null);
       return { data, error: null };
     } catch (error) {
