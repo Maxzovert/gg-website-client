@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import SprayProductCard from '../../components/SprayProductCard';
 import Loader from '../../components/Loader';
 import sprayBanner from '../../assets/Spray/4sp.webp';
-import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
+import { fetchAllProductsByCategory, isSprayComboSubcategory } from '../../utils/shopProductFetch';
 import Heading from "../../assets/Sprayelem/Header.webp";
 
 const Spray = () => {
@@ -18,20 +18,21 @@ const Spray = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await apiFetch('/api/products?category=Sprays');
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch products: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setProducts(result.data);
-      } else {
-        setProducts([]);
-      }
-    } catch (error) {
+      const [sprays, comboCategoryProducts] = await Promise.all([
+        fetchAllProductsByCategory('Sprays'),
+        fetchAllProductsByCategory('Combos'),
+      ]);
+
+      const sprayCombosFromCombosCategory = comboCategoryProducts.filter((p) =>
+        isSprayComboSubcategory(p.subcategory),
+      );
+
+      const byId = new Map();
+      [...sprays, ...sprayCombosFromCombosCategory].forEach((p) => {
+        if (p?.id != null && !byId.has(p.id)) byId.set(p.id, p);
+      });
+      setProducts([...byId.values()]);
+    } catch (_error) {
       setProducts([]);
     } finally {
       setLoading(false);
