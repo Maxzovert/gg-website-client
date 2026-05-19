@@ -138,7 +138,7 @@ const Footer = () => {
             </p>
             <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-3">
               <a
-                href="https://www.facebook.com/profile.php?id=61586896997135"
+                href="https://www.facebook.com/profile.php?id=61589197491701"
                 aria-label="Facebook"
                 className="w-10 h-10 sm:w-9 sm:h-9 rounded-full border-2 border-white/60 text-white flex items-center justify-center hover:bg-white hover:text-primary transition-colors shrink-0"
               >
