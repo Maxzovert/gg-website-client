@@ -21,6 +21,7 @@ import YouTubePodcastSection from './YouTubePodcastSection'
 import LatestPostsSection from './LatestPostsSection'
 import GoogleReviewSection from './GoogleReviewSection'
 import TrustStrip from './TrustStrip'
+import Combos from './Combos'
 
 
 const SectionDivider = () => (
@@ -39,6 +40,7 @@ const Home = () => {
       <AccessoriesProd />
       <RudrakhshaProd />
       <TulsiProd />
+      <Combos />
       <SectionDivider />
       <FeaturedProductsSection />
       {/* <SectionDivider />
