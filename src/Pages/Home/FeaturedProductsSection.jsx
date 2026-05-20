@@ -101,7 +101,7 @@ const FeaturedProductsSection = () => {
               Curated picks
             </p>
             <h2 id="featured-products-heading" className="font-heading text-xl font-bold tracking-tight text-stone-900 sm:text-2xl md:text-3xl lg:text-[2rem]">
-              Featured Products
+              Featured Products & Combos
             </h2>
           </div>
           <Link

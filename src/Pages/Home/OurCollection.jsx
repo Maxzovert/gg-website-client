@@ -7,6 +7,7 @@ import accessoriesImg from '../../assets/HomePage/Our-collection/Accessories.web
 import tulsiImg from '../../assets/HomePage/Our-collection/Tulsi.webp';
 import braceletImg from '../../assets/HomePage/Our-collection/braclet1.webp';
 import malaImg from '../../assets/HomePage/Our-collection/Mala.webp';
+import combosImg from '../../assets/HomePage/Our-collection/COMBO.webp';
 
 const collections = [
   { id: 1, name: 'Rudraksha', image: rudrakshaImg, link: '/rudraksha' },
@@ -14,7 +15,8 @@ const collections = [
   { id: 3, name: 'Accessories', image: accessoriesImg, link: '/accessories' },
   { id: 4, name: 'Tulsi Products', image: tulsiImg, link: '/tulsimala' },
   { id: 5, name: 'Bracelet', image: braceletImg, link: '/accessories?subcategory=Bracelet' },
-  { id: 6, name: 'Mala', image: malaImg, link: '/accessories?subcategory=Mala' }
+  { id: 6, name: 'Mala', image: malaImg, link: '/accessories?subcategory=Mala' },
+  { id: 7, name: 'Combos', image: combosImg, link: '/combos' }
 ];
 
 const OurCollection = () => {
@@ -33,7 +35,7 @@ const OurCollection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 sm:gap-2 md:grid-cols-6 md:gap-5 lg:gap-6">
+        <div className="grid grid-cols-2 gap-6 sm:gap-2 md:grid-cols-7 md:gap-5 lg:gap-6">
           {collections.map((item) => (
             <Link
               key={item.id}
