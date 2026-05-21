@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
+import ExploreSectionsBlock from '../../components/ExploreSectionsBlock';
 import combosHeaderBanner from '../../assets/Combos/combos-header.webp';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
@@ -43,7 +44,6 @@ const Combos = () => {
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
         <h1 className="sr-only">Combos</h1>
-        {/* Header with Banner (replace assets/Combos/combos-header.webp with your Combos hero art) */}
         <div className="mb-6 sm:mb-8 text-center">
           <div className="w-full rounded-lg overflow-hidden shadow-md">
             <img
@@ -89,6 +89,8 @@ const Combos = () => {
           </div>
         )}
       </div>
+
+      <ExploreSectionsBlock excludeCategory="Combos" />
     </div>
   );
 };
