@@ -63,9 +63,6 @@ const ProductPage = () => {
   const [showPreorderModal, setShowPreorderModal] = useState(false);
   const [preorderEmail, setPreorderEmail] = useState("");
   const [preorderSubmitting, setPreorderSubmitting] = useState(false);
-  const [elementImages, setElementImages] = useState([]);
-  const [benefitImages, setBenefitImages] = useState([]);
-  const [staticImagesLoading, setStaticImagesLoading] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(() => new Set(["description"]));
@@ -169,12 +166,6 @@ const ProductPage = () => {
     Pisces: ["4 Mukhi", "7 Mukhi", "12 Mukhi"],
   };
 
-  const S3_BASE = (import.meta.env.VITE_S3_PUBLIC_BASE_URL || "").replace(/\/$/, "");
-  const buildStaticImgUrl = (folder, file_name) =>
-    S3_BASE
-      ? `${S3_BASE}/StaticImg/${encodeURIComponent(folder)}/${encodeURIComponent(file_name)}`
-      : null;
-
   useEffect(() => {
     fetchProduct();
   }, [slug]);
@@ -217,49 +208,6 @@ const ProductPage = () => {
       }
     };
     fetchReviews();
-  }, [product?.id]);
-
-  // Fetch Elements and Benifits static images when product is loaded (for rudraksha matching)
-  useEffect(() => {
-    if (!product) return;
-
-    const fetchStaticImages = async () => {
-      const isRudraksha =
-        product.category === "Rudraksha" || product.category === "Rudrakshas";
-
-      // These static images are only needed for rudraksha-related matching.
-      // Skipping them for other categories reduces network calls and speeds up page load.
-      if (!isRudraksha) {
-        setElementImages([]);
-        setBenefitImages([]);
-        setStaticImagesLoading(false);
-        return;
-      }
-
-      setStaticImagesLoading(true);
-      try {
-        const [elementsRes, benefitsRes] = await Promise.all([
-          apiFetch(`/api/static-images?folder=Elements`),
-          apiFetch(`/api/static-images?folder=Benifits`),
-        ]);
-        const elementsData = elementsRes.ok ? await elementsRes.json() : [];
-        const benefitsData = benefitsRes.ok ? await benefitsRes.json() : [];
-
-        const withUrls = (items) =>
-          (items || []).map((item) => ({
-            ...item,
-            url: item.url || buildStaticImgUrl(item.folder, item.file_name),
-          }));
-
-        setElementImages(withUrls(elementsData));
-        setBenefitImages(withUrls(benefitsData));
-      } catch (err) {
-      } finally {
-        setStaticImagesLoading(false);
-      }
-    };
-
-    fetchStaticImages();
   }, [product?.id]);
 
   // Fetch related products (same category, exclude current)
@@ -671,26 +619,6 @@ const ProductPage = () => {
   const isPreorder = isProductPreorder(product);
   const canPurchase = productCanBePurchased(product);
   const maxOrderQty = getMaxOrderQuantity(product);
-
-  // Derive possible keys to match rudraksha with element/benefit images (e.g. "1 Mukhi" or "1")
-  const getMatchKeys = () => {
-    const keys = [];
-    const sub = (product.subcategory || "").trim();
-    const name = (product.name || "").trim();
-    if (sub) keys.push(sub, sub.toLowerCase());
-    const numMatch = (sub || name).match(/^(\d+)|(\d+)\s*[Mm]ukhi|(\d+)\s*[Ee]lement/);
-    const num = numMatch && (numMatch[1] || numMatch[2] || numMatch[3]);
-    if (num) keys.push(num, `${num}E`);
-    return keys;
-  };
-
-  const matchKeys = getMatchKeys();
-  const matchedElementInfo = elementImages.find((img) =>
-    matchKeys.some((k) => String(img.key).toLowerCase() === String(k).toLowerCase())
-  );
-  const matchedBenefitInfo = benefitImages.find((img) =>
-    matchKeys.some((k) => String(img.key).toLowerCase() === String(k).toLowerCase())
-  );
 
   // For Rudraksha: which Rashis recommend this product (by matching mukhi in subcategory/name)
   const isRudraksha = isRudrakshaProduct;
@@ -1232,31 +1160,7 @@ const ProductPage = () => {
                     {
                       key: "elements",
                       title: "Elements",
-                      content: (
-                        <div className="space-y-3 min-w-0 max-w-full text-gray-700">
-                          <p className="break-words min-w-0">
-                            This product is associated with natural elements and traditional
-                            symbolism. Its spiritual meaning is interpreted through elemental
-                            balance and sacred energy.
-                          </p>
-                          {(matchedElementInfo || matchedBenefitInfo) && (
-                            <div className="grid gap-2 text-sm sm:text-base">
-                              {matchedElementInfo?.key && (
-                                <p className="break-words">
-                                  <span className="font-semibold text-gray-900">Element Key:</span>{" "}
-                                  {matchedElementInfo.key}
-                                </p>
-                              )}
-                              {matchedBenefitInfo?.key && (
-                                <p className="break-words">
-                                  <span className="font-semibold text-gray-900">Benefit Key:</span>{" "}
-                                  {matchedBenefitInfo.key}
-                                </p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ),
+                      content: product.elements || "No element information available for this product.",
                     },
                     {
                       key: "care",
@@ -1272,22 +1176,6 @@ const ProductPage = () => {
                             Store separately in a zip lock bag to prevent moisture and tarnishing.
                           </li>
                         </ul>
-                      ),
-                    },
-                    {
-                      key: "other",
-                      title: "Other Information",
-                      content: (
-                        <div className="grid gap-2 text-sm sm:text-base text-gray-700 min-w-0 max-w-full break-words">
-                          {product.subcategory && <p><span className="font-semibold text-gray-900">Subcategory:</span> {product.subcategory}</p>}
-                          {product.deity && <p><span className="font-semibold text-gray-900">Deity:</span> {product.deity}</p>}
-                          {product.planet && <p><span className="font-semibold text-gray-900">Planet:</span> {product.planet}</p>}
-                          {product.rarity && <p><span className="font-semibold text-gray-900">Rarity:</span> {product.rarity}</p>}
-                          {product.category && <p><span className="font-semibold text-gray-900">Category:</span> {product.category}</p>}
-                          {!product.subcategory && !product.deity && !product.planet && !product.rarity && (
-                            <p>No additional information available.</p>
-                          )}
-                        </div>
                       ),
                     },
                   ].map(({ key, title, icon, content }) => (

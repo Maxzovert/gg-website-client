@@ -3,21 +3,6 @@ import { apiFetch } from '../config/api';
 const PAGE_SIZE = 100;
 
 /**
- * True when a product's subcategory should be treated as a "spray combo"
- * (Combos category items that also appear on the Sprays page).
- * Matches common admin labels case-insensitively.
- */
-export function isSprayComboSubcategory(subcategory) {
-  const s = String(subcategory ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ');
-  if (!s) return false;
-  if (s === 'spray combo' || s === 'spray combos') return true;
-  return s.includes('spray combo');
-}
-
-/**
  * Fetch every active product in a category (paginated; must match `categories.name` in DB).
  */
 export async function fetchAllProductsByCategory(category, options = {}) {
