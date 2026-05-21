@@ -83,6 +83,7 @@ const ProductPage = () => {
   const [showStickyMobileCta, setShowStickyMobileCta] = useState(false);
   const isRudrakshaProduct =
     product?.category === "Rudraksha" || product?.category === "Rudrakshas";
+  const isComboProduct = product?.category === "Combos";
 
   // Normalize API review to UI shape
   const normalizeReview = (r) => ({
@@ -148,6 +149,7 @@ const ProductPage = () => {
     Sprays: "/sprays",
     Rashi: "/rashi",
     Accessories: "/accessories",
+    Combos: "/combos",
   };
 
   // Rashi → recommended Rudraksha Mukhi (matches Rashi page logic)
@@ -1162,6 +1164,17 @@ const ProductPage = () => {
                       title: "Elements",
                       content: product.elements || "No element information available for this product.",
                     },
+                    ...(isComboProduct
+                      ? [
+                          {
+                            key: "who_can_use",
+                            title: "Who Can Use It",
+                            content:
+                              product.who_can_use?.trim() ||
+                              "No who-can-use information available for this combo.",
+                          },
+                        ]
+                      : []),
                     {
                       key: "care",
                       title: "Care Information",
