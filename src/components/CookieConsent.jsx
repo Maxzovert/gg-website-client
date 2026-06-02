@@ -10,7 +10,7 @@ import {
 import { useLocation } from 'react-router-dom';
 
 /**
- * GDPR-style choice: essential-only vs analytics (GA4). Loads GA only after opt-in.
+ * GDPR-style choice: essential-only vs analytics (GA4 + Meta Pixel). Loads trackers only after opt-in.
  */
 const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
@@ -53,8 +53,8 @@ const CookieConsent = () => {
             Cookies & analytics
           </h2>
           <p className="text-white/90">
-            We use essential cookies for the site to work. With your permission we also load Google Analytics to
-            understand traffic and improve the store. See our{' '}
+            We use essential cookies for the site to work. With your permission we also load Google Analytics and
+            Meta (Facebook) Pixel to understand traffic, measure ads, and improve the store. See our{' '}
             <Link to="/privacy-policy" className="underline hover:text-white">
               Privacy Policy
             </Link>
