@@ -1,6 +1,11 @@
 const CONSENT_KEY = 'gg_cookie_consent';
 
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-7P8LPXZ012';
+const META_PIXEL_ID = import.meta.env.VITE_META_PIXEL_ID || '4467576400152637';
+
+function hasAnalyticsConsent() {
+  return getStoredConsent() === 'analytics';
+}
 
 function normalizeItems(items = []) {
   return items.map((i) => ({
@@ -36,6 +41,50 @@ function appendGtagScript() {
   document.head.appendChild(s);
 }
 
+function ensureFbqStub() {
+  if (typeof window.fbq === 'function') return;
+  const n = (window.fbq = function fbq() {
+    n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+  });
+  if (!window._fbq) window._fbq = n;
+  n.push = n;
+  n.loaded = true;
+  n.version = '2.0';
+  n.queue = [];
+}
+
+function initMetaPixel() {
+  ensureFbqStub();
+  if (window.__ggMetaPixelInited) return;
+  window.fbq('init', META_PIXEL_ID);
+  window.__ggMetaPixelInited = true;
+}
+
+function appendMetaPixelScript() {
+  if (document.querySelector('script[src*="fbevents.js"]')) {
+    initMetaPixel();
+    return;
+  }
+  ensureFbqStub();
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://connect.facebook.net/en_US/fbevents.js';
+  s.onload = () => initMetaPixel();
+  document.head.appendChild(s);
+}
+
+function trackMetaPageView() {
+  if (!hasAnalyticsConsent() || typeof window.fbq !== 'function') return;
+  initMetaPixel();
+  window.fbq('track', 'PageView');
+}
+
+function trackMetaEvent(eventName, params = {}) {
+  if (!hasAnalyticsConsent() || typeof window.fbq !== 'function') return;
+  initMetaPixel();
+  window.fbq('track', eventName, params);
+}
+
 /** Call after user accepts analytics cookies */
 export function enableAnalyticsFromConsent() {
   try {
@@ -47,6 +96,7 @@ export function enableAnalyticsFromConsent() {
   window.gtag('js', new Date());
   window.gtag('config', GA_ID, { anonymize_ip: true });
   appendGtagScript();
+  appendMetaPixelScript();
 }
 
 export function rejectOptionalCookies() {
@@ -64,30 +114,35 @@ export function hydrateAnalyticsIfConsented() {
   window.gtag('js', new Date());
   window.gtag('config', GA_ID, { anonymize_ip: true });
   appendGtagScript();
+  appendMetaPixelScript();
 }
 
 export function trackPageView(path) {
-  if (getStoredConsent() !== 'analytics') return;
+  if (!hasAnalyticsConsent()) return;
   ensureGtagStub();
   window.gtag('config', GA_ID, {
     page_path: path,
     anonymize_ip: true,
   });
+  trackMetaPageView();
 }
 
 export function trackPurchase({ transactionId, value, currency = 'INR', items = [] }) {
-  if (getStoredConsent() !== 'analytics') return;
+  const normalizedItems = normalizeItems(items);
+  if (!hasAnalyticsConsent()) return;
   ensureGtagStub();
   window.gtag('event', 'purchase', {
     transaction_id: String(transactionId),
     value: Number(value) || 0,
     currency,
-    items: items.map((i) => ({
-      item_id: String(i.product_id ?? i.id ?? ''),
-      item_name: i.product_name || i.name || '',
-      price: Number(i.product_price ?? i.price) || 0,
-      quantity: Number(i.quantity) || 1,
-    })),
+    items: normalizedItems,
+  });
+  trackMetaEvent('Purchase', {
+    value: Number(value) || 0,
+    currency,
+    content_ids: normalizedItems.map((i) => i.item_id).filter(Boolean),
+    content_type: 'product',
+    num_items: normalizedItems.reduce((sum, i) => sum + i.quantity, 0),
   });
 }
 
@@ -105,25 +160,50 @@ export function trackSignUp(method = 'otp') {
 
 export function trackBeginCheckout(value, items = []) {
   const normalizedItems = normalizeItems(items);
-  if (getStoredConsent() !== 'analytics') return;
+  if (!hasAnalyticsConsent()) return;
   ensureGtagStub();
   window.gtag('event', 'begin_checkout', {
     value: Number(value) || 0,
     currency: 'INR',
     items: normalizedItems,
   });
+  trackMetaEvent('InitiateCheckout', {
+    value: Number(value) || 0,
+    currency: 'INR',
+    content_ids: normalizedItems.map((i) => i.item_id).filter(Boolean),
+    content_type: 'product',
+    num_items: normalizedItems.reduce((sum, i) => sum + i.quantity, 0),
+  });
 }
 
 export function trackViewContent(product, quantity = 1) {
-  void product;
-  void quantity;
+  if (!hasAnalyticsConsent() || !product) return;
+  const id = String(product.id ?? product.product_id ?? '');
+  const price = Number(product.price ?? product.product_price) || 0;
+  trackMetaEvent('ViewContent', {
+    content_ids: id ? [id] : [],
+    content_name: product.name || product.product_name || '',
+    content_type: 'product',
+    value: price * (Number(quantity) || 1),
+    currency: 'INR',
+  });
 }
 
 export function trackAddToCart(product, quantity = 1) {
-  void product;
-  void quantity;
+  if (!hasAnalyticsConsent() || !product) return;
+  const id = String(product.id ?? product.product_id ?? '');
+  const price = Number(product.price ?? product.product_price) || 0;
+  const qty = Number(quantity) || 1;
+  trackMetaEvent('AddToCart', {
+    content_ids: id ? [id] : [],
+    content_name: product.name || product.product_name || '',
+    content_type: 'product',
+    value: price * qty,
+    currency: 'INR',
+  });
 }
 
 export function trackLead(payload = {}) {
-  void payload;
+  if (!hasAnalyticsConsent()) return;
+  trackMetaEvent('Lead', payload);
 }
