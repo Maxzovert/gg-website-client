@@ -173,19 +173,6 @@ const BlogPostPage = () => {
             dangerouslySetInnerHTML={{ __html: renderedHtml }}
           />
 
-          {post.primary_link_url ? (
-            <div className="mt-8 border-t border-stone-200 pt-6">
-              <a
-                href={post.primary_link_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90"
-              >
-                {post.primary_link_label || 'Learn more'}
-              </a>
-            </div>
-          ) : null}
-
           <BlogExploreProductsSection headingId="blog-post-explore-products-heading" />
         </div>
       </article>
