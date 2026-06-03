@@ -254,7 +254,13 @@ const ProductPage = () => {
 
       const result = await response.json();
       if (result.success) {
-        setProduct(result.data);
+        const data = result.data || {};
+        setProduct({
+          ...data,
+          elements: String(data.elements ?? data.Elements ?? "").trim(),
+          benefits: String(data.benefits ?? data.Benefits ?? "").trim(),
+          who_can_use: String(data.who_can_use ?? data.whoCanUse ?? "").trim(),
+        });
         // Reset image index when product changes
         setSelectedImageIndex(0);
         setImagePreviewOpen(false);
@@ -1162,7 +1168,9 @@ const ProductPage = () => {
                     {
                       key: "elements",
                       title: "Elements",
-                      content: product.elements || "No element information available for this product.",
+                      content:
+                        String(product.elements ?? "").trim() ||
+                        "No element information available for this product.",
                     },
                     ...(isComboProduct
                       ? [
