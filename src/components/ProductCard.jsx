@@ -94,7 +94,7 @@ const ProductCard = ({
   return (
     <Link 
       to={`/product/${product.slug || product.id}`}
-      className={`bg-white shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col ${large ? 'rounded-2xl' : 'rounded-xl'}`}
+      className={`bg-white shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full ${large ? 'rounded-2xl' : 'rounded-xl'}`}
     >
       {/* Product Image */}
       <div className={`from-gray-50 to-gray-100 overflow-hidden relative group ${large ? 'aspect-square min-h-56 sm:min-h-64 md:min-h-68 lg:min-h-72' : 'aspect-square lg:aspect-4/3'}`}
@@ -125,7 +125,7 @@ const ProductCard = ({
       </div>
 
       {/* Product Info */}
-      <div className={`bg-white flex-1 flex flex-col ${large ? 'p-3 sm:p-4 md:p-5' : 'p-2 sm:p-2.5 md:p-3 lg:p-4'}`}
+      <div className={`bg-white flex-1 flex flex-col min-h-0 ${large ? 'p-3 sm:p-4 md:p-5' : 'p-2 sm:p-2.5 md:p-3 lg:p-4'}`}
       >
         {/* Badges */}
         {badges.length > 0 && (
@@ -157,7 +157,7 @@ const ProductCard = ({
         )}
 
         {/* Product Name */}
-        <h3 className={`font-bold text-gray-900 line-clamp-2 leading-tight ${large ? 'text-sm sm:text-base md:text-lg mb-2 sm:mb-2.5 min-h-12' : 'text-xs sm:text-sm lg:text-base mb-1 lg:mb-2 min-h-9'}`}
+        <h3 className={`font-bold text-gray-900 line-clamp-2 leading-tight min-h-[2lh] ${large ? 'text-sm sm:text-base md:text-lg mb-2 sm:mb-2.5' : 'text-xs sm:text-sm lg:text-base mb-1 lg:mb-2'}`}
         >
           {product.name}
         </h3>
@@ -212,14 +212,14 @@ const ProductCard = ({
           >
             {/* Price and Stock - Left Side */}
             <div className="flex-1 flex flex-col justify-center min-w-0">
-              <div className={`flex items-baseline ${large ? 'gap-1.5 sm:gap-2 mb-1 sm:mb-1.5' : 'gap-1 sm:gap-1.5 lg:gap-2 mb-0.5 lg:mb-1'}`}
+              <div className={`flex flex-wrap items-baseline ${large ? 'gap-x-1.5 sm:gap-x-2 gap-y-0.5 mb-1 sm:mb-1.5' : 'gap-x-1 sm:gap-x-1.5 lg:gap-x-2 gap-y-0.5 mb-0.5 lg:mb-1'}`}
               >
-                <span className={`font-bold text-primary truncate ${large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`}
+                <span className={`font-bold text-primary shrink-0 ${large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`}
                 >
                   ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </span>
                 {pricing.discount > 0 && (
-                  <span className={`text-gray-400 line-through font-medium hidden sm:inline ${large ? 'text-xs sm:text-sm md:text-base' : 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm'}`}
+                  <span className={`text-gray-400 line-through font-medium shrink-0 hidden sm:inline ${large ? 'text-xs sm:text-sm md:text-base' : 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm'}`}
                   >
                     ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                   </span>
