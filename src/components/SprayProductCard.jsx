@@ -248,12 +248,12 @@ const SprayProductCard = ({
           <div className="mt-auto pt-3" style={{ borderTop: `1px solid ${theme.accent}33` }}>
             <div className="mb-3 flex items-end justify-between gap-2">
               <div className="min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <span className="truncate text-xl font-bold sm:text-2xl" style={{ color: theme.heading }}>
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="shrink-0 text-xl font-bold sm:text-2xl" style={{ color: theme.heading }}>
                     ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                   </span>
                   {pricing.discount > 0 && (
-                    <span className="hidden text-sm font-medium text-gray-400 line-through sm:inline">
+                    <span className="hidden shrink-0 text-sm font-medium text-gray-400 line-through sm:inline">
                       ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   )}

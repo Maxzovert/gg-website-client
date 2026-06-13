@@ -95,7 +95,7 @@ export default function ExploreCollectionSection({ heading, category, linkTo, li
           role="list"
         >
           {products.map((product) => (
-            <div key={product.id} role="listitem" className="relative min-w-0">
+            <div key={product.id} role="listitem" className="relative flex h-full min-w-0 flex-col">
               <ProductCard
                 product={product}
                 variant="rudraksh"
