@@ -97,7 +97,7 @@ const ProductCard = ({
       className={`bg-white shadow-sm border border-primary overflow-hidden hover:shadow-lg hover:border-primary/80 transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full ${large ? 'rounded-2xl' : 'rounded-xl'}`}
     >
       {/* Product Image */}
-      <div className={`from-gray-50 to-gray-100 overflow-hidden relative group ${large ? 'aspect-square min-h-56 sm:min-h-64 md:min-h-68 lg:min-h-72' : 'aspect-square lg:aspect-4/3'}`}
+      <div className={`from-gray-50 to-gray-100 overflow-hidden relative group shrink-0 ${large ? 'aspect-3/3' : 'aspect-4/3'}`}
       >
         {product.images && product.images.length > 0 ? (
           <img
@@ -125,16 +125,16 @@ const ProductCard = ({
       </div>
 
       {/* Product Info */}
-      <div className={`bg-white flex-1 flex flex-col min-h-0 ${large ? 'p-3 sm:p-4 md:p-5' : 'p-2 sm:p-2.5 md:p-3 lg:p-4'}`}
+      <div className={`bg-white flex-1 flex flex-col min-h-0 ${large ? 'p-2.5 sm:p-3' : 'p-2 sm:p-2.5 md:p-3 lg:p-4'}`}
       >
         {/* Badges */}
         {badges.length > 0 && (
-          <div className={`flex flex-wrap ${large ? 'gap-1 sm:gap-1.5 mb-2 sm:mb-2.5' : 'gap-0.5 sm:gap-1 lg:gap-1.5 mb-1 lg:mb-2'}`}
+          <div className={`flex flex-wrap ${large ? 'gap-1 mb-1.5' : 'gap-0.5 sm:gap-1 lg:gap-1.5 mb-1 lg:mb-2'}`}
           >
             {badges.map((badge, index) => {
               // Different badge styles based on type
               let badgeClass = large
-                ? 'inline-block px-2 py-1 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs md:text-sm font-semibold rounded border '
+                ? 'inline-block px-1.5 py-0.5 sm:px-2 sm:py-0.5 text-[10px] sm:text-xs font-semibold rounded border '
                 : 'inline-block px-1 py-0.5 sm:px-1.5 sm:py-0.5 lg:px-2 lg:py-1 text-[9px] sm:text-[10px] lg:text-xs font-semibold rounded border ';
               
               if (badge.type === 'subcategory') {
@@ -157,7 +157,7 @@ const ProductCard = ({
         )}
 
         {/* Product Name */}
-        <h3 className={`font-bold text-gray-900 line-clamp-2 leading-tight min-h-[2lh] ${large ? 'text-sm sm:text-base md:text-lg mb-2 sm:mb-2.5' : 'text-xs sm:text-sm lg:text-base mb-1 lg:mb-2'}`}
+        <h3 className={`font-bold text-gray-900 line-clamp-2 leading-tight min-h-[2lh] ${large ? 'text-sm sm:text-base mb-1.5' : 'text-xs sm:text-sm lg:text-base mb-1 lg:mb-2'}`}
         >
           {product.name}
         </h3>
@@ -185,41 +185,41 @@ const ProductCard = ({
         )}
 
         {/* Star Rating */}
-        <div className={`flex items-center ${large ? 'gap-1 sm:gap-1.5 mb-2 sm:mb-3' : 'gap-0.5 lg:gap-1 mb-1.5 sm:mb-2 lg:mb-3'}`}
+        <div className={`flex items-center ${large ? 'gap-1 mb-1.5' : 'gap-0.5 lg:gap-1 mb-1.5 sm:mb-2 lg:mb-3'}`}
         >
           <div className="flex items-center gap-0.5 sm:gap-0.5">
             {[...Array(5)].map((_, i) => (
               <FaStar
                 key={i}
-                className={`text-primary fill-current ${large ? 'text-xs sm:text-sm md:text-base' : 'text-[9px] sm:text-[10px] lg:text-sm'}`}
+                className={`text-primary fill-current ${large ? 'text-[10px] sm:text-xs' : 'text-[9px] sm:text-[10px] lg:text-sm'}`}
               />
             ))}
           </div>
-          <span className={`text-gray-500 font-medium ${large ? 'text-xs sm:text-sm ml-1' : 'text-[9px] sm:text-[10px] lg:text-xs ml-0.5 lg:ml-1'}`}
+          <span className={`text-gray-500 font-medium ${large ? 'text-[10px] sm:text-xs ml-0.5' : 'text-[9px] sm:text-[10px] lg:text-xs ml-0.5 lg:ml-1'}`}
           >
             4.9 ({reviewCount} reviews)
           </span>
         </div>
 
-        <p className={`text-emerald-700 font-semibold ${large ? 'text-[11px] sm:text-xs mb-2' : 'text-[9px] sm:text-[10px] mb-1.5'}`}>
+        <p className={`text-emerald-700 font-semibold ${large ? 'text-[10px] sm:text-[11px] mb-1.5' : 'text-[9px] sm:text-[10px] mb-1.5'}`}>
           Authentic | COD Available
         </p>
 
         {/* Pricing Section */}
-        <div className={`mt-auto border-t border-primary/20 ${large ? 'pt-2 sm:pt-3' : 'pt-1 sm:pt-1.5 lg:pt-2.5'}`}
+        <div className={`mt-auto border-t border-primary/20 ${large ? 'pt-1.5 sm:pt-2' : 'pt-1 sm:pt-1.5 lg:pt-2.5'}`}
         >
-          <div className={`flex items-stretch ${large ? 'gap-2 sm:gap-3' : 'gap-1 sm:gap-2 lg:gap-3'}`}
+          <div className={`flex items-stretch ${large ? 'gap-1.5 sm:gap-2' : 'gap-1 sm:gap-2 lg:gap-3'}`}
           >
             {/* Price and Stock - Left Side */}
             <div className="flex-1 flex flex-col justify-center min-w-0">
-              <div className={`flex flex-wrap items-baseline ${large ? 'gap-x-1.5 sm:gap-x-2 gap-y-0.5 mb-1 sm:mb-1.5' : 'gap-x-1 sm:gap-x-1.5 lg:gap-x-2 gap-y-0.5 mb-0.5 lg:mb-1'}`}
+              <div className={`flex flex-wrap items-baseline ${large ? 'gap-x-1 sm:gap-x-1.5 gap-y-0.5 mb-0.5 sm:mb-1' : 'gap-x-1 sm:gap-x-1.5 lg:gap-x-2 gap-y-0.5 mb-0.5 lg:mb-1'}`}
               >
-                <span className={`font-bold text-primary shrink-0 ${large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`}
+                <span className={`font-bold text-primary shrink-0 ${large ? 'text-sm sm:text-base md:text-lg' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`}
                 >
                   ₹{pricing.currentPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </span>
                 {pricing.discount > 0 && (
-                  <span className={`text-gray-400 line-through font-medium shrink-0 hidden sm:inline ${large ? 'text-xs sm:text-sm md:text-base' : 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm'}`}
+                  <span className={`text-gray-400 line-through font-medium shrink-0 hidden sm:inline ${large ? 'text-[10px] sm:text-xs' : 'text-[9px] sm:text-[10px] md:text-xs lg:text-sm'}`}
                   >
                     ₹{pricing.originalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                   </span>
@@ -258,29 +258,29 @@ const ProductCard = ({
             </div>
 
             {/* Heart and Cart Buttons */}
-            <div className={`flex items-center ${large ? 'gap-2 sm:gap-2.5' : 'gap-1 sm:gap-2'}`}
+            <div className={`flex items-center ${large ? 'gap-1.5' : 'gap-1 sm:gap-2'}`}
             >
               {/* Heart Button */}
               <button
                 onClick={handleWishlistClick}
-                className={`transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10 hover:scale-110 ${large ? 'w-10 h-10 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14' : 'w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12'}`}
+                className={`transition-all duration-200 flex items-center justify-center shrink-0 cursor-pointer z-10 hover:scale-110 ${large ? 'w-8 h-8 sm:w-9 sm:h-9' : 'w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12'}`}
                 aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
               >
                 {inWishlist ? (
-                  <FaHeart className={`text-primary fill-primary ${large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`} />
+                  <FaHeart className={`text-primary fill-primary ${large ? 'text-sm sm:text-base' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`} />
                 ) : (
-                  <FaRegHeart className={`text-primary hover:text-primary/80 ${large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`} />
+                  <FaRegHeart className={`text-primary hover:text-primary/80 ${large ? 'text-sm sm:text-base' : 'text-xs sm:text-sm md:text-base lg:text-xl'}`} />
                 )}
               </button>
               
               {/* Cart Button */}
               <button
                 onClick={handleCartClick}
-                className={`border-2 border-primary text-primary bg-transparent rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center gap-1 shrink-0 cursor-pointer z-10 ${large ? 'px-2 w-auto h-10 sm:h-10 md:h-12 lg:h-14' : 'px-2 w-auto h-9 sm:h-9 md:h-10 lg:h-12'}`}
+                className={`border-2 border-primary text-primary bg-transparent rounded-md sm:rounded-lg hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center gap-1 shrink-0 cursor-pointer z-10 ${large ? 'px-1.5 w-auto h-8 sm:h-9' : 'px-2 w-auto h-9 sm:h-9 md:h-10 lg:h-12'}`}
                 aria-label="Add to cart"
               >
-                <FaShoppingCart className={large ? 'text-sm sm:text-base md:text-lg lg:text-2xl' : 'text-xs sm:text-sm md:text-base lg:text-xl'} />
-                <span className={`font-semibold ${large ? 'text-xs sm:text-sm' : 'text-[10px] sm:text-xs'} hidden sm:inline`}>
+                <FaShoppingCart className={large ? 'text-sm sm:text-base' : 'text-xs sm:text-sm md:text-base lg:text-xl'} />
+                <span className={`font-semibold ${large ? 'text-[10px] sm:text-xs' : 'text-[10px] sm:text-xs'} hidden sm:inline`}>
                   Add
                 </span>
               </button>
