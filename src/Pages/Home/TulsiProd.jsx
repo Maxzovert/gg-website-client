@@ -101,7 +101,7 @@ const TulsiProd = () => {
               <span className="absolute -top-0.5 sm:-top-1 left-1/2 -translate-x-1/2 z-20 max-w-[calc(100%-6px)] truncate rounded-full bg-primary px-1.5 py-px sm:px-3 sm:py-1 text-[8px] sm:text-[11px] sm:leading-normal md:text-sm font-bold uppercase tracking-wide text-white shadow-md text-center">
                 Highlighted
               </span>
-              <div className="flex h-full min-h-0 w-full flex-1 flex-col rounded-[10px] sm:rounded-[13px] bg-amber-50/30 overflow-hidden pt-3.5 sm:pt-5">
+              <div className="flex h-full min-h-0 w-full flex-1 flex-col rounded-[10px] sm:rounded-[13px] bg-amber-50/30 overflow-hidden pt-3 sm:pt-3.5">
                 <ProductCard
                   product={product}
                   variant="rudraksh"
