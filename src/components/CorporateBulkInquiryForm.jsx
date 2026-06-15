@@ -55,10 +55,6 @@ export default function CorporateBulkInquiryForm({ source = 'corporate_page' }) 
     if (isSubmitting) return
 
     setIsSubmitting(true)
-    trackLead({
-      content_name: 'Corporate bulk inquiry',
-      source,
-    })
 
     const body = {
       name: form.name,
@@ -77,6 +73,11 @@ export default function CorporateBulkInquiryForm({ source = 'corporate_page' }) 
       if (!response.ok || !payload?.success) {
         throw new Error(payload?.message || 'Could not send your request')
       }
+
+      trackLead({
+        content_name: 'Corporate bulk inquiry',
+        source,
+      })
 
       setSubmitted(true)
       setForm({

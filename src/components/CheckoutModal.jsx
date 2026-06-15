@@ -197,6 +197,7 @@ const CheckoutModal = ({
           {currentStep === 2 && (
             <PaymentOptions
               baseAmount={baseAmount}
+              cartItems={cartItems}
               onPaymentSelect={(method) => {
                 setPaymentMethod(method);
               }}

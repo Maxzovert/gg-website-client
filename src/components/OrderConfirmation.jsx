@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaCheckCircle, FaSpinner, FaMapMarkerAlt, FaShoppingBag } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { apiFetch } from '../config/api.js';
-import { trackBeginCheckout } from '../utils/analytics.js';
+import { trackBeginCheckout, trackPurchase } from '../utils/analytics.js';
 import { paymentGatewayEmail } from '../utils/checkoutContact.js';
 
 const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
@@ -154,6 +154,11 @@ const OrderConfirmation = ({
       setOrderData(order);
       onOrderPlaced(order);
       clearCart();
+      trackPurchase({
+        transactionId: order.id,
+        value: order.final_amount ?? finalAmount,
+        items: orderItems,
+      });
     } catch (error) {
       alert(error.message || 'Network error. Please try again.');
     } finally {
