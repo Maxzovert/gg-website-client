@@ -1,41 +1,43 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  enableAnalyticsFromConsent,
-  getStoredConsent,
-  hydrateAnalyticsIfConsented,
-  rejectOptionalCookies,
-  trackPageView,
-} from '../utils/analytics';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { initAnalytics, trackPageView } from '../utils/analytics';
+
+const NOTICE_DISMISSED_KEY = 'gg_cookie_notice_dismissed';
+
+function isNoticeDismissed() {
+  try {
+    return localStorage.getItem(NOTICE_DISMISSED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function dismissNotice() {
+  try {
+    localStorage.setItem(NOTICE_DISMISSED_KEY, '1');
+  } catch {
+    /* ignore */
+  }
+}
 
 /**
- * GDPR-style choice: essential-only vs analytics (GA4 + Meta Pixel). Loads trackers only after opt-in.
+ * Loads GA4 + Meta Pixel immediately on every visit (no opt-in required).
+ * Optional notice is informational only — dismissing it does not affect tracking.
  */
 const CookieConsent = () => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => !isNoticeDismissed());
   const location = useLocation();
 
   useEffect(() => {
-    hydrateAnalyticsIfConsented();
-    const c = getStoredConsent();
-    if (c === null || c === undefined) {
-      setVisible(true);
-    }
+    initAnalytics();
   }, []);
 
   useEffect(() => {
     trackPageView(location.pathname + location.search);
   }, [location.pathname, location.search]);
 
-  const accept = () => {
-    enableAnalyticsFromConsent();
-    trackPageView(location.pathname + location.search);
-    setVisible(false);
-  };
-
-  const essentialOnly = () => {
-    rejectOptionalCookies();
+  const handleDismiss = () => {
+    dismissNotice();
     setVisible(false);
   };
 
@@ -45,38 +47,29 @@ const CookieConsent = () => {
     <div
       className="fixed bottom-0 left-0 right-0 z-100 p-4 md:p-6 bg-gray-900/95 text-white shadow-2xl border-t border-white/10"
       role="dialog"
-      aria-labelledby="cookie-consent-title"
+      aria-labelledby="cookie-notice-title"
     >
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex-1 text-sm md:text-base leading-relaxed">
-          <h2 id="cookie-consent-title" className="font-semibold text-base mb-1">
-            Cookies & analytics
+          <h2 id="cookie-notice-title" className="font-semibold text-base mb-1">
+            Cookies &amp; analytics
           </h2>
           <p className="text-white/90">
-            We use essential cookies for the site to work. With your permission we also load Google Analytics and
-            Meta (Facebook) Pixel to understand traffic, measure ads, and improve the store. See our{' '}
+            We use cookies and analytics (Google Analytics and Meta Pixel) to understand traffic,
+            measure ads, and improve the store. See our{' '}
             <Link to="/privacy-policy" className="underline hover:text-white">
               Privacy Policy
             </Link>
             .
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={essentialOnly}
-            className="px-4 py-2.5 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors text-sm font-medium"
-          >
-            Essential only
-          </button>
-          <button
-            type="button"
-            onClick={accept}
-            className="px-4 py-2.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium transition-colors"
-          >
-            Accept analytics
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleDismiss}
+          className="shrink-0 px-5 py-2.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium transition-colors"
+        >
+          Got it
+        </button>
       </div>
     </div>
   );

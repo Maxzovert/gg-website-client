@@ -1,11 +1,8 @@
-const CONSENT_KEY = 'gg_cookie_consent';
-
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-7P8LPXZ012';
 const META_PIXEL_ID = import.meta.env.VITE_META_PIXEL_ID || '4467576400152637';
+const PURCHASE_TRACKED_KEY = 'gg_purchase_tracked_ids';
 
-function hasAnalyticsConsent() {
-  return getStoredConsent() === 'analytics';
-}
+let analyticsInited = false;
 
 function normalizeItems(items = []) {
   return items.map((i) => ({
@@ -16,12 +13,24 @@ function normalizeItems(items = []) {
   }));
 }
 
-export function getStoredConsent() {
-  try {
-    return localStorage.getItem(CONSENT_KEY);
-  } catch {
-    return null;
-  }
+function metaContentsFromItems(items = []) {
+  return normalizeItems(items).map((i) => ({
+    id: i.item_id,
+    quantity: i.quantity,
+    item_price: i.price,
+  }));
+}
+
+function metaParamsFromItems(items, value, currency = 'INR') {
+  const normalized = normalizeItems(items);
+  return {
+    value: Number(value) || 0,
+    currency,
+    content_ids: normalized.map((i) => i.item_id).filter(Boolean),
+    contents: metaContentsFromItems(items),
+    content_type: 'product',
+    num_items: normalized.reduce((sum, i) => sum + i.quantity, 0),
+  };
 }
 
 function ensureGtagStub() {
@@ -73,43 +82,56 @@ function appendMetaPixelScript() {
   document.head.appendChild(s);
 }
 
+function ensureAnalytics() {
+  initAnalytics();
+}
+
 function trackMetaPageView() {
-  if (!hasAnalyticsConsent() || typeof window.fbq !== 'function') return;
+  if (typeof window.fbq !== 'function') return;
   initMetaPixel();
   window.fbq('track', 'PageView');
 }
 
-function trackMetaEvent(eventName, params = {}) {
-  if (!hasAnalyticsConsent() || typeof window.fbq !== 'function') return;
+function trackMetaEvent(eventName, params = {}, options = {}) {
+  if (typeof window.fbq !== 'function') return;
   initMetaPixel();
-  window.fbq('track', eventName, params);
-}
-
-/** Call after user accepts analytics cookies */
-export function enableAnalyticsFromConsent() {
-  try {
-    localStorage.setItem(CONSENT_KEY, 'analytics');
-  } catch {
-    /* ignore */
-  }
-  ensureGtagStub();
-  window.gtag('js', new Date());
-  window.gtag('config', GA_ID, { anonymize_ip: true });
-  appendGtagScript();
-  appendMetaPixelScript();
-}
-
-export function rejectOptionalCookies() {
-  try {
-    localStorage.setItem(CONSENT_KEY, 'essential');
-  } catch {
-    /* ignore */
+  if (options.eventID) {
+    window.fbq('track', eventName, params, { eventID: options.eventID });
+  } else {
+    window.fbq('track', eventName, params);
   }
 }
 
-/** Restore GA on return visits if user already opted in */
-export function hydrateAnalyticsIfConsented() {
-  if (getStoredConsent() !== 'analytics') return;
+function getTrackedPurchaseIds() {
+  try {
+    const raw = sessionStorage.getItem(PURCHASE_TRACKED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function markPurchaseTracked(orderId) {
+  try {
+    const ids = getTrackedPurchaseIds();
+    const id = String(orderId);
+    if (!ids.includes(id)) {
+      ids.push(id);
+      sessionStorage.setItem(PURCHASE_TRACKED_KEY, JSON.stringify(ids));
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+function hasPurchaseBeenTracked(orderId) {
+  return getTrackedPurchaseIds().includes(String(orderId));
+}
+
+/** Load GA4 + Meta Pixel scripts (idempotent; no consent gate). */
+export function initAnalytics() {
+  if (analyticsInited) return;
+  analyticsInited = true;
   ensureGtagStub();
   window.gtag('js', new Date());
   window.gtag('config', GA_ID, { anonymize_ip: true });
@@ -118,8 +140,7 @@ export function hydrateAnalyticsIfConsented() {
 }
 
 export function trackPageView(path) {
-  if (!hasAnalyticsConsent()) return;
-  ensureGtagStub();
+  ensureAnalytics();
   window.gtag('config', GA_ID, {
     page_path: path,
     anonymize_ip: true,
@@ -128,82 +149,112 @@ export function trackPageView(path) {
 }
 
 export function trackPurchase({ transactionId, value, currency = 'INR', items = [] }) {
+  const orderId = String(transactionId ?? '');
+  if (!orderId || hasPurchaseBeenTracked(orderId)) return;
+  markPurchaseTracked(orderId);
+
   const normalizedItems = normalizeItems(items);
-  if (!hasAnalyticsConsent()) return;
-  ensureGtagStub();
+  ensureAnalytics();
   window.gtag('event', 'purchase', {
-    transaction_id: String(transactionId),
+    transaction_id: orderId,
     value: Number(value) || 0,
     currency,
     items: normalizedItems,
   });
-  trackMetaEvent('Purchase', {
-    value: Number(value) || 0,
-    currency,
-    content_ids: normalizedItems.map((i) => i.item_id).filter(Boolean),
-    content_type: 'product',
-    num_items: normalizedItems.reduce((sum, i) => sum + i.quantity, 0),
-  });
+  trackMetaEvent(
+    'Purchase',
+    metaParamsFromItems(items, value, currency),
+    { eventID: orderId },
+  );
 }
 
 export function trackLogin(method = 'otp') {
-  if (getStoredConsent() !== 'analytics') return;
-  ensureGtagStub();
+  ensureAnalytics();
   window.gtag('event', 'login', { method });
 }
 
 export function trackSignUp(method = 'otp') {
-  if (getStoredConsent() !== 'analytics') return;
-  ensureGtagStub();
+  ensureAnalytics();
   window.gtag('event', 'sign_up', { method });
+  trackMetaEvent('CompleteRegistration', { status: true, method });
 }
 
 export function trackBeginCheckout(value, items = []) {
+  ensureAnalytics();
   const normalizedItems = normalizeItems(items);
-  if (!hasAnalyticsConsent()) return;
-  ensureGtagStub();
   window.gtag('event', 'begin_checkout', {
     value: Number(value) || 0,
     currency: 'INR',
     items: normalizedItems,
   });
-  trackMetaEvent('InitiateCheckout', {
+  trackMetaEvent('InitiateCheckout', metaParamsFromItems(items, value, 'INR'));
+}
+
+export function trackAddPaymentInfo(value, items = [], paymentMethod = '') {
+  ensureAnalytics();
+  const normalizedItems = normalizeItems(items);
+  window.gtag('event', 'add_payment_info', {
     value: Number(value) || 0,
     currency: 'INR',
-    content_ids: normalizedItems.map((i) => i.item_id).filter(Boolean),
-    content_type: 'product',
-    num_items: normalizedItems.reduce((sum, i) => sum + i.quantity, 0),
+    payment_type: paymentMethod,
+    items: normalizedItems,
+  });
+  trackMetaEvent('AddPaymentInfo', {
+    ...metaParamsFromItems(items, value, 'INR'),
+    payment_method: paymentMethod,
   });
 }
 
 export function trackViewContent(product, quantity = 1) {
-  if (!hasAnalyticsConsent() || !product) return;
+  if (!product) return;
   const id = String(product.id ?? product.product_id ?? '');
   const price = Number(product.price ?? product.product_price) || 0;
+  const qty = Number(quantity) || 1;
+  const name = product.name || product.product_name || '';
+  const value = price * qty;
+
+  ensureAnalytics();
+  window.gtag('event', 'view_item', {
+    currency: 'INR',
+    value,
+    items: [{ item_id: id, item_name: name, price, quantity: qty }],
+  });
   trackMetaEvent('ViewContent', {
     content_ids: id ? [id] : [],
-    content_name: product.name || product.product_name || '',
+    content_name: name,
     content_type: 'product',
-    value: price * (Number(quantity) || 1),
+    value,
     currency: 'INR',
+    contents: [{ id, quantity: qty, item_price: price }],
   });
 }
 
 export function trackAddToCart(product, quantity = 1) {
-  if (!hasAnalyticsConsent() || !product) return;
+  if (!product) return;
   const id = String(product.id ?? product.product_id ?? '');
   const price = Number(product.price ?? product.product_price) || 0;
   const qty = Number(quantity) || 1;
+  const name = product.name || product.product_name || '';
+  const value = price * qty;
+
+  ensureAnalytics();
+  window.gtag('event', 'add_to_cart', {
+    currency: 'INR',
+    value,
+    items: [{ item_id: id, item_name: name, price, quantity: qty }],
+  });
   trackMetaEvent('AddToCart', {
     content_ids: id ? [id] : [],
-    content_name: product.name || product.product_name || '',
+    content_name: name,
     content_type: 'product',
-    value: price * qty,
+    value,
     currency: 'INR',
+    contents: [{ id, quantity: qty, item_price: price }],
   });
 }
 
 export function trackLead(payload = {}) {
-  if (!hasAnalyticsConsent()) return;
+  ensureAnalytics();
+  window.gtag('event', 'generate_lead', payload);
   trackMetaEvent('Lead', payload);
 }

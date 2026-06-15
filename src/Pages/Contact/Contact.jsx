@@ -29,10 +29,6 @@ const Contact = () => {
     if (isSubmitting) return
 
     setIsSubmitting(true)
-    trackLead({
-      content_name: 'Contact Form',
-      source: 'contact_page',
-    })
     try {
       const response = await apiFetch('/api/contact', {
         method: 'POST',
@@ -44,6 +40,10 @@ const Contact = () => {
         throw new Error(payload?.message || 'Failed to send your message')
       }
 
+      trackLead({
+        content_name: 'Contact Form',
+        source: 'contact_page',
+      })
       setSubmitted(true)
       setFormData({ name: '', email: '', subject: '', message: '' })
       toast.success('Message sent successfully')

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FaCreditCard, FaUniversity, FaMobileAlt, FaMoneyBillWave } from 'react-icons/fa';
+import { trackAddPaymentInfo } from '../utils/analytics.js';
 
-const PaymentOptions = ({ baseAmount, onPaymentSelect }) => {
+const PaymentOptions = ({ baseAmount, cartItems = [], onPaymentSelect }) => {
   const [selectedMethod, setSelectedMethod] = useState('');
   const shippingFor = (methodId) => (methodId === 'cod' ? 120 : 70);
   const totalFor = (methodId) => Number(baseAmount || 0) + shippingFor(methodId);
@@ -36,6 +37,13 @@ const PaymentOptions = ({ baseAmount, onPaymentSelect }) => {
   const handleSelect = (methodId) => {
     setSelectedMethod(methodId);
     onPaymentSelect(methodId);
+    const orderItems = cartItems.map((item) => ({
+      product_id: item.id,
+      product_name: item.name,
+      product_price: item.price,
+      quantity: item.quantity,
+    }));
+    trackAddPaymentInfo(totalFor(methodId), orderItems, methodId);
   };
 
   return (
