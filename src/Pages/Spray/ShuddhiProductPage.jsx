@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/Toaster';
 import Loader from '../../components/Loader';
 import PreorderEmailModal from '../../components/PreorderEmailModal';
+import OtherSpraysSection from '../../components/OtherSpraysSection';
 import { submitPreorderRequest } from '../../utils/preorderRequest';
 import { trackViewContent } from '../../utils/analytics.js';
 import shuddhiBg from '../../assets/Sprayelem/shuddhi/shuddhibg.png';
@@ -505,6 +506,8 @@ const ShuddhiProductPage = () => {
             </div>
           )}
         </section>
+
+        <OtherSpraysSection excludeProductId={product?.id} />
 
         <PreorderEmailModal
           isOpen={showPreorderModal}

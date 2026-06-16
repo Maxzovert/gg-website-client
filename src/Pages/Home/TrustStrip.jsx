@@ -1,16 +1,16 @@
 import React from 'react'
-import { FaCheckCircle, FaMoneyBillWave, FaShippingFast, FaLock } from 'react-icons/fa'
+import { FaCheckCircle, FaFlask, FaTruck, FaLock } from 'react-icons/fa'
 
 const trustItems = [
-  { label: 'Authentic Rudraksha', Icon: FaCheckCircle },
-  { label: 'COD Available', Icon: FaMoneyBillWave },
-  { label: 'Fast Dispatch', Icon: FaShippingFast },
-  { label: 'Secure Payments', Icon: FaLock },
+  { label: 'Authentic', Icon: FaCheckCircle },
+  { label: 'Lab-Tested', Icon: FaFlask },
+  { label: 'Pan-India Delivery', Icon: FaTruck },
+  { label: 'Secure Payment', Icon: FaLock },
 ]
 
 const TrustStrip = () => {
   return (
-    <section className="bg-[#FFF6DE] py-4 sm:py-5">
+    <section className="bg-[#FFF6DE] py-4 sm:py-5" aria-label="Store trust highlights">
       <div className="mx-auto grid w-[92%] max-w-7xl grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
         {trustItems.map(({ label, Icon }) => (
           <div

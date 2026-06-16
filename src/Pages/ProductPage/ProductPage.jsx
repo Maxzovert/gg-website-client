@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   FaStar,
   FaStarHalfAlt,
@@ -13,7 +14,6 @@ import {
   FaRegHeart,
   FaTruck,
   FaShieldAlt,
-  FaUndo,
   FaCertificate,
   FaCompass,
   FaCheckCircle,
@@ -38,6 +38,22 @@ import { isProductPreorder, productCanBePurchased, getMaxOrderQuantity } from ".
 import { submitPreorderRequest } from "../../utils/preorderRequest";
 import { trackBeginCheckout, trackViewContent } from "../../utils/analytics.js";
 import { getCardReviewCount } from "../../utils/reviewDisplayCount.js";
+import { buildBreadcrumbJsonLd, buildProductJsonLd } from "../../utils/productJsonLd.js";
+
+const LOW_STOCK_THRESHOLD = 5;
+
+function getStockStatus(product) {
+  const stock = Number(product?.stock) || 0;
+  if (stock <= 0) return { kind: "out", stock: 0 };
+  if (stock <= LOW_STOCK_THRESHOLD) return { kind: "low", stock };
+  return { kind: "in", stock };
+}
+
+function getStockLabel(status, { compact = false } = {}) {
+  if (status.kind === "out") return compact ? "No Stock" : "Out of Stock";
+  if (status.kind === "low") return `Only ${status.stock} left`;
+  return compact ? "Stock" : "In Stock";
+}
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -623,6 +639,20 @@ const ProductPage = () => {
 
   const pricing = pricingFromProduct(product);
   const reviewCount = totalReviews;
+  const stockStatus = getStockStatus(product);
+  const productJsonLd = buildProductJsonLd({
+    product,
+    pricing,
+    avgRating,
+    reviewCount: totalReviews,
+  });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: "Home", url: "/" },
+    ...(product.category && categoryToPath[product.category]
+      ? [{ name: product.category, url: categoryToPath[product.category] }]
+      : []),
+    { name: product.name, url: `/product/${product.slug || product.id}` },
+  ]);
   const hasMultipleImages = product.images && product.images.length > 1;
   const isPreorder = isProductPreorder(product);
   const canPurchase = productCanBePurchased(product);
@@ -652,6 +682,14 @@ const ProductPage = () => {
 
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-orange-50/30 to-white overflow-x-hidden pb-24 sm:pb-6 lg:pb-8">
+      <Helmet>
+        {productJsonLd ? (
+          <script type="application/ld+json">{JSON.stringify(productJsonLd)}</script>
+        ) : null}
+        {breadcrumbJsonLd ? (
+          <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
+        ) : null}
+      </Helmet>
       <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-4 md:px-6 lg:px-8 xl:px-12 min-w-0">
         {/* Back Button */}
         <button
@@ -869,6 +907,16 @@ const ProductPage = () => {
                   )}
                 </p>
               )}
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+                  <FaCheckCircle className="shrink-0" aria-hidden />
+                  100% Authentic
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-semibold text-primary">
+                  <FaCertificate className="shrink-0" aria-hidden />
+                  Lab-Verified Quality
+                </span>
+              </div>
             </div>
 
             {/* Badges */}
@@ -981,10 +1029,16 @@ const ProductPage = () => {
                       ? `Pre-order — ${product.stock} available now`
                       : 'Pre-order — ships when ready'}
                   </span>
-                ) : product.stock > 0 ? (
-                  <span className="inline-flex items-center text-sm sm:text-base font-semibold text-primary">
-                    <span className="w-2 h-2 bg-primary rounded-full mr-2 shrink-0"></span>
-                    In Stock ({product.stock} available)
+                ) : stockStatus.kind !== 'out' ? (
+                  <span className={`inline-flex items-center text-sm sm:text-base font-semibold ${
+                    stockStatus.kind === 'low' ? 'text-amber-700' : 'text-primary'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full mr-2 shrink-0 ${
+                      stockStatus.kind === 'low' ? 'bg-amber-500' : 'bg-primary'
+                    }`}></span>
+                    {stockStatus.kind === 'low'
+                      ? getStockLabel(stockStatus)
+                      : `In Stock (${stockStatus.stock} available)`}
                   </span>
                 ) : (
                   <span className="inline-flex items-center text-sm sm:text-base font-semibold text-red-600">
@@ -1053,7 +1107,7 @@ const ProductPage = () => {
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
                   <p className="font-semibold text-[11px] sm:text-sm truncate">Fast Dispatch</p>
-                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Quick order processing</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">3–7 business days</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-gray-700 min-w-0 overflow-hidden">
@@ -1067,11 +1121,11 @@ const ProductPage = () => {
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-gray-700 min-w-0 overflow-hidden">
                 <div className="p-1.5 sm:p-2 rounded-full bg-primary/10 text-primary shrink-0">
-                  <FaUndo className="text-xs sm:text-lg" />
+                  <FaCheckCircle className="text-xs sm:text-lg" />
                 </div>
                 <div className="min-w-0 flex-1 overflow-hidden">
-                  <p className="font-semibold text-[11px] sm:text-sm truncate">Easy Returns</p>
-                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Hassle-free</p>
+                  <p className="font-semibold text-[11px] sm:text-sm truncate">100% Authentic</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Genuine products</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 text-gray-700 min-w-0 overflow-hidden">

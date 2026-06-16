@@ -8,6 +8,7 @@ import tulsiBanner from '../../assets/TulsiMala/tcm.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
+import CollectionSortSelect, { sortProducts } from '../../components/CollectionSortSelect';
 
 /** Must match `categories.name` in your database (comparison is case-insensitive). */
 const TULSI_CATEGORY = 'Tulsi Mala';
@@ -38,6 +39,7 @@ const TulsiMala = () => {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+  const [sortBy, setSortBy] = useState('featured');
 
   useEffect(() => {
     fetchFilterOptions();
@@ -70,8 +72,8 @@ const TulsiMala = () => {
       const price = product.price || 0;
       return price >= filters.priceMin && price <= filters.priceMax;
     });
-    setProducts(filtered);
-  }, [filters.priceMin, filters.priceMax, allProducts]);
+    setProducts(sortProducts(filtered, sortBy));
+  }, [filters.priceMin, filters.priceMax, allProducts, sortBy]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -110,7 +112,7 @@ const TulsiMala = () => {
           const price = product.price || 0;
           return price >= filters.priceMin && price <= filters.priceMax;
         });
-        setProducts(filtered);
+        setProducts(sortProducts(filtered, sortBy));
       } else {
         setAllProducts([]);
         setProducts([]);
@@ -380,6 +382,12 @@ const TulsiMala = () => {
 
           {/* Products Section */}
           <div className="flex-1">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-gray-600">
+                {loading ? 'Loading…' : `${products.length} product${products.length === 1 ? '' : 's'}`}
+              </p>
+              <CollectionSortSelect value={sortBy} onChange={setSortBy} />
+            </div>
             {loading ? (
               <div className="flex h-64 items-center justify-center">
                 <Loader size="lg" />

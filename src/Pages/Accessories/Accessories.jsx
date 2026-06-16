@@ -8,6 +8,7 @@ import accessoriesBanner from '../../assets/Accessories/as1.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
+import CollectionSortSelect, { sortProducts } from '../../components/CollectionSortSelect';
 
 const ACCESSORIES_SUBCATEGORIES = [
   { id: 1, name: 'Mala' },
@@ -45,6 +46,7 @@ const Accessories = () => {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+  const [sortBy, setSortBy] = useState('featured');
 
   useEffect(() => {
     fetchFilterOptions();
@@ -73,8 +75,8 @@ const Accessories = () => {
       const price = product.price || 0;
       return price >= filters.priceMin && price <= filters.priceMax;
     });
-    setProducts(filtered);
-  }, [filters.priceMin, filters.priceMax, allProducts]);
+    setProducts(sortProducts(filtered, sortBy));
+  }, [filters.priceMin, filters.priceMax, allProducts, sortBy]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -112,7 +114,7 @@ const Accessories = () => {
           const price = product.price || 0;
           return price >= filters.priceMin && price <= filters.priceMax;
         });
-        setProducts(filtered);
+        setProducts(sortProducts(filtered, sortBy));
       } else {
         setAllProducts([]);
         setProducts([]);
@@ -390,6 +392,12 @@ const Accessories = () => {
 
           {/* Products Section */}
           <div className="flex-1">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-gray-600">
+                {loading ? 'Loading…' : `${products.length} product${products.length === 1 ? '' : 's'}`}
+              </p>
+              <CollectionSortSelect value={sortBy} onChange={setSortBy} />
+            </div>
             {loading ? (
               <div className="flex justify-center items-center h-64">
                 <Loader size="lg" />

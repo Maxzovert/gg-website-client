@@ -3,7 +3,7 @@ import { matchPath, useLocation, useSearchParams } from 'react-router-dom';
 
 const SITE = (import.meta.env.VITE_SITE_URL || 'https://www.gawriganga.com').replace(/\/$/, '');
 const OG_LOCALE = 'en_IN';
-const OG_IMAGE_PATH = '/favicon.png';
+const OG_IMAGE_PATH = import.meta.env.VITE_OG_IMAGE_PATH || '/favicon.png';
 const DEFAULT_DESC =
   'Shop authentic Rudraksha, japa & meditation malas, aura sprays, Tulsi malas, and spiritual accessories at Gawri Ganga—secure checkout and delivery across India.';
 
@@ -300,7 +300,11 @@ const RouteSeo = () => {
   const [searchParams] = useSearchParams();
   const meta = matchRouteMeta(pathname, searchParams);
   const url = `${SITE}${pathname}`;
-  const ogImage = `${SITE}${OG_IMAGE_PATH}`;
+  const ogImage =
+    import.meta.env.VITE_OG_IMAGE_URL?.trim() ||
+    (OG_IMAGE_PATH.startsWith('http')
+      ? OG_IMAGE_PATH
+      : `${SITE}${OG_IMAGE_PATH.startsWith('/') ? '' : '/'}${OG_IMAGE_PATH}`);
   const isHome = pathname === '/';
   const orgLd = isHome ? organizationJsonLd(SITE, HOME_DESCRIPTION) : null;
 

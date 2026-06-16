@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle, FaShieldAlt } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaShoppingCart, FaArrowLeft, FaTag, FaCheckCircle, FaChevronDown } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/Toaster';
 import { useAuth } from '../../context/AuthContext';
@@ -12,6 +12,7 @@ import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPrici
 import { getMaxOrderQuantity } from '../../utils/productPreorder';
 import { trackBeginCheckout } from '../../utils/analytics.js';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
+import PaymentTrustBadges from '../../components/PaymentTrustBadges';
 
 function shuffleInPlace(arr) {
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -46,6 +47,11 @@ function getCouponHeadline(coupon) {
   return String(coupon.discount_type).toLowerCase() === 'percentage'
     ? `${coupon.discount_value}% OFF`
     : `${formatMoney(coupon.discount_value)} OFF`;
+}
+
+function formatCouponExpiry(coupon) {
+  if (!coupon?.expiry_date) return 'No expiry';
+  return new Date(coupon.expiry_date).toLocaleDateString('en-IN');
 }
 
 function isCouponLive(coupon) {
@@ -115,6 +121,7 @@ const Cart = () => {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [showCouponCelebration, setShowCouponCelebration] = useState(false);
+  const [couponsExpanded, setCouponsExpanded] = useState(false);
 
   const getReviewCount = useCallback((productId) => getCardReviewCount(productId), []);
 
@@ -267,6 +274,7 @@ const Cart = () => {
       });
       setShowCouponCelebration(true);
       setTimeout(() => setShowCouponCelebration(false), 1800);
+      setCouponsExpanded(false);
       setPrivateCouponCode(data.data.code || '');
       setSelectedCouponCode(data.data.code || selectedCouponCode);
       toast.success(`Coupon ${data.data.code} applied`);
@@ -309,6 +317,19 @@ const Cart = () => {
     setAppliedCoupon(null);
     setPrivateCouponCode('');
     toast.success('Coupon removed');
+  };
+
+  const handleProceedToCheckout = () => {
+    if (cartItems.length === 0) {
+      toast.info('Your cart is empty. Add items to proceed to checkout.');
+      return;
+    }
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: '/cart' } } });
+      return;
+    }
+    trackBeginCheckout(payableAfterWallet, cartItems);
+    setShowCheckout(true);
   };
 
   const showEmptyCart = cartItems.length === 0 && !showCheckout;
@@ -371,402 +392,435 @@ const Cart = () => {
         ))}
       </div>
     )}
-    <div className="min-h-screen py-4 sm:py-6 lg:py-8 bg-linear-to-br from-[#f7f7fb] via-white to-[#fff6ec]">
-      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-[#f7f7fb] via-white to-[#fff6ec] pb-24 lg:pb-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
         {/* Header */}
-        <div className="mb-6 sm:mb-8 rounded-3xl border border-black/5 bg-white/90 backdrop-blur-md shadow-[0_10px_40px_rgba(17,24,39,0.06)] p-4 sm:p-6">
+        <div className="mb-5 sm:mb-6">
           <Link
             to="/"
-            className="mb-4 sm:mb-6 inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-semibold text-sm"
+            className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80"
           >
-            <FaArrowLeft className="text-sm sm:text-base" />
-            <span className="text-sm sm:text-base">Continue Shopping</span>
+            <FaArrowLeft className="text-xs" />
+            Continue Shopping
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900">
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                 Shopping Cart
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Review your items and checkout securely.
+              <p className="mt-1 text-sm text-gray-500">
+                {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} · Secure checkout
               </p>
             </div>
+            {cartItems.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearCart}
+                className="text-sm font-medium text-gray-500 transition-colors hover:text-red-600"
+              >
+                Clear cart
+              </button>
+            )}
           </div>
-          <p className="text-sm sm:text-base text-gray-600 mt-2">
-            {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] lg:items-start">
           {/* Cart Items */}
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+          <div className="space-y-3">
+            <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-4 border-b border-gray-200 px-4 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <span>Product</span>
+              <span className="w-28 text-center">Quantity</span>
+              <span className="w-20 text-right">Total</span>
+              <span className="w-8" />
+            </div>
             {cartItems.map((item) => (
-              <div
+              <article
                 key={item.id}
-                className="group bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-black/5 p-3 sm:p-4 md:p-6 flex gap-3 sm:gap-4 hover:shadow-[0_14px_36px_rgba(17,24,39,0.08)] transition-all"
+                className="relative rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:grid sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-center sm:gap-4"
               >
-                {/* Product Image */}
-                <Link
-                  to={`/product/${item.slug || item.id}`}
-                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-xl overflow-hidden bg-gray-100 shrink-0 ring-1 ring-black/5"
-                >
-                  {item.images && item.images.length > 0 ? (
-                    <img
-                      src={item.images[0]}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/200x200?text=No+Image';
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <span className="text-xs">No Image</span>
-                    </div>
-                  )}
-                </Link>
+                <div className="flex gap-3 sm:gap-4 min-w-0 pr-8 sm:pr-0">
+                  <Link
+                    to={`/product/${item.slug || item.id}`}
+                    className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/80 sm:h-24 sm:w-24"
+                  >
+                    {item.images && item.images.length > 0 ? (
+                      <img
+                        src={item.images[0]}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/200x200?text=No+Image';
+                        }}
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+                        No Image
+                      </div>
+                    )}
+                  </Link>
 
-                {/* Product Details */}
-                <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 min-w-0">
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <Link
                       to={`/product/${item.slug || item.id}`}
-                      className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 hover:text-primary transition-colors mb-1 block line-clamp-2"
+                      className="mb-1 block line-clamp-2 text-base font-semibold text-gray-900 transition-colors hover:text-primary"
                     >
                       {item.name}
                     </Link>
                     {item.subcategory && (
-                      <p className="text-xs sm:text-sm text-gray-600 mb-1 line-clamp-1">
+                      <p className="mb-2 line-clamp-1 text-xs text-gray-500 sm:text-sm">
                         {item.subcategory}
-                        {item.deity && ` • ${item.deity}`}
-                        {item.planet && ` • ${item.planet}`}
+                        {item.deity && ` · ${item.deity}`}
+                        {item.planet && ` · ${item.planet}`}
                       </p>
                     )}
-                    <div className="flex items-center gap-2 mt-1">
-                      <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-primary">
-                        ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                      </p>
-                      <span className="text-[11px] sm:text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                        per item
-                      </span>
-                    </div>
+                    <p className="text-base font-bold text-primary sm:hidden">
+                      ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      <span className="ml-1 text-xs font-normal text-gray-500">each</span>
+                    </p>
                   </div>
+                </div>
 
-                  {/* Quantity Controls and Actions */}
-                  <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
-                    <div className="flex items-center border border-gray-200 rounded-xl bg-gray-50">
-                      <button
-                        onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
-                        className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-xl"
-                        disabled={item.quantity <= 1}
-                      >
-                        <FaMinus className="text-xs sm:text-sm" />
-                      </button>
-                      <span className="px-2 sm:px-4 md:px-6 py-1.5 sm:py-2 text-xs sm:text-base md:text-lg font-semibold text-gray-900 min-w-8 sm:min-w-12 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
-                        className="px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-primary hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-xl"
-                        disabled={item.quantity >= getMaxOrderQuantity(item)}
-                      >
-                        <FaPlus className="text-xs sm:text-sm" />
-                      </button>
-                    </div>
-
-                    {/* Item Total - Hidden on very small screens */}
-                    <div className="text-right hidden xs:block min-w-20">
-                      <p className="text-[11px] sm:text-xs text-gray-500">Item total</p>
-                      <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-primary">
-                        ₹{(item.price * item.quantity).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                      </p>
-                    </div>
-
-                    {/* Remove Button */}
+                <div className="mt-3 flex items-center justify-between gap-3 sm:mt-0 sm:w-28 sm:justify-center">
+                  <span className="text-xs font-medium text-gray-500 sm:hidden">Qty</span>
+                  <div className="inline-flex items-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
                     <button
-                      onClick={() => handleRemoveItem(item.id, item.name)}
-                      className="p-1.5 sm:p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0 opacity-80 group-hover:opacity-100"
-                      aria-label="Remove item"
+                      type="button"
+                      onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
+                      className="px-3 py-2 text-primary transition-colors hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={item.quantity <= 1}
+                      aria-label="Decrease quantity"
                     >
-                      <FaTrash className="text-sm sm:text-base md:text-lg" />
+                      <FaMinus className="text-xs" />
+                    </button>
+                    <span className="min-w-10 px-2 text-center text-sm font-semibold text-gray-900">
+                      {item.quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
+                      className="px-3 py-2 text-primary transition-colors hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={item.quantity >= getMaxOrderQuantity(item)}
+                      aria-label="Increase quantity"
+                    >
+                      <FaPlus className="text-xs" />
                     </button>
                   </div>
                 </div>
-              </div>
+
+                <div className="mt-2 flex items-center justify-between sm:mt-0 sm:w-20 sm:flex-col sm:items-end sm:justify-center sm:text-right">
+                  <span className="text-xs text-gray-500 sm:hidden">Line total</span>
+                  <p className="text-base font-bold text-gray-900 sm:text-lg">
+                    ₹{(item.price * item.quantity).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  </p>
+                  <p className="hidden text-xs text-gray-500 sm:block">
+                    ₹{item.price.toLocaleString('en-IN', { maximumFractionDigits: 0 })} each
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleRemoveItem(item.id, item.name)}
+                  className="absolute right-3 top-3 rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 sm:static sm:flex sm:w-8 sm:justify-center"
+                  aria-label={`Remove ${item.name}`}
+                >
+                  <FaTrash className="text-sm" />
+                </button>
+              </article>
             ))}
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-[0_16px_36px_rgba(17,24,39,0.09)] border border-black/5 p-3 sm:p-4 md:p-6 sticky top-4">
-              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6">
-                Order Summary
-              </h2>
+          <aside className="lg:sticky lg:top-24">
+            <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-[0_12px_40px_rgba(17,24,39,0.08)]">
+              <div className="border-b border-gray-100 bg-linear-to-r from-amber-50/80 to-white px-4 py-3 sm:px-5 sm:py-4">
+                <h2 className="text-lg font-bold text-gray-900">Order Summary</h2>
+              </div>
 
-              <div className="space-y-2 sm:space-y-3 md:space-y-4 mb-3 sm:mb-4 md:mb-6">
-                <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
-                  <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                  <span>₹{originalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
-                </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
-                    <span>Product discount</span>
-                    <span className="text-green-600 font-semibold">
-                      -₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-                    </span>
-                  </div>
-                )}
-                <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600">
-                  <span>Shipping</span>
-                  <span>
-                    {`₹${shippingCharges.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
-                  </span>
-                </div>
-                {availableCoupons.length > 0 && (
-                  <div className="rounded-xl border border-black/10 bg-linear-to-br from-white to-amber-50/70 p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <FaTag className="text-primary text-sm" />
-                        <p className="text-xs sm:text-sm font-semibold text-gray-800">Coupons & offers</p>
-                      </div>
-                      <p className="text-[11px] sm:text-xs text-gray-500">{availableCoupons.length} available</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-2">
-                      {availableCoupons.map((coupon) => {
-                        const isSelected = selectedCouponCode === coupon.code;
-                        const minAmount = Number(coupon.minimum_order_amount || 0);
-                        const meetsMin = totalPrice >= minAmount;
-                        const isLive = isCouponLive(coupon);
-                        const isSelectable = isLive && meetsMin;
-                        return (
-                          <div
-                            key={coupon.id}
-                            className={`rounded-lg border transition ${
-                              isSelected
-                                ? 'border-primary bg-primary/5'
-                                : 'border-gray-200 bg-white hover:border-primary/40'
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => isSelectable && setSelectedCouponCode(coupon.code)}
-                              disabled={!isSelectable}
-                              className={`text-left w-full p-2 ${!isSelectable ? 'cursor-not-allowed opacity-60' : ''}`}
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <div>
-                                  <p className="text-xs sm:text-sm font-bold text-gray-900">{coupon.code}</p>
-                                  <p className="text-[11px] sm:text-xs text-gray-600">{getCouponHeadline(coupon)}</p>
-                                </div>
-                                <span
-                                  className={`text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full font-semibold ${
-                                    isSelectable
-                                      ? 'bg-emerald-100 text-emerald-700'
-                                      : 'bg-gray-100 text-gray-500'
-                                  }`}
-                                >
-                                  {meetsMin ? 'Available' : `Min ${formatMoney(minAmount)}`}
-                                </span>
-                              </div>
-                            </button>
-
-                            {isSelected && (
-                              <div className="border-t border-gray-200 bg-white p-2 text-[11px] sm:text-xs text-gray-700">
-                                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                                  <p>Offer: <span className="font-semibold">{getCouponHeadline(coupon)}</span></p>
-                                  <p>Min order: <span className="font-semibold">{formatMoney(minAmount)}</span></p>
-                                  <p>
-                                    Max off:{' '}
-                                    <span className="font-semibold">
-                                      {coupon.maximum_discount != null
-                                        ? formatMoney(coupon.maximum_discount)
-                                        : 'No cap'}
-                                    </span>
-                                  </p>
-                                  <p>
-                                    Valid till:{' '}
-                                    <span className="font-semibold">
-                                      {coupon.expiry_date
-                                        ? new Date(coupon.expiry_date).toLocaleDateString('en-IN')
-                                        : 'No expiry'}
-                                    </span>
-                                  </p>
-                                </div>
-                                {selectedCoupon && !selectedCouponMeetsMinimum && (
-                                  <p className="text-red-600 font-semibold mt-2">
-                                    Add {formatMoney(selectedCouponMissingAmount)} more to unlock this coupon.
-                                  </p>
-                                )}
-                                {selectedCoupon && !selectedCouponIsLive && (
-                                  <p className="text-amber-700 font-semibold mt-2">
-                                    This coupon is not active for current date/time.
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mt-2 flex gap-2">
-                      {!appliedCoupon ? (
-                        <button
-                          type="button"
-                          onClick={handleApplyCoupon}
-                          disabled={couponLoading || !selectedCouponCode || !selectedCouponMeetsMinimum || !selectedCouponIsLive}
-                          className="flex-1 px-3 py-2 rounded-lg bg-linear-to-r from-primary to-orange-400 text-white text-xs sm:text-sm disabled:opacity-50 font-semibold shadow-sm"
-                        >
-                          {couponLoading ? 'Applying...' : 'Apply selected coupon'}
-                        </button>
-                      ) : (
-                        <>
-                          <div className="flex-1 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs sm:text-sm text-emerald-700 font-semibold flex items-center gap-2">
-                            <FaCheckCircle className="shrink-0" />
-                            {appliedCoupon.code} saved {formatMoney(couponDiscount)}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleRemoveCoupon}
-                            className="px-3 py-2 rounded-lg border border-red-300 text-red-600 text-xs sm:text-sm font-semibold"
-                          >
-                            Remove
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    {!appliedCoupon && (
-                      <div className="mt-3 border-t border-gray-200 pt-3">
-                        <p className="text-[11px] sm:text-xs text-gray-600 font-medium mb-2">
-                          Have a coupon code?
-                        </p>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={privateCouponCode}
-                            onChange={(e) => setPrivateCouponCode(e.target.value.toUpperCase())}
-                            placeholder="Enter Coupon code"
-                            className="flex-1 border border-gray-300 rounded-lg px-2 py-2 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleApplyPrivateCoupon}
-                            disabled={couponLoading || !String(privateCouponCode || '').trim()}
-                            className="px-3 py-2 rounded-lg border border-primary text-primary text-xs sm:text-sm disabled:opacity-50 font-semibold"
-                          >
-                            Apply
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                <div className="border-t border-gray-200 pt-2 sm:pt-3 md:pt-4">
-                  {appliedCoupon && (
-                    <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600 mb-2">
-                      <span>Coupon discount ({appliedCoupon.code})</span>
-                      <span className="text-green-600 font-semibold">
-                        -₹{couponDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-                      </span>
-                    </div>
-                  )}
-                  {hasRudrakshaInCart && (
-                    <>
-                      <label className="mb-2 sm:mb-3 flex items-start gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={includeBlessing}
-                          onChange={(e) => setIncludeBlessing(e.target.checked)}
-                          className="mt-0.5 h-4 w-4 accent-primary shrink-0"
-                        />
-                        <span className="text-xs sm:text-sm text-gray-700">
-                          Add Special Blessing Service (+₹{OPTIONAL_BLESSING_CHARGE})
-                        </span>
-                      </label>
-                      {includeBlessing && (
-                        <div className="flex justify-between text-xs sm:text-sm md:text-base text-gray-600 mb-2">
-                          <span>Blessing Service</span>
-                          <span>₹{blessingCharge.toLocaleString('en-IN')}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {isAuthenticated && walletBalance > 0 && (
-                    <div className="mb-2 rounded-md border border-emerald-200 bg-emerald-50 p-2">
-                      <label className="flex items-start gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={useWallet}
-                          onChange={(e) => {
-                            setUseWallet(e.target.checked);
-                            if (e.target.checked) setWalletToUse(walletBalance);
-                          }}
-                          className="mt-0.5 h-4 w-4 accent-primary shrink-0"
-                        />
-                        <span className="text-xs sm:text-sm text-gray-700">
-                          Apply wallet money (Available: ₹{walletBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })})
-                        </span>
-                      </label>
-                      {useWallet && (
-                        <div className="mt-1 flex justify-between text-xs sm:text-sm text-emerald-700">
-                          <span>Wallet deduction</span>
-                          <span>-₹{walletAppliedAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-base sm:text-lg md:text-xl font-bold text-gray-900">Total</span>
-                    <span className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">
+              <div className="space-y-3 px-4 py-4 sm:px-5">
+                <div className="rounded-xl bg-gray-50 px-3 py-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-bold text-gray-900">Total</span>
+                    <span className="text-2xl font-bold text-primary">
                       ₹{payableAfterWallet.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </span>
                   </div>
                   {discountAmount > 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      You save ₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    <p className="mt-1 text-xs text-gray-500">
+                      You save ₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })} on this order
                     </p>
                   )}
                 </div>
-              </div>
 
-              <button 
-                onClick={() => {
-                  if (cartItems.length === 0) {
-                    toast.info('Your cart is empty. Add items to proceed to checkout.');
-                    return;
-                  }
-                  if (!isAuthenticated) {
-                    navigate('/login', { state: { from: { pathname: '/cart' } } });
-                    return;
-                  }
-                  trackBeginCheckout(payableAfterWallet, cartItems);
-                  setShowCheckout(true);
-                }}
-                disabled={cartItems.length === 0}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-linear-to-r from-primary to-orange-400 text-white rounded-xl hover:brightness-95 transition-all font-semibold text-sm sm:text-base md:text-lg shadow-lg hover:shadow-xl mb-2 sm:mb-3 disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
-                Proceed to Checkout
-              </button>
+                <div className="space-y-2 border-t border-gray-100 pt-3 text-sm text-gray-600">
+                  <div className="flex justify-between gap-4">
+                    <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
+                    <span className="font-medium text-gray-900">
+                      ₹{originalTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between gap-4">
+                      <span>Product discount</span>
+                      <span className="font-semibold text-green-600">
+                        -₹{discountAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between gap-4">
+                    <span>Shipping</span>
+                    <span className="font-medium text-gray-900">
+                      ₹{shippingCharges.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    </span>
+                  </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between gap-4">
+                      <span>Coupon ({appliedCoupon.code})</span>
+                      <span className="font-semibold text-green-600">
+                        -₹{couponDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  )}
+                  {hasRudrakshaInCart && includeBlessing && (
+                    <div className="flex justify-between gap-4">
+                      <span>Blessing service</span>
+                      <span className="font-medium text-gray-900">₹{blessingCharge.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  {useWallet && walletAppliedAmount > 0 && (
+                    <div className="flex justify-between gap-4 text-emerald-700">
+                      <span>Wallet applied</span>
+                      <span className="font-semibold">
+                        -₹{walletAppliedAmount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-              <Link
-                to="/"
-                className="block w-full text-center px-4 sm:px-6 py-2 sm:py-3 border-2 border-primary text-primary rounded-xl hover:bg-primary/10 transition-all font-semibold text-xs sm:text-sm md:text-base"
-              >
-                Continue Shopping
-              </Link>
-              <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-2">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-emerald-600 text-white">
-                  <FaShieldAlt className="text-[11px]" />
-                </span>
-                <p className="text-[11px] sm:text-xs font-medium text-emerald-800">
-                  Payment secured by Easebuzz
+                {hasRudrakshaInCart && (
+                  <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-gray-200 bg-gray-50/80 px-3 py-2.5 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={includeBlessing}
+                      onChange={(e) => setIncludeBlessing(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    />
+                    <span>Add blessing service (+₹{OPTIONAL_BLESSING_CHARGE})</span>
+                  </label>
+                )}
+
+                {isAuthenticated && walletBalance > 0 && (
+                  <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-2.5 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={useWallet}
+                      onChange={(e) => {
+                        setUseWallet(e.target.checked);
+                        if (e.target.checked) setWalletToUse(walletBalance);
+                      }}
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    />
+                    <span>
+                      Use wallet balance
+                      <span className="mt-0.5 block text-xs text-emerald-700">
+                        Available: ₹{walletBalance.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                      </span>
+                    </span>
+                  </label>
+                )}
+
+                {availableCoupons.length > 0 && (
+                  <div className="overflow-hidden rounded-xl border border-amber-200/80">
+                    <button
+                      type="button"
+                      onClick={() => setCouponsExpanded((open) => !open)}
+                      className="flex w-full items-center justify-between gap-2 bg-amber-50/90 px-3 py-2.5 text-left text-sm font-semibold text-gray-800"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <FaTag className="text-primary" aria-hidden />
+                        {appliedCoupon ? `Coupon applied · ${appliedCoupon.code}` : 'Apply coupon'}
+                        {!appliedCoupon && (
+                          <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-gray-500">
+                            {availableCoupons.length}
+                          </span>
+                        )}
+                      </span>
+                      <FaChevronDown
+                        className={`text-xs text-gray-500 transition-transform ${couponsExpanded ? 'rotate-180' : ''}`}
+                        aria-hidden
+                      />
+                    </button>
+
+                    {couponsExpanded && (
+                      <div className="max-h-64 space-y-2 overflow-y-auto border-t border-amber-100 bg-white p-3">
+                        <div className="space-y-2">
+                          {availableCoupons.map((coupon) => {
+                            const isSelected = selectedCouponCode === coupon.code;
+                            const minAmount = Number(coupon.minimum_order_amount || 0);
+                            const meetsMin = meetsMinimumOrder(totalPrice, minAmount);
+                            const isLive = isCouponLive(coupon);
+                            const isSelectable = isLive && meetsMin;
+                            return (
+                              <div
+                                key={coupon.id}
+                                className={`overflow-hidden rounded-lg border transition ${
+                                  isSelected
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-gray-200 bg-white'
+                                }`}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedCouponCode(coupon.code)}
+                                  className="w-full p-2.5 text-left text-sm"
+                                >
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div>
+                                      <p className="font-bold text-gray-900">{coupon.code}</p>
+                                      <p className="text-xs text-gray-600">{getCouponHeadline(coupon)}</p>
+                                    </div>
+                                    <span
+                                      className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                                        isSelectable
+                                          ? 'bg-emerald-100 text-emerald-700'
+                                          : 'bg-gray-100 text-gray-500'
+                                      }`}
+                                    >
+                                      {meetsMin ? 'Available' : `Min ${formatMoney(minAmount)}`}
+                                    </span>
+                                  </div>
+                                </button>
+
+                                {isSelected && (
+                                  <div className="border-t border-gray-200 bg-white px-2.5 pb-2.5 pt-2 text-[11px] text-gray-700 sm:text-xs">
+                                    <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                                      <p>
+                                        Offer:{' '}
+                                        <span className="font-semibold text-gray-900">
+                                          {getCouponHeadline(coupon)}
+                                        </span>
+                                      </p>
+                                      <p>
+                                        Min order:{' '}
+                                        <span className="font-semibold text-gray-900">
+                                          {formatMoney(minAmount)}
+                                        </span>
+                                      </p>
+                                      <p className="col-span-2">
+                                        Valid till:{' '}
+                                        <span className="font-semibold text-gray-900">
+                                          {formatCouponExpiry(coupon)}
+                                        </span>
+                                      </p>
+                                    </div>
+                                    {!meetsMin && (
+                                      <p className="mt-2 font-semibold text-red-600">
+                                        Add {formatMoney(Math.max(0, minAmount - totalPrice))} more to unlock this coupon.
+                                      </p>
+                                    )}
+                                    {!isLive && (
+                                      <p className="mt-2 font-semibold text-amber-700">
+                                        This coupon is not active for the current date/time.
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="flex gap-2">
+                          {!appliedCoupon ? (
+                            <button
+                              type="button"
+                              onClick={handleApplyCoupon}
+                              disabled={couponLoading || !selectedCouponCode || !selectedCouponMeetsMinimum || !selectedCouponIsLive}
+                              className="flex-1 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                            >
+                              {couponLoading ? 'Applying...' : 'Apply selected'}
+                            </button>
+                          ) : (
+                            <>
+                              <div className="flex flex-1 items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                                <FaCheckCircle className="shrink-0" aria-hidden />
+                                Saved {formatMoney(couponDiscount)}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleRemoveCoupon}
+                                className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-600"
+                              >
+                                Remove
+                              </button>
+                            </>
+                          )}
+                        </div>
+
+                        {!appliedCoupon && (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={privateCouponCode}
+                              onChange={(e) => setPrivateCouponCode(e.target.value.toUpperCase())}
+                              placeholder="Enter code"
+                              className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleApplyPrivateCoupon}
+                              disabled={couponLoading || !String(privateCouponCode || '').trim()}
+                              className="shrink-0 rounded-lg border border-primary px-3 py-2 text-sm font-semibold text-primary disabled:opacity-50"
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        )}
+
+                        {selectedCoupon && !selectedCouponMeetsMinimum && (
+                          <p className="text-xs font-medium text-red-600">
+                            Add {formatMoney(selectedCouponMissingAmount)} more to use {selectedCoupon.code}.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleProceedToCheckout}
+                  disabled={cartItems.length === 0}
+                  className="hidden w-full rounded-xl bg-linear-to-r from-primary to-orange-400 px-4 py-3 text-base font-semibold text-white shadow-lg transition-all hover:brightness-95 disabled:cursor-not-allowed disabled:bg-gray-300 lg:block"
+                >
+                  Proceed to Checkout
+                </button>
+
+                <PaymentTrustBadges compact className="hidden lg:flex" />
+                <p className="hidden text-center text-xs text-gray-500 lg:block">
+                  Delivery in 3–7 business days across India
                 </p>
               </div>
-              <p className="text-[11px] sm:text-xs text-gray-500 text-center mt-3">
-                Secure checkout • Trusted payment gateway
+            </div>
+          </aside>
+        </div>
+
+        {/* Mobile sticky checkout */}
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-8px_30px_rgba(15,23,42,0.12)] backdrop-blur-md lg:hidden">
+          <div className="mx-auto flex max-w-7xl items-center gap-3">
+            <div className="min-w-0">
+              <p className="text-xs text-gray-500">Total payable</p>
+              <p className="text-xl font-bold text-primary">
+                ₹{payableAfterWallet.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
               </p>
             </div>
+            <button
+              type="button"
+              onClick={handleProceedToCheckout}
+              disabled={cartItems.length === 0}
+              className="ml-auto min-w-[148px] rounded-xl bg-linear-to-r from-primary to-orange-400 px-4 py-3 text-sm font-semibold text-white shadow-md disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              Checkout
+            </button>
           </div>
         </div>
 

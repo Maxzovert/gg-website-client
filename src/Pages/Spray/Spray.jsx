@@ -6,7 +6,7 @@ import sprayBanner from '../../assets/Spray/4sp.webp';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 import { fetchAllProductsByCategory } from '../../utils/shopProductFetch';
-import Heading from "../../assets/Sprayelem/Header.webp";
+import Heading from '../../assets/Sprayelem/Header.webp';
 
 const Spray = () => {
   const [products, setProducts] = useState([]);
@@ -26,40 +26,6 @@ const Spray = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Get essence from subcategory
-  const getEssence = (subcategory) => {
-    if (!subcategory) return null;
-    
-    // Mapping of subcategories to essences
-    const essenceMap = {
-      'Chakra Balance': 'Gurhal',
-      'Amrat Bindu': 'Lavandur',
-      'Amrat Dhara': 'Lavandur',
-      'Maitri': 'Levandur',
-      'Shuddhi': 'Kewda/Mogra'
-    };
-    
-    // Check if subcategory matches exactly
-    if (essenceMap[subcategory]) {
-      return essenceMap[subcategory];
-    }
-    
-    // Try to extract from subcategory if it contains essence info
-    // Format: "Subcategory - (Essence - EssenceName)"
-    const match = subcategory.match(/\(Essence\s*-\s*([^)]+)\)/i);
-    if (match) {
-      return match[1].trim();
-    }
-    
-    // Try format: "Subcategory (EssenceName)"
-    const match2 = subcategory.match(/\(([^)]+)\)/);
-    if (match2) {
-      return match2[1].trim();
-    }
-    
-    return null;
   };
 
   return (
@@ -96,7 +62,6 @@ const Spray = () => {
                   product={product}
                   calculatePricing={pricingFromProduct}
                   getReviewCount={getCardReviewCount}
-                  getEssence={getEssence}
                 />
               ))}
               </div>

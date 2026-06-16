@@ -8,6 +8,7 @@ import rudrakshBanner from '../../assets/RudraksPageImg/rd1.webp';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
+import CollectionSortSelect, { sortProducts } from '../../components/CollectionSortSelect';
 
 const MUKHI_SUBCATEGORIES = Array.from({ length: 14 }, (_, i) => `${i + 1} Mukhi`);
 
@@ -43,6 +44,7 @@ const Rudraksh = () => {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+  const [sortBy, setSortBy] = useState('featured');
 
   useEffect(() => {
     fetchFilterOptions();
@@ -83,13 +85,12 @@ const Rudraksh = () => {
   }, [filters.subcategory, filters.deity, filters.planet, filters.rarity, filters.search]);
 
   useEffect(() => {
-    // Filter by price on client side
     const filtered = allProducts.filter(product => {
       const price = product.price || 0;
       return price >= filters.priceMin && price <= filters.priceMax;
     });
-    setProducts(filtered);
-  }, [filters.priceMin, filters.priceMax, allProducts]);
+    setProducts(sortProducts(filtered, sortBy));
+  }, [filters.priceMin, filters.priceMax, allProducts, sortBy]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -120,12 +121,11 @@ const Rudraksh = () => {
       const result = await response.json();
       if (result.success) {
         setAllProducts(result.data);
-        // Apply price filter on client side
         const filtered = result.data.filter(product => {
           const price = product.price || 0;
           return price >= filters.priceMin && price <= filters.priceMax;
         });
-        setProducts(filtered);
+        setProducts(sortProducts(filtered, sortBy));
       }
     } catch (_error) {
     } finally {
@@ -395,6 +395,12 @@ const Rudraksh = () => {
 
           {/* Products Section */}
           <div className="flex-1">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-gray-600">
+                {loading ? 'Loading…' : `${products.length} product${products.length === 1 ? '' : 's'}`}
+              </p>
+              <CollectionSortSelect value={sortBy} onChange={setSortBy} />
+            </div>
 
             {/* Products Grid */}
             {loading ? (
