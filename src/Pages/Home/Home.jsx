@@ -19,6 +19,8 @@ import OurCollection from './OurCollection'
 import InstagramFeedSection from './InstagramFeedSection'
 import YouTubePodcastSection from './YouTubePodcastSection'
 import LatestPostsSection from './LatestPostsSection'
+import HomeReviewsSection from './HomeReviewsSection'
+import TestimonialsSection from './TestimonialsSection'
 import GoogleReviewSection from './GoogleReviewSection'
 import TrustStrip from './TrustStrip'
 import Combos from './Combos'
@@ -63,6 +65,10 @@ const Home = () => {
       <YouTubePodcastSection />
       <SectionDivider />
       <LatestPostsSection />
+      <SectionDivider />
+      <HomeReviewsSection />
+      <SectionDivider />
+      <TestimonialsSection />
       <SectionDivider />
       <GoogleReviewSection />
       <SectionDivider />
