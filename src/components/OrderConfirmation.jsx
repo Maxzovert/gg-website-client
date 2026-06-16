@@ -266,6 +266,9 @@ const OrderConfirmation = ({
 
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4">Price Breakdown</h4>
+        <p className="mb-4 text-sm text-gray-600 rounded-lg border border-primary/15 bg-primary/5 px-3 py-2">
+          Estimated delivery: <span className="font-semibold text-gray-800">3–7 business days</span> across India after dispatch.
+        </p>
         <div className="space-y-2">
           <div className="flex justify-between text-gray-700">
             <span>Payment Method:</span>

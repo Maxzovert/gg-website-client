@@ -74,11 +74,27 @@ const resolveSprayTheme = (product = {}) => {
   return SPRAY_THEMES.default;
 };
 
+function getSprayEssence(subcategory) {
+  if (!subcategory) return null;
+  const essenceMap = {
+    'Chakra Balance': 'Gurhal',
+    'Amrat Bindu': 'Lavandur',
+    'Amrat Dhara': 'Lavandur',
+    Maitri: 'Levandur',
+    Shuddhi: 'Kewda/Mogra',
+  };
+  if (essenceMap[subcategory]) return essenceMap[subcategory];
+  const match = subcategory.match(/\(Essence\s*-\s*([^)]+)\)/i);
+  if (match) return match[1].trim();
+  const match2 = subcategory.match(/\(([^)]+)\)/);
+  if (match2) return match2[1].trim();
+  return null;
+}
+
 const SprayProductCard = ({
   product,
   calculatePricing,
   getReviewCount,
-  getEssence,
   onAddToCart
 }) => {
   const { addToCart } = useCart();
@@ -88,7 +104,7 @@ const SprayProductCard = ({
 
   const pricing = calculatePricing ? calculatePricing(product) : pricingFromProduct(product);
   const reviewCount = getReviewCount ? getReviewCount(product.id) : 5;
-  const essence = getEssence ? getEssence(product.subcategory) : null;
+  const essence = getSprayEssence(product.subcategory);
   const theme = resolveSprayTheme(product);
   const descriptionText = String(
     product.description ||

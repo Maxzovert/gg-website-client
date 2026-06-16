@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaCreditCard, FaUniversity, FaMobileAlt, FaMoneyBillWave } from 'react-icons/fa';
 import { trackAddPaymentInfo } from '../utils/analytics.js';
+import PaymentTrustBadges from './PaymentTrustBadges';
 
 const PaymentOptions = ({ baseAmount, cartItems = [], onPaymentSelect }) => {
   const [selectedMethod, setSelectedMethod] = useState('');
@@ -97,6 +98,8 @@ const PaymentOptions = ({ baseAmount, cartItems = [], onPaymentSelect }) => {
           );
         })}
       </div>
+
+      <PaymentTrustBadges className="mt-2" />
 
     </div>
   );

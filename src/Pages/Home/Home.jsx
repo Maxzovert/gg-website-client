@@ -36,7 +36,7 @@ const Home = () => {
       <WebsiteCarousel />
       <TrustStrip />
       {/* <GawriGangaIntroSection /> */}
-      {/* <SectionDivider /> */}
+      <SectionDivider />
       <AccessoriesProd />
       <RudrakhshaProd />
       <TulsiProd />

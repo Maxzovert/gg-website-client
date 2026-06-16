@@ -8,7 +8,22 @@ import { pricingFromProduct } from '../utils/productPricing';
 import { isProductPreorder } from '../utils/productPreorder';
 import { formatMeasuresSummary } from '../utils/productMeasures';
 
-const ProductCard = ({ 
+const LOW_STOCK_THRESHOLD = 5;
+
+function getStockStatus(product) {
+  const stock = Number(product?.stock) || 0;
+  if (stock <= 0) return { kind: 'out', stock: 0 };
+  if (stock <= LOW_STOCK_THRESHOLD) return { kind: 'low', stock };
+  return { kind: 'in', stock };
+}
+
+function getStockLabel(status, { compact = false } = {}) {
+  if (status.kind === 'out') return compact ? 'No Stock' : 'Out of Stock';
+  if (status.kind === 'low') return `Only ${status.stock} left`;
+  return compact ? 'Stock' : 'In Stock';
+}
+
+const ProductCard = ({
   product, 
   variant = 'default', // 'rudraksh', 'spray', 'rashi', 'default'
   size = 'default', // 'default' | 'lg' — larger image, type, and actions
@@ -23,6 +38,7 @@ const ProductCard = ({
   const { toggleWishlist, isInWishlist } = useWishlist();
   const toast = useToast();
   const inWishlist = isInWishlist(product.id);
+  const stockStatus = getStockStatus(product);
   // Calculate pricing
   const pricing = calculatePricing ? calculatePricing(product) : pricingFromProduct(product);
 
@@ -238,13 +254,21 @@ const ProductCard = ({
                   <span className="hidden sm:inline">Pre-order</span>
                   <span className="sm:hidden">Pre</span>
                 </span>
-              ) : product.stock > 0 ? (
-                <span className={`inline-flex items-center font-semibold text-primary ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}
+              ) : stockStatus.kind !== 'out' ? (
+                <span className={`inline-flex items-center font-semibold ${
+                  stockStatus.kind === 'low' ? 'text-amber-700' : 'text-primary'
+                } ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}
                 >
-                  <span className={`bg-primary rounded-full ${large ? 'w-1.5 h-1.5 mr-1 sm:mr-1.5' : 'w-1 h-1 lg:w-1.5 lg:h-1.5 mr-0.5 sm:mr-1 lg:mr-1.5'}`}
+                  <span className={`rounded-full ${
+                    stockStatus.kind === 'low' ? 'bg-amber-500' : 'bg-primary'
+                  } ${large ? 'w-1.5 h-1.5 mr-1 sm:mr-1.5' : 'w-1 h-1 lg:w-1.5 lg:h-1.5 mr-0.5 sm:mr-1 lg:mr-1.5'}`}
                   />
-                  <span className="hidden sm:inline">In Stock</span>
-                  <span className="sm:hidden">Stock</span>
+                  <span className="hidden sm:inline">
+                    {stockStatus.kind === 'low' ? getStockLabel(stockStatus) : 'In Stock'}
+                  </span>
+                  <span className="sm:hidden">
+                    {getStockLabel(stockStatus, { compact: true })}
+                  </span>
                 </span>
               ) : (
                 <span className={`inline-flex items-center font-semibold text-red-600 ${large ? 'text-xs sm:text-sm' : 'text-[9px] sm:text-[10px] lg:text-xs'}`}
