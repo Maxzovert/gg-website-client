@@ -2,9 +2,11 @@ import React, { lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import CookieConsent from './components/CookieConsent'
+import LoginScrollPrompt from './components/LoginScrollPrompt'
 import RouteSeo from './components/RouteSeo'
 import Footer from './components/Footer'
-import WhatsAppFloatingButton from './components/WhatsAppFloatingButton'
+// TEMP: WhatsApp hidden — re-enable when ready
+// import WhatsAppFloatingButton from './components/WhatsAppFloatingButton'
 import Loader from './components/Loader'
 import { ToastProvider } from './components/Toaster'
 import { CartProvider } from './context/CartContext'
@@ -62,6 +64,7 @@ const App = () => {
               <RouteSeo />
               <ScrollToTop />
               <CookieConsent />
+              <LoginScrollPrompt />
               <Navbar />
               <main className="flex-1">
                 <Suspense fallback={<PageLoader />}>
@@ -106,7 +109,8 @@ const App = () => {
                 </Routes>
                 </Suspense>
               </main>
-              <WhatsAppFloatingButton />
+              {/* TEMP: WhatsApp floating badge hidden — re-enable when ready */}
+              {/* <WhatsAppFloatingButton /> */}
               <Footer />
             </div>
           </WishlistProvider>

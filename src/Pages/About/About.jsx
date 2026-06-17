@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../../assets/gglogo.svg'
-import founderImage from '../../assets/Webimg/Sk.png'
 import {
   FaCertificate,
   FaLeaf,
@@ -41,37 +40,6 @@ const About = () => {
             purity, and trust to every bead we offer.
           </p>
         </header>
-
-        {/* Founder Section */}
-        <section className="mb-16 sm:mb-20">
-          <div
-            className={`w-full h-px border-t ${GOLD_DIVIDER} mb-10 sm:mb-12`}
-            aria-hidden
-          />
-          <div className="flex flex-col md:flex-row gap-8 md:gap-10 items-center">
-            <div className="shrink-0 w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-lg overflow-hidden border-2 border-primary p-2 sm:p-2.5 md:p-3 bg-stone-100 shadow-sm">
-              <img
-                src={founderImage}
-                alt="Shobhi Kulshreshta, Founder of Gawri Ganga"
-                className="w-full h-full object-cover object-top rounded-md"
-              />
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="about-heading text-2xl sm:text-3xl font-semibold text-stone-800 mb-3">
-                Shobhi Kulshreshta
-              </h2>
-              <p className="about-body text-stone-600 text-base sm:text-lg leading-relaxed">
-                Founder of Gawri Ganga, Shobhi Kulshreshta has spent over forty
-                years in the sacred trade of Rudraksha. What began as a deep
-                personal connection to these beads has grown into a legacy of
-                trust—ensuring every piece we offer is authentic, certified, and
-                ethically sourced. Today, that same commitment extends to our
-                online presence, so you can experience the same integrity
-                wherever you are.
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* Authenticity & Certification */}
         <section className="mb-16 sm:mb-20">
