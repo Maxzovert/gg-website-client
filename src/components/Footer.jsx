@@ -4,8 +4,7 @@ import {
   FaInstagram,
   FaFacebookF,
   FaEnvelope,
-  FaPhone,
-  FaWhatsapp,
+  // FaWhatsapp, // TEMP: WhatsApp hidden
   FaPinterest,
   FaYoutube,
   FaLinkedinIn,
@@ -13,36 +12,18 @@ import {
 } from 'react-icons/fa'
 import logo from '../assets/gglogo.svg'
 
-const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
-const CONTACT_PHONE = String(import.meta.env.VITE_CONTACT_PHONE || '').replace(/\D/g, '')
+// const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
 
+// TEMP: WhatsApp hidden — re-enable when ready
+/*
 function getWhatsAppNumber() {
   return WHATSAPP_NUMBER || '919717568740'
-}
-
-function getContactPhone() {
-  return CONTACT_PHONE || getWhatsAppNumber()
-}
-
-function formatPhoneDisplay(digits) {
-  const d = String(digits || '').replace(/\D/g, '')
-  if (d.length === 12 && d.startsWith('91')) {
-    return `+91 ${d.slice(2, 7)} ${d.slice(7)}`
-  }
-  if (d.length === 10) {
-    return `+91 ${d.slice(0, 5)} ${d.slice(5)}`
-  }
-  return d ? `+${d}` : ''
 }
 
 function getWhatsAppHref(message = 'Hi, I need help choosing the right Rudraksha.') {
   return `https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(message)}`
 }
-
-function getTelHref() {
-  const phone = getContactPhone()
-  return phone ? `tel:+${phone}` : ''
-}
+*/
 
 const Footer = () => {
   const [email, setEmail] = useState('')
@@ -95,24 +76,17 @@ const Footer = () => {
             >
               support@gawriganga.com
             </a>
-            <div className="mt-3 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-              <a
-                href={getTelHref()}
-                className="inline-flex items-center gap-2 text-white/95 hover:text-white text-sm font-medium"
-              >
-                <FaPhone className="shrink-0" aria-hidden />
-                {formatPhoneDisplay(getContactPhone())}
-              </a>
-              <a
-                href={getWhatsAppHref()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-white/95 hover:text-white text-sm font-medium"
-              >
-                <FaWhatsapp className="shrink-0" aria-hidden />
-                WhatsApp
-              </a>
-            </div>
+            {/* TEMP: WhatsApp hidden — re-enable when ready
+            <a
+              href={getWhatsAppHref()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-2 text-white/95 hover:text-white text-sm font-medium"
+            >
+              <FaWhatsapp className="shrink-0" aria-hidden />
+              WhatsApp
+            </a>
+            */}
             {/* Full address block – hidden on mobile, visible from sm */}
             <div className="mt-4 space-y-1.5 text-white/95 text-xs sm:text-sm text-left max-w-xs mx-auto lg:mx-0 lg:max-w-none break-words hidden sm:block">
               <p>Gawri Ganga</p>

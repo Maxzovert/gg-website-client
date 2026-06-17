@@ -4,41 +4,24 @@ import { FaRegHeart, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import { CgShoppingBag } from "react-icons/cg";
 import logo from "../assets/gglogo.svg";
 import { LuCircleUserRound } from "react-icons/lu";
-import { FaWhatsapp, FaPhone } from "react-icons/fa";
+// TEMP: WhatsApp hidden — re-enable when ready
+// import { FaWhatsapp } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useAuth } from "../context/AuthContext";
 
-const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/\D/g, "");
-const CONTACT_PHONE = String(import.meta.env.VITE_CONTACT_PHONE || "").replace(/\D/g, "");
+// const WHATSAPP_NUMBER = String(import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/\D/g, "");
 
+// TEMP: WhatsApp hidden — re-enable when ready
+/*
 function getWhatsAppNumber() {
   return WHATSAPP_NUMBER || "919717568740";
-}
-
-function getContactPhone() {
-  return CONTACT_PHONE || getWhatsAppNumber();
-}
-
-function formatPhoneDisplay(digits) {
-  const d = String(digits || "").replace(/\D/g, "");
-  if (d.length === 12 && d.startsWith("91")) {
-    return `+91 ${d.slice(2, 7)} ${d.slice(7)}`;
-  }
-  if (d.length === 10) {
-    return `+91 ${d.slice(0, 5)} ${d.slice(5)}`;
-  }
-  return d ? `+${d}` : "";
 }
 
 function getWhatsAppHref(message = "Hi, I need help choosing the right Rudraksha.") {
   return `https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(message)}`;
 }
-
-function getTelHref() {
-  const phone = getContactPhone();
-  return phone ? `tel:+${phone}` : "";
-}
+*/
 
 const ACCESSORY_TYPE_LINKS = [
   {
@@ -248,45 +231,42 @@ const Navbar = () => {
         `}</style>
       <header className="bg-[#FFFAEB] shadow-md border-b border-[#E9DFC4]">
         {/* Top Banner */}
-        <div className="hidden md:grid h-10 grid-cols-3 items-center bg-primary px-6 text-sm text-white">
-          <p className="justify-self-start">Authentic · Lab-Tested · Fast Delivery</p>
-          <p className="justify-self-center text-center font-medium">
+        <div className="hidden md:flex h-10 items-center justify-between gap-4 bg-primary px-6 text-sm text-white">
+          <p className="shrink-0">Authentic · Lab-Tested · Fast Delivery</p>
+          <p className="text-center font-medium">
             ₹1,000 wallet cashback for first 100 users
           </p>
-          <div className="flex items-center justify-self-end gap-4">
-            <a
-              href={getTelHref()}
-              className="inline-flex items-center gap-1.5 hover:underline"
-            >
-              <FaPhone className="text-xs" aria-hidden />
-              {formatPhoneDisplay(getContactPhone())}
-            </a>
-            <a
-              href={getWhatsAppHref()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 hover:underline"
-            >
-              <FaWhatsapp aria-hidden />
-              WhatsApp
-            </a>
-          </div>
+          {/* TEMP: WhatsApp hidden — re-enable when ready (restore grid-cols-3 layout)
+          <a
+            href={getWhatsAppHref()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center shrink-0 gap-1.5 hover:underline"
+          >
+            <FaWhatsapp aria-hidden />
+            WhatsApp
+          </a>
+          */}
         </div>
 
         {/* Mobile Top Banner - Simplified */}
-        <div className="grid h-10 grid-cols-3 items-center gap-1 bg-primary px-2 text-[10px] text-white sm:px-3 sm:text-xs md:hidden">
-          <p className="truncate justify-self-start">Authentic · Lab-Tested</p>
-          <p className="truncate px-1 text-center font-medium justify-self-center">
+        <div className="grid h-10 grid-cols-2 items-center gap-2 bg-primary px-2 text-[10px] text-white sm:px-3 sm:text-xs md:hidden">
+          <p className="truncate">Authentic · Lab-Tested</p>
+          <p className="truncate text-right font-medium">
             ₹1,000 cashback — first 100 users
           </p>
+          {/* TEMP: WhatsApp hidden — re-enable when ready (restore grid-cols-3 layout)
           <a
-            href={getTelHref()}
+            href={getWhatsAppHref()}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex shrink-0 items-center justify-self-end gap-1 font-semibold underline-offset-2 hover:underline"
-            aria-label="Call us"
+            aria-label="Chat on WhatsApp"
           >
-            <FaPhone aria-hidden />
-            Call
+            <FaWhatsapp aria-hidden />
+            WhatsApp
           </a>
+          */}
         </div>
 
         {/* Main Navigation */}

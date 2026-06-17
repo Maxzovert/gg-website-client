@@ -25,7 +25,7 @@ const TRUST_POINTS = [
   },
 ];
 
-const Auth = () => {
+const Auth = ({ embedded = false, onSuccess, onDismiss }) => {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
@@ -37,9 +37,16 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSignup = useMemo(() => location.pathname.startsWith('/signup'), [location.pathname]);
-  const from = location.state?.from?.pathname || '/';
-  const linkState = { from: location.state?.from };
+  const isSignup = useMemo(
+    () => !embedded && location.pathname.startsWith('/signup'),
+    [location.pathname, embedded],
+  );
+  const from = embedded
+    ? location.pathname + location.search
+    : location.state?.from?.pathname || '/';
+  const linkState = embedded
+    ? { from: { pathname: location.pathname, search: location.search } }
+    : { from: location.state?.from };
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -108,7 +115,11 @@ const Auth = () => {
           trackLogin('otp');
           toast.success('Welcome back');
         }
-        navigate(from, { replace: true });
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate(from, { replace: true });
+        }
       }
     } catch (_error) {
       toast.error('An unexpected error occurred');
@@ -126,20 +137,14 @@ const Auth = () => {
     setPhoneNumber(raw.replace(/\D/g, '').slice(0, 10));
   };
 
-  return (
-    <div className="relative min-h-screen bg-linear-to-b from-[#FFF7F0] via-[#FAF4EF] to-[#EDE5DD]">
-      <Link
-        to="/"
-        className="absolute left-4 top-4 z-10 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-2 text-sm font-medium text-stone-700 shadow-sm ring-1 ring-orange-100/90 backdrop-blur-sm transition hover:bg-[#FFF5EE] hover:text-primary hover:ring-primary/25 sm:left-6 sm:top-6"
-      >
-        <FaArrowLeft className="text-xs text-primary/70" aria-hidden />
-        Home
-      </Link>
-
-      <div className="flex min-h-screen items-center justify-center px-3 pb-8 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:py-12">
-        <div className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl shadow-orange-950/10 ring-1 ring-primary/15 sm:rounded-3xl lg:flex lg:min-h-[min(640px,calc(100vh-8rem))]">
+  const authCard = (
+    <div
+      className={`w-full overflow-hidden rounded-2xl bg-white shadow-2xl shadow-orange-950/10 ring-1 ring-primary/15 sm:rounded-3xl lg:flex ${
+        embedded ? '' : 'max-w-5xl lg:min-h-[min(640px,calc(100vh-8rem))]'
+      }`}
+    >
           {/* Brand column — browns flow into site primary */}
-          <aside className="relative flex flex-col justify-between gap-6 bg-linear-to-br from-[#2a1d18] via-[#4a2d1c] to-[#8f4518] px-5 py-7 text-white sm:gap-8 sm:px-10 sm:py-12 lg:w-[46%] lg:shrink-0 lg:py-14">
+          <aside className={`relative flex flex-col justify-between gap-6 bg-linear-to-br from-[#2a1d18] via-[#4a2d1c] to-[#8f4518] px-5 py-7 text-white sm:gap-8 sm:px-10 sm:py-12 ${embedded ? 'hidden sm:flex lg:w-[46%] lg:shrink-0 lg:py-14' : 'lg:w-[46%] lg:shrink-0 lg:py-14'}`}>
             <div
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_100%_0%,rgba(255,145,77,0.45),transparent_50%)]"
               aria-hidden
@@ -309,7 +314,12 @@ const Auth = () => {
                 ) : (
                   <>
                     New to Gawri Ganga?{' '}
-                    <Link to="/signup" state={linkState} className="font-semibold text-primary hover:underline">
+                    <Link
+                      to="/signup"
+                      state={linkState}
+                      className="font-semibold text-primary hover:underline"
+                      onClick={onDismiss}
+                    >
                       Create an account
                     </Link>
                   </>
@@ -317,7 +327,25 @@ const Auth = () => {
               </p>
             </div>
           </div>
-        </div>
+    </div>
+  );
+
+  if (embedded) {
+    return authCard;
+  }
+
+  return (
+    <div className="relative min-h-screen bg-linear-to-b from-[#FFF7F0] via-[#FAF4EF] to-[#EDE5DD]">
+      <Link
+        to="/"
+        className="absolute left-4 top-4 z-10 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-2 text-sm font-medium text-stone-700 shadow-sm ring-1 ring-orange-100/90 backdrop-blur-sm transition hover:bg-[#FFF5EE] hover:text-primary hover:ring-primary/25 sm:left-6 sm:top-6"
+      >
+        <FaArrowLeft className="text-xs text-primary/70" aria-hidden />
+        Home
+      </Link>
+
+      <div className="flex min-h-screen items-center justify-center px-3 pb-8 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:py-12">
+        {authCard}
       </div>
     </div>
   );
