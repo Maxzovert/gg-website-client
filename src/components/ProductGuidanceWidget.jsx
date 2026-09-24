@@ -68,11 +68,8 @@ const ProductGuidanceWidget = () => {
 
   const handleBadgeClick = () => {
     if (authLoading) return;
-    if (isAuthenticated) {
-      openGuidancePanel();
-      return;
-    }
-    setLoginGateOpen(true);
+    // Never block product help behind OTP — guests can continue with phone at the end.
+    openGuidancePanel();
   };
 
   const handleLoginSuccess = () => {

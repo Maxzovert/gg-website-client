@@ -28,6 +28,8 @@ import {
   FaBoxOpen,
   FaGift,
   FaUserFriends,
+  FaUndo,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import Loader from "../../components/Loader";
 import { useToast } from "../../components/Toaster";
@@ -48,6 +50,7 @@ import { getCardReviewCount } from "../../utils/reviewDisplayCount.js";
 import { buildBreadcrumbJsonLd, buildProductJsonLd } from "../../utils/productJsonLd.js";
 import { normalizeProductMedia } from "../../utils/productMedia.js";
 import { getGalleryViewLabel, getProductStoryContext } from "../../utils/productPageCopy.js";
+import { formatDeliveryByLabel } from "../../utils/deliveryEstimate.js";
 import PaymentTrustBadges from "../../components/PaymentTrustBadges.jsx";
 
 const LOW_STOCK_THRESHOLD = 5;
@@ -195,6 +198,49 @@ function ProductLabCertificateBlock() {
             </li>
           </ul>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductTrustBesidePrice({ deliveryLabel }) {
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 px-2.5 py-2">
+        <p className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 sm:text-xs">
+          <FaMoneyBillWave aria-hidden />
+          COD available
+        </p>
+        <p className="mt-0.5 text-[10px] leading-snug text-emerald-700/90 sm:text-[11px]">
+          Pay on delivery
+        </p>
+      </div>
+      <div className="rounded-lg border border-stone-200 bg-white px-2.5 py-2">
+        <p className="inline-flex items-center gap-1.5 text-[11px] font-bold text-stone-800 sm:text-xs">
+          <FaUndo className="text-primary" aria-hidden />
+          Easy returns
+        </p>
+        <p className="mt-0.5 text-[10px] leading-snug text-stone-500 sm:text-[11px]">
+          Clear return policy
+        </p>
+      </div>
+      <div className="rounded-lg border border-amber-200 bg-amber-50/80 px-2.5 py-2">
+        <p className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-900 sm:text-xs">
+          <FaCertificate className="text-primary" aria-hidden />
+          Lab certified
+        </p>
+        <p className="mt-0.5 text-[10px] leading-snug text-amber-800/90 sm:text-[11px]">
+          Quality checked
+        </p>
+      </div>
+      <div className="rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-2">
+        <p className="inline-flex items-center gap-1.5 text-[11px] font-bold text-stone-900 sm:text-xs">
+          <FaTruck className="text-primary" aria-hidden />
+          Delivery
+        </p>
+        <p className="mt-0.5 text-[10px] font-semibold leading-snug text-primary sm:text-[11px]">
+          {deliveryLabel}
+        </p>
       </div>
     </div>
   );
@@ -540,7 +586,7 @@ const ProductPage = () => {
         const result = res.ok ? await res.json() : { data: [] };
         const list = result.success && result.data ? result.data : [];
         const related = list
-          .filter((p) => p.id !== product.id)
+          .filter((p) => p.id !== product.id && productCanBePurchased(p))
           .slice(0, 4);
         setRelatedProducts(related);
       } catch (err) {
@@ -599,14 +645,6 @@ const ProductPage = () => {
     if (!product) return;
     if (isProductPreorder(product)) {
       setShowPreorderModal(true);
-      return;
-    }
-    if (authLoading) {
-      toast.info('Please wait, checking authentication...');
-      return;
-    }
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: `/product/${slug}` } } });
       return;
     }
     const existingItem = cartItems.find(item => item.id === product.id);
@@ -921,6 +959,7 @@ const ProductPage = () => {
   const pricing = pricingFromProduct(product);
   const reviewCount = totalReviews;
   const stockStatus = getStockStatus(product);
+  const deliveryByLabel = formatDeliveryByLabel();
   const productJsonLd = buildProductJsonLd({
     product,
     pricing,
@@ -1102,11 +1141,6 @@ const ProductPage = () => {
                     </div>
                   )}
                 </div>
-                {hasMultipleImages ? (
-                  <p className="text-center text-[11px] leading-relaxed text-stone-500 lg:text-left sm:text-xs">
-                    Browse photos for close-ups, bead texture, and size reference before you buy.
-                  </p>
-                ) : null}
                 <ProductBelowGalleryMedia
                   videoUrl={product.video_url}
                   posterUrl={product.images?.[0]}
@@ -1200,6 +1234,8 @@ const ProductPage = () => {
                 </p>
               )}
             </div>
+
+            <ProductTrustBesidePrice deliveryLabel={deliveryByLabel} />
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2">
@@ -1379,9 +1415,9 @@ const ProductPage = () => {
             <div ref={ctaAnchorRef} className="h-px w-full" aria-hidden />
 
             <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-xs text-stone-500 sm:justify-start">
-              <span className="inline-flex items-center gap-1">
-                <FaTruck className="text-primary" aria-hidden />
-                Dispatch in 3–7 days
+              <span className="inline-flex items-center gap-1 font-semibold text-primary">
+                <FaTruck aria-hidden />
+                {deliveryByLabel}
               </span>
               <span className="hidden sm:inline text-stone-300" aria-hidden>|</span>
               <span className="inline-flex items-center gap-1">

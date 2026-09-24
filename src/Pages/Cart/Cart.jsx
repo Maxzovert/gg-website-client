@@ -9,7 +9,7 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct, cartDiscountTotals } from '../../utils/productPricing';
-import { getMaxOrderQuantity } from '../../utils/productPreorder';
+import { getMaxOrderQuantity, productCanBePurchased } from '../../utils/productPreorder';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 import PaymentTrustBadges from '../../components/PaymentTrustBadges';
 import { DEFAULT_DELIVERY_CHARGES, fetchDeliveryCharges, resolveShippingAmount } from '../../utils/deliveryCharges.js';
@@ -238,7 +238,9 @@ const Cart = () => {
         const list = result.success && Array.isArray(result.data) ? result.data : [];
         if (cancelled) return;
         const cartIds = new Set(cartItems.map((i) => String(i.id)));
-        const candidates = list.filter((p) => p?.id != null && !cartIds.has(String(p.id)));
+        const candidates = list.filter(
+          (p) => p?.id != null && !cartIds.has(String(p.id)) && productCanBePurchased(p),
+        );
         shuffleInPlace(candidates);
         setSuggestedProducts(candidates.slice(0, SUGGESTIONS_COUNT));
       } catch {
@@ -336,10 +338,6 @@ const Cart = () => {
   const handleProceedToCheckout = () => {
     if (cartItems.length === 0) {
       toast.info('Your cart is empty. Add items to proceed to checkout.');
-      return;
-    }
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: { pathname: '/cart' } } });
       return;
     }
     setShowCheckout(true);
