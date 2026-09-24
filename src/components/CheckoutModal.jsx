@@ -132,6 +132,26 @@ const CheckoutModal = ({
   };
 
   const handleClose = () => {
+    if (!orderData && selectedAddress?.receiver_phone && cartItems?.length) {
+      const phone = String(selectedAddress.receiver_phone).replace(/\D/g, '').slice(0, 10);
+      if (/^[6-9]\d{9}$/.test(phone)) {
+        const items = cartItems.map((item) => ({
+          product_id: item.id,
+          product_name: item.name,
+          product_price: item.price,
+          quantity: item.quantity,
+        }));
+        apiFetch('/api/abandoned-carts', {
+          method: 'POST',
+          body: JSON.stringify({
+            phone_number: phone,
+            full_name: selectedAddress.receiver_name || userName || null,
+            items,
+            cart_total: Number(totalAmount) || 0,
+          }),
+        }).catch(() => {});
+      }
+    }
     setCurrentStep(1);
     setSelectedAddress(null);
     setOrderData(null);

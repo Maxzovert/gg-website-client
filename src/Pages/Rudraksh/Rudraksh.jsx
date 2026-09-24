@@ -30,13 +30,16 @@ const Rudraksh = () => {
     subcategories: [],
     deities: [],
     planets: [],
-    rarities: []
+    rarities: [],
+    purposes: [],
   });
   const [filters, setFilters] = useState(() => ({
     subcategory: subcategoryFromSearchParams(searchParams),
     deity: 'all',
     planet: 'all',
     rarity: 'all',
+    purpose: searchParams.get('purpose') || 'all',
+    availability: 'in_stock',
     search: '',
     priceMin: 0,
     priceMax: 100000
@@ -82,15 +85,20 @@ const Rudraksh = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [filters.subcategory, filters.deity, filters.planet, filters.rarity, filters.search]);
+  }, [filters.subcategory, filters.deity, filters.planet, filters.rarity, filters.purpose, filters.search]);
 
   useEffect(() => {
-    const filtered = allProducts.filter(product => {
+    const filtered = allProducts.filter((product) => {
       const price = product.price || 0;
-      return price >= filters.priceMin && price <= filters.priceMax;
+      if (price < filters.priceMin || price > filters.priceMax) return false;
+      if (filters.availability === 'in_stock') {
+        const stock = Number(product.stock ?? product.stock_quantity ?? 0);
+        if (stock <= 0 && product.sale_type !== 'preorder' && !product.is_preorder) return false;
+      }
+      return true;
     });
     setProducts(sortProducts(filtered, sortBy));
-  }, [filters.priceMin, filters.priceMax, allProducts, sortBy]);
+  }, [filters.priceMin, filters.priceMax, filters.availability, allProducts, sortBy]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -98,7 +106,13 @@ const Rudraksh = () => {
       if (!response.ok) throw new Error('Failed to fetch filter options');
       const result = await response.json();
       if (result.success) {
-        setFilterOptions(result.data);
+        setFilterOptions({
+          subcategories: result.data?.subcategories || [],
+          deities: result.data?.deities || [],
+          planets: result.data?.planets || [],
+          rarities: result.data?.rarities || [],
+          purposes: result.data?.purposes || [],
+        });
       }
     } catch (_error) {
     }
@@ -113,7 +127,8 @@ const Rudraksh = () => {
         ...(filters.deity !== 'all' && { deity: filters.deity }),
         ...(filters.planet !== 'all' && { planet: filters.planet }),
         ...(filters.rarity !== 'all' && { rarity: filters.rarity }),
-        ...(filters.search && { search: filters.search })
+        ...(filters.purpose !== 'all' && { purpose: filters.purpose }),
+        ...(filters.search && { search: filters.search }),
       });
 
       const response = await apiFetch(`/api/products?${params}`);
@@ -121,9 +136,14 @@ const Rudraksh = () => {
       const result = await response.json();
       if (result.success) {
         setAllProducts(result.data);
-        const filtered = result.data.filter(product => {
+        const filtered = result.data.filter((product) => {
           const price = product.price || 0;
-          return price >= filters.priceMin && price <= filters.priceMax;
+          if (price < filters.priceMin || price > filters.priceMax) return false;
+          if (filters.availability === 'in_stock') {
+            const stock = Number(product.stock ?? product.stock_quantity ?? 0);
+            if (stock <= 0 && product.sale_type !== 'preorder' && !product.is_preorder) return false;
+          }
+          return true;
         });
         setProducts(sortProducts(filtered, sortBy));
       }
@@ -146,6 +166,8 @@ const Rudraksh = () => {
       deity: 'all',
       planet: 'all',
       rarity: 'all',
+      purpose: 'all',
+      availability: 'in_stock',
       search: '',
       priceMin: 0,
       priceMax: 100000
@@ -318,6 +340,40 @@ const Rudraksh = () => {
                       {m}
                     </option>
                   ))}
+                </select>
+              </div>
+
+              {/* Purpose */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Purpose
+                </label>
+                <select
+                  value={filters.purpose}
+                  onChange={(e) => handleFilterChange('purpose', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                >
+                  <option value="all">All Purposes</option>
+                  {(filterOptions.purposes || []).map((purpose) => (
+                    <option key={purpose} value={purpose}>
+                      {purpose}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Availability */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Availability
+                </label>
+                <select
+                  value={filters.availability}
+                  onChange={(e) => handleFilterChange('availability', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                >
+                  <option value="in_stock">In stock only</option>
+                  <option value="all">Include out of stock</option>
                 </select>
               </div>
 

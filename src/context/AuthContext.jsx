@@ -108,11 +108,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /** Soft session for checkout — no OTP. Same cookie as login so address/order APIs work. */
+  const startGuestCheckout = async (phone_number, full_name) => {
+    try {
+      if (!API_URL) throw new Error('API URL is not configured');
+      const res = await apiFetch('/api/auth/guest-checkout', {
+        method: 'POST',
+        body: JSON.stringify({
+          phone_number,
+          full_name,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to start guest checkout');
+      }
+      setUser(data.user || null);
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  };
+
   const value = {
     user,
     loading,
     sendPhoneOtp,
     verifyPhoneOtp,
+    startGuestCheckout,
     signOut,
     isAuthenticated: !!user,
     userId: user?.id || null

@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { apiFetch } from '../config/api.js';
 import { trackPurchase } from '../utils/analytics.js';
 import { paymentGatewayEmail } from '../utils/checkoutContact.js';
+import { formatDeliveryByLabel } from '../utils/deliveryEstimate.js';
 
 const ONLINE_PAYMENT_IDS = ['card', 'upi', 'netbanking'];
 const PAYMENT_METHOD_LABELS = {
@@ -54,28 +55,37 @@ const OrderConfirmation = ({
       alert('Please select a delivery address');
       return;
     }
-    const gatewayEmail = paymentGatewayEmail(userPhone);
+    const gatewayPhone = String(userPhone || selectedAddress?.receiver_phone || '')
+      .replace(/\D/g, '')
+      .slice(0, 10);
+    const gatewayEmail = paymentGatewayEmail(gatewayPhone);
     if (isOnlinePayment && !gatewayEmail) {
-      alert('A verified mobile number is required for online payment. Please sign in again.');
+      alert(
+        'A valid 10-digit mobile number is required for online payment. Please check your delivery address.',
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      const orderItems = cartItems.map(item => ({
+      const orderItems = cartItems.map((item) => ({
         product_id: item.id,
         product_name: item.name,
         product_price: item.price,
-        quantity: item.quantity
+        quantity: item.quantity,
       }));
 
       if (isOnlinePayment) {
-        const firstname = (selectedAddress.receiver_name || userName || 'Customer').trim() || 'Customer';
+        const firstname =
+          (selectedAddress.receiver_name || userName || 'Customer').trim() || 'Customer';
         const email = gatewayEmail;
-        const phone = String(selectedAddress.receiver_phone || '').replace(/\D/g, '').slice(0, 10) || '0000000000';
+        const phone =
+          String(selectedAddress.receiver_phone || gatewayPhone || '')
+            .replace(/\D/g, '')
+            .slice(0, 10) || '0000000000';
         if (!email) {
-          alert('A verified mobile number is required for online payment.');
+          alert('A valid mobile number is required for online payment.');
           setLoading(false);
           return;
         }
@@ -213,7 +223,14 @@ const OrderConfirmation = ({
         </div>
 
         <p className="text-sm text-gray-600">
-          You will receive an order confirmation email shortly.
+          We will contact you on {selectedAddress?.receiver_phone || 'your mobile'} with order updates.
+        </p>
+        <p className="mt-3 text-sm text-stone-600">
+          Want to track this order later?{' '}
+          <a href="/login" className="font-semibold text-primary underline-offset-2 hover:underline">
+            Sign in with OTP
+          </a>{' '}
+          using the same mobile number.
         </p>
       </div>
     );
@@ -267,7 +284,8 @@ const OrderConfirmation = ({
       <div className="bg-gray-50 rounded-lg p-6">
         <h4 className="font-semibold text-gray-900 mb-4">Price Breakdown</h4>
         <p className="mb-4 text-sm text-gray-600 rounded-lg border border-primary/15 bg-primary/5 px-3 py-2">
-          Estimated delivery: <span className="font-semibold text-gray-800">3–7 business days</span> across India after dispatch.
+          Estimated delivery:{" "}
+          <span className="font-semibold text-gray-800">{formatDeliveryByLabel()}</span> across India.
         </p>
         <div className="space-y-2">
           <div className="flex justify-between text-gray-700">

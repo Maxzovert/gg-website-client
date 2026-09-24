@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaMapMarkerAlt, FaPlus, FaCheck } from 'react-icons/fa';
 import { apiFetch } from '../config/api.js';
+import { useAuth } from '../context/AuthContext';
 
 const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCreated, userId }) => {
-  const [showForm, setShowForm] = useState(false);
+  const { isAuthenticated, startGuestCheckout } = useAuth();
+  const [showForm, setShowForm] = useState(() => !addresses?.length);
   const [formData, setFormData] = useState({
     receiver_name: '',
     receiver_phone: '',
@@ -19,6 +21,12 @@ const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCre
   });
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
+
+  useEffect(() => {
+    if (!addresses?.length) {
+      setShowForm(true);
+    }
+  }, [addresses?.length]);
 
   // Get current location
   const getCurrentLocation = () => {
@@ -131,10 +139,35 @@ const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCre
     setLoading(true);
 
     try {
+      const phoneDigits = String(formData.receiver_phone || '').replace(/\D/g, '').slice(0, 10);
+      if (phoneDigits.length !== 10) {
+        alert('Enter a valid 10-digit mobile number');
+        setLoading(false);
+        return;
+      }
+      if (!String(formData.receiver_name || '').trim()) {
+        alert('Enter the receiver name');
+        setLoading(false);
+        return;
+      }
+
+      if (!isAuthenticated) {
+        const { error: guestError } = await startGuestCheckout(
+          phoneDigits,
+          String(formData.receiver_name).trim(),
+        );
+        if (guestError) {
+          alert(guestError.message || 'Could not start checkout. Please try again.');
+          setLoading(false);
+          return;
+        }
+      }
+
       const response = await apiFetch('/api/addresses', {
         method: 'POST',
         body: JSON.stringify({
-          ...formData
+          ...formData,
+          receiver_phone: phoneDigits,
         })
       });
 
@@ -176,14 +209,18 @@ const AddressForm = ({ addresses, selectedAddress, onSelectAddress, onAddressCre
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-gray-900">Select Delivery Address</h3>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <FaPlus />
-          {showForm ? 'Cancel' : 'Add New Address'}
-        </button>
+        <h3 className="text-xl font-bold text-gray-900">
+          {isAuthenticated && addresses.length > 0 ? 'Select Delivery Address' : 'Delivery Address'}
+        </h3>
+        {(isAuthenticated || addresses.length > 0) && (
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <FaPlus />
+            {showForm ? 'Cancel' : 'Add New Address'}
+          </button>
+        )}
       </div>
 
       {/* Existing Addresses */}

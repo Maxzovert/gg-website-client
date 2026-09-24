@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
 import CookieConsent from './components/CookieConsent'
-import LoginScrollPrompt from './components/LoginScrollPrompt'
 import RouteSeo from './components/RouteSeo'
 import Footer from './components/Footer'
 import ProductGuidanceWidget from './components/ProductGuidanceWidget'
@@ -63,7 +62,6 @@ const App = () => {
               <RouteSeo />
               <ScrollToTop />
               <CookieConsent />
-              <LoginScrollPrompt />
               <Navbar />
               <main className="flex-1">
                 <Suspense fallback={<PageLoader />}>
