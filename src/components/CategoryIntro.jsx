@@ -3,8 +3,6 @@ import { CATEGORY_INTROS, LANDING_PAGES } from '../seo/landings.js';
 
 const LINK_KIND = {
   rudraksha: 'mukhi',
-  rashi: 'rashi',
-  purpose: 'purpose',
 };
 
 /** Short unique intro for category templates. Does not replace an existing page H1. */
