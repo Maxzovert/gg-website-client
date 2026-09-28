@@ -6,6 +6,7 @@ import combosHeaderBanner from '../../assets/Combos/combos-header.webp';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 import { fetchAllProductsByCategory } from '../../utils/shopProductFetch';
+import CategoryIntro from '../../components/CategoryIntro';
 
 /** Must match `categories.name` in your database (comparison is case-insensitive on the API). */
 const COMBOS_CATEGORY = 'Combos';
@@ -43,6 +44,7 @@ const Combos = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
+        <CategoryIntro id="combos" />
         <h1 className="sr-only">Combos</h1>
         <div className="mb-6 sm:mb-8 text-center">
           <div className="w-full rounded-lg overflow-hidden shadow-md">
