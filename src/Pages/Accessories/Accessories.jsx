@@ -9,6 +9,7 @@ import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 import CollectionSortSelect, { sortProducts } from '../../components/CollectionSortSelect';
+import CategoryIntro from '../../components/CategoryIntro';
 
 const ACCESSORIES_SUBCATEGORIES = [
   { id: 1, name: 'Mala' },
@@ -157,6 +158,7 @@ const Accessories = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
+        <CategoryIntro id="accessories" />
         {/* Header with Banner */}
         <div className="mb-6 sm:mb-8 text-center">
           <div className="w-full rounded-lg overflow-hidden shadow-md">

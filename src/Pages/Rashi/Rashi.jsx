@@ -4,6 +4,7 @@ import { FaTimes, FaChevronDown, FaArrowRight } from 'react-icons/fa';
 import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import RashiSection from '../Home/RashiSection';
+import CategoryIntro from '../../components/CategoryIntro';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
@@ -413,6 +414,7 @@ const Rashi = () => {
         <RashiSection hideCta />
 
         <div className="px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
+          <CategoryIntro id="rashi" />
           {/* Header */}
           <div className="mb-6 sm:mb-8 text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-2">
