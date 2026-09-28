@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import Loader from '../../components/Loader';
 import { apiFetch } from '../../config/api.js';
 import { buildBreadcrumbJsonLd } from '../../utils/productJsonLd.js';
-import CategoryIntro from '../../components/CategoryIntro';
 
 const SITE = (import.meta.env.VITE_SITE_URL || 'https://www.gawriganga.com').replace(/\/$/, '');
 
@@ -97,7 +96,6 @@ const AllProducts = () => {
       </Helmet>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        <CategoryIntro id="products" />
         <nav aria-label="Breadcrumb" className="mb-6 text-sm text-stone-600">
           <ol className="flex flex-wrap items-center gap-2 list-none p-0 m-0">
             <li>

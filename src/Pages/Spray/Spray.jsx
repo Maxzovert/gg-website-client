@@ -7,7 +7,6 @@ import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
 import { fetchAllProductsByCategory } from '../../utils/shopProductFetch';
 import Heading from '../../assets/Sprayelem/Header.webp';
-import CategoryIntro from '../../components/CategoryIntro';
 
 const Spray = () => {
   const [products, setProducts] = useState([]);
@@ -32,7 +31,6 @@ const Spray = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
-        <CategoryIntro id="sprays" />
         <img src={Heading} alt="" className="w-full mb-6 rounded-4xl" />
         {/* Header with Banner */}
         {/* <div className="mb-6 sm:mb-8 text-center">

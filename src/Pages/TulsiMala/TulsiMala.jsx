@@ -5,7 +5,6 @@ import ProductCard from '../../components/ProductCard';
 import Loader from '../../components/Loader';
 import ExploreSectionsBlock from '../../components/ExploreSectionsBlock';
 import tulsiBanner from '../../assets/TulsiMala/tcm.webp';
-import CategoryIntro from '../../components/CategoryIntro';
 import { apiFetch } from '../../config/api.js';
 import { pricingFromProduct } from '../../utils/productPricing';
 import { getCardReviewCount } from '../../utils/reviewDisplayCount.js';
@@ -153,7 +152,6 @@ const TulsiMala = () => {
   return (
     <div className="min-h-screen py-4 sm:py-6 lg:py-8">
       <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
-        <CategoryIntro id="tulsimala" />
         {/* Header with Banner */}
         <div className="mb-6 sm:mb-8 text-center">
           <div className="w-full overflow-hidden rounded-lg shadow-md">
